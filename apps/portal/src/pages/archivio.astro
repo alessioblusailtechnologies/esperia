@@ -1,0 +1,38 @@
+---
+import Base from '@/layouts/Base.astro'
+import ArticleListing from '@/components/ArticleListing.astro'
+import { ARTICLES_PER_PAGE, getArticles } from '@/lib/payload'
+import { absoluteUrl, breadcrumbJsonLd } from '@/lib/seo'
+
+/**
+ * Archivio cronologico — RF-P-12.
+ *
+ * È la destinazione del link "Tutte le notizie in archivio" presente in
+ * homepage nei design: senza questa pagina quel collegamento porterebbe a una
+ * 404. Riusa la stessa impaginazione dei listing di categoria.
+ */
+
+const pagina = Math.max(1, Number(Astro.url.searchParams.get('pagina') ?? '1') || 1)
+const risultati = await getArticles({ page: pagina, limit: ARTICLES_PER_PAGE })
+
+if (pagina > 1 && risultati.docs.length === 0) return Astro.rewrite('/404')
+
+const base = '/archivio'
+const titoloSeo = pagina > 1 ? `Archivio — pagina ${pagina}` : 'Archivio'
+---
+
+<Base
+  title={titoloSeo}
+  description="Tutti gli articoli pubblicati, dal più recente."
+  canonical={absoluteUrl(pagina > 1 ? `${base}?pagina=${pagina}` : base)}
+  jsonLd={[breadcrumbJsonLd([{ name: 'Home', url: '/' }, { name: 'Archivio', url: base }])]}
+>
+  <ArticleListing
+    eyebrow="Archivio"
+    titolo="Tutte le notizie"
+    descrizione="Gli articoli pubblicati, in ordine cronologico."
+    risultati={risultati}
+    base={base}
+    messaggioVuoto="Non è ancora stato pubblicato nessun articolo."
+  />
+</Base>

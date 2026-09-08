@@ -1,0 +1,211 @@
+---
+import type { Category, Page, SiteSettings } from '@/lib/types'
+
+interface Props {
+  settings: SiteSettings
+  pages: Page[]
+  categories: Category[]
+}
+
+const { settings, pages, categories } = Astro.props
+const anno = new Date().getFullYear()
+
+const ETICHETTE_SOCIAL: Record<string, string> = {
+  facebook: 'Facebook',
+  instagram: 'Instagram',
+  x: 'X',
+  linkedin: 'LinkedIn',
+  youtube: 'YouTube',
+  tiktok: 'TikTok',
+}
+
+/*
+ * Piede — dai design (Home v1).
+ *
+ * I dati della testata (registrazione al tribunale, partita IVA, direttore
+ * responsabile) sono obbligatori per legge su una testata giornalistica
+ * registrata e arrivano dalle impostazioni: sono dati del Committente, non
+ * costanti del codice.
+ */
+---
+
+<footer class="piede">
+  <div class="piede__griglia">
+    <div class="piede__testata">
+      <p class="piede__marchio">{settings.siteName}</p>
+      {settings.legalNotice && <p class="piede__legale">{settings.legalNotice}</p>}
+      {settings.contactEmail && (
+        <p class="piede__email"><a href={`mailto:${settings.contactEmail}`}>{settings.contactEmail}</a></p>
+      )}
+    </div>
+
+    <nav class="piede__colonna" aria-label="Categorie">
+      <h2 class="piede__titolo">Categorie</h2>
+      <ul>
+        {categories
+          .filter((c) => c.showInMenu !== false)
+          .map((c) => (
+            <li><a href={`/categoria/${c.slug}`}>{c.name}</a></li>
+          ))}
+      </ul>
+    </nav>
+
+    <nav class="piede__colonna" aria-label="Informazioni sulla testata">
+      <h2 class="piede__titolo">Testata</h2>
+      <ul>
+        {pages.map((p) => (
+          <li><a href={`/pagina/${p.slug}`}>{p.title}</a></li>
+        ))}
+        <li>
+          {/*
+            Revoca del consenso: obbligatoria quanto la raccolta (RNF-04).
+            Un <button> e non un link, perché non porta da nessuna parte —
+            riapre il pannello delle preferenze.
+          */}
+          <button type="button" class="piede__preferenze" data-apri-preferenze>
+            Preferenze cookie
+          </button>
+        </li>
+      </ul>
+    </nav>
+
+    <div class="piede__colonna">
+      <h2 class="piede__titolo">Segui {settings.siteName}</h2>
+      <ul>
+        <li>
+          <a href="/rss.xml" class="piede__rss">
+            <span class="piede__pastiglia" aria-hidden="true">RSS</span> Feed RSS
+          </a>
+        </li>
+        {(settings.social ?? []).map((s) => (
+          <li>
+            <a href={s.url} rel="noopener noreferrer me" target="_blank">
+              {ETICHETTE_SOCIAL[s.platform] ?? s.platform}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </div>
+
+  <div class="piede__coda">
+    <span>
+      © {anno} {settings.publisherName || settings.siteName}
+      {settings.companyDetails ? ` — ${settings.companyDetails}` : ''}
+    </span>
+    {settings.editorInChief && <span>Direttore responsabile: {settings.editorInChief}</span>}
+  </div>
+</footer>
+
+<script>
+  // Il pannello dei consensi vive nell'isola CookieBanner: qui lanciamo solo
+  // l'evento che lo riapre, così il piede resta HTML statico.
+  document.querySelectorAll('[data-apri-preferenze]').forEach((b) => {
+    b.addEventListener('click', () => {
+      window.dispatchEvent(new CustomEvent('esperia:apri-preferenze'))
+    })
+  })
+</script>
+
+<style>
+  .piede {
+    margin: var(--spazio-9) var(--padding-laterale) 0;
+    padding-top: var(--spazio-7);
+    border-top: 1px solid var(--colore-bordo);
+  }
+
+  .piede__griglia {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+    gap: clamp(20px, 3vw, 40px);
+  }
+
+  .piede__testata {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .piede__marchio {
+    font-family: var(--font-titoli);
+    font-size: 24px;
+    font-weight: var(--peso-extra);
+    letter-spacing: -0.5px;
+  }
+
+  .piede__legale {
+    font-size: 12px;
+    line-height: var(--interlinea-normale);
+    color: var(--colore-testo-meta);
+    max-width: 26ch;
+  }
+
+  .piede__email {
+    font-size: 13px;
+  }
+
+  .piede__colonna {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spazio-3);
+  }
+
+  .piede__titolo {
+    font-family: var(--font-testo);
+    font-size: 10px;
+    font-weight: var(--peso-forte);
+    letter-spacing: 1.8px;
+    text-transform: uppercase;
+    color: var(--colore-testo-meta);
+  }
+
+  .piede ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: var(--spazio-3);
+    font-size: 13px;
+  }
+
+  .piede__preferenze {
+    background: none;
+    border: 0;
+    padding: 0;
+    font-size: 13px;
+    color: var(--colore-testo-tenue);
+    cursor: pointer;
+    text-align: left;
+  }
+
+  .piede__preferenze:hover {
+    color: var(--colore-accento);
+  }
+
+  .piede__rss {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+  }
+
+  .piede__pastiglia {
+    font-size: 10px;
+    font-weight: var(--peso-forte);
+    letter-spacing: 0.5px;
+    background: var(--colore-rss);
+    color: var(--colore-testo);
+    border-radius: 4px;
+    padding: 2px 6px;
+  }
+
+  .piede__coda {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 20px;
+    padding: var(--spazio-6) 0 8px;
+    margin-top: var(--spazio-7);
+    border-top: 1px solid var(--colore-bordo);
+    font-size: var(--testo-xs);
+    color: var(--colore-testo-meta);
+  }
+</style>

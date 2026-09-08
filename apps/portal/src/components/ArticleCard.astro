@@ -1,0 +1,410 @@
+---
+import type { Article, Author, Category, Media } from '@/lib/types'
+import { populated, populatedList } from '@/lib/types'
+import { mediaUrl } from '@/lib/seo'
+import { formatData, isoDate, tempoLettura } from '@/lib/format'
+
+interface Props {
+  article: Article
+  /**
+   * Le quattro forme presenti nei design:
+   *   apertura   — articolo principale della home, immagine a tutta larghezza
+   *   testata    — apertura di categoria e tag, immagine e testo affiancati
+   *   scheda     — griglia a 3-4 colonne (secondari, correlati, listing)
+   *   riga       — elenco "Ultime notizie", miniatura a destra
+   *   risultato  — riga della pagina di ricerca, miniatura a sinistra
+   */
+  variante?: 'apertura' | 'testata' | 'scheda' | 'riga' | 'risultato'
+  /**
+   * La prima immagine della pagina è quasi sempre l'elemento LCP: va caricata
+   * subito e con priorità, mai in lazy. Le altre in lazy. RNF-01.
+   */
+  prioritaria?: boolean
+  /** Livello dell'intestazione, per non rompere la gerarchia dei titoli. RNF-07 */
+  livelloTitolo?: 2 | 3
+  /** Sommario già evidenziato (ricerca): HTML sicuro prodotto dal CMS. */
+  sommarioHtml?: string | null
+  /** Nelle "ultime notizie" i design mostrano l'ora, non la data. */
+  mostraOra?: boolean
+}
+
+const {
+  article,
+  variante = 'scheda',
+  prioritaria = false,
+  livelloTitolo = 3,
+  sommarioHtml = null,
+  mostraOra = false,
+} = Astro.props
+
+const categoria = populated<Category>(article.category)
+const immagine = populated<Media>(article.heroImage)
+const autori = populatedList<Author>(article.authors)
+const autore = autori[0] ?? null
+const avatar = autore ? mediaUrl(autore.avatar, 'thumbnail') : null
+
+const dimensione =
+  variante === 'apertura' || variante === 'testata'
+    ? 'hero'
+    : variante === 'scheda'
+      ? 'card'
+      : 'thumbnail'
+const src = mediaUrl(immagine, dimensione)
+const misura = immagine?.sizes?.[dimensione]
+
+const Titolo = `h${livelloTitolo}` as 'h2' | 'h3'
+const href = `/${article.slug}`
+
+const ora = article.publishedAt
+  ? new Intl.DateTimeFormat('it-IT', { hour: '2-digit', minute: '2-digit' }).format(
+      new Date(article.publishedAt),
+    )
+  : ''
+
+// Nelle schede la data è compatta: "27 ago". Per esteso solo nell'apertura.
+const dataBreve = article.publishedAt
+  ? new Intl.DateTimeFormat('it-IT', { day: 'numeric', month: 'short' }).format(
+      new Date(article.publishedAt),
+    )
+  : ''
+---
+
+<article class:list={['scheda', `scheda--${variante}`]}>
+  {src && (
+    <a class="scheda__media" href={href} tabindex="-1" aria-hidden="true">
+      <img
+        src={src}
+        alt={immagine?.alt ?? ''}
+        width={misura?.width ?? undefined}
+        height={misura?.height ?? undefined}
+        loading={prioritaria ? 'eager' : 'lazy'}
+        fetchpriority={prioritaria ? 'high' : 'auto'}
+        decoding={prioritaria ? 'sync' : 'async'}
+      />
+    </a>
+  )}
+
+  <div class="scheda__testo">
+    {categoria && (
+      <a class="scheda__categoria" href={`/categoria/${categoria.slug}`}>{categoria.name}</a>
+    )}
+
+    <Titolo class="scheda__titolo">
+      <a href={href}>{article.title}</a>
+    </Titolo>
+
+    {variante !== 'riga' && sommarioHtml && (
+      <p class="scheda__sommario" set:html={sommarioHtml} />
+    )}
+    {variante !== 'riga' && !sommarioHtml && article.excerpt && (
+      <p class="scheda__sommario">{article.excerpt}</p>
+    )}
+
+    {mostraOra ? (
+      <p class="scheda__ora">
+        <time datetime={isoDate(article.publishedAt)}>{ora}</time>
+      </p>
+    ) : variante === 'risultato' ? (
+      <p class="scheda__ora">
+        <time datetime={isoDate(article.publishedAt)}>{formatData(article.publishedAt)}</time>
+      </p>
+    ) : (
+      <div class="scheda__firma">
+        {avatar ? (
+          <img class="avatar scheda__avatar" src={avatar} alt="" width="30" height="30" loading="lazy" />
+        ) : (
+          <span class="avatar scheda__avatar" aria-hidden="true"></span>
+        )}
+        {autore && <span class="scheda__autore">{autore.name}</span>}
+        <span aria-hidden="true">·</span>
+        <time datetime={isoDate(article.publishedAt)}>
+          {variante === 'apertura' || variante === 'testata'
+            ? formatData(article.publishedAt)
+            : dataBreve}
+        </time>
+        {article.readingMinutes ? (
+          <>
+            <span aria-hidden="true">·</span>
+            <span>
+              {variante === 'apertura'
+                ? tempoLettura(article.readingMinutes)
+                : `${article.readingMinutes} min`}
+            </span>
+          </>
+        ) : null}
+      </div>
+    )}
+  </div>
+</article>
+
+<style>
+  .scheda {
+    display: flex;
+    flex-direction: column;
+    gap: 11px;
+  }
+
+  .scheda:hover {
+    opacity: 0.85;
+  }
+
+  .scheda__media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    background: var(--colore-superficie);
+    border-radius: var(--raggio-md);
+  }
+
+  .scheda__testo {
+    display: flex;
+    flex-direction: column;
+    gap: 11px;
+  }
+
+  .scheda__categoria {
+    font-size: 10px;
+    font-weight: var(--peso-forte);
+    letter-spacing: var(--spaziatura-eyebrow);
+    text-transform: uppercase;
+    color: var(--colore-accento);
+  }
+
+  .scheda__titolo {
+    font-size: var(--titolo-scheda);
+    line-height: var(--interlinea-titoletto);
+    font-weight: var(--peso-medio);
+    margin: 0;
+  }
+
+  .scheda__sommario {
+    font-size: var(--testo-base);
+    line-height: var(--interlinea-normale);
+    color: var(--colore-testo-tenue);
+  }
+
+  /* Termini evidenziati nei risultati di ricerca. */
+  .scheda__sommario :global(mark) {
+    background: var(--colore-evidenza);
+    color: var(--colore-testo);
+    padding: 0 2px;
+  }
+
+  .scheda__firma {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    font-size: var(--testo-xs);
+    color: var(--colore-testo-meta);
+  }
+
+  .scheda__avatar {
+    width: 24px;
+    height: 24px;
+  }
+
+  .scheda__autore {
+    color: var(--colore-testo);
+    font-weight: var(--peso-forte);
+  }
+
+  .scheda__ora {
+    font-size: var(--testo-xs);
+    color: var(--colore-testo-meta);
+  }
+
+  /* --- Apertura ---------------------------------------------------------- */
+
+  .scheda--apertura {
+    gap: 18px;
+  }
+
+  .scheda--apertura:hover {
+    opacity: 0.9;
+  }
+
+  .scheda--apertura .scheda__media {
+    display: block;
+    height: clamp(220px, 38vw, 440px);
+  }
+
+  .scheda--apertura .scheda__media img {
+    border-radius: var(--raggio-lg);
+  }
+
+  .scheda--apertura .scheda__testo {
+    gap: 18px;
+  }
+
+  .scheda--apertura .scheda__categoria {
+    font-size: var(--testo-eyebrow);
+  }
+
+  .scheda--apertura .scheda__titolo {
+    font-size: var(--titolo-apertura);
+    line-height: var(--interlinea-titolo);
+    font-weight: var(--peso-forte);
+    letter-spacing: var(--spaziatura-titolo);
+    max-width: 16ch;
+    min-width: 100%;
+  }
+
+  .scheda--apertura .scheda__sommario {
+    font-size: var(--testo-md);
+    line-height: 1.55;
+    max-width: 70ch;
+  }
+
+  .scheda--apertura .scheda__firma {
+    gap: 10px;
+    font-size: var(--testo-sm);
+  }
+
+  .scheda--apertura .scheda__avatar {
+    width: 30px;
+    height: 30px;
+  }
+
+  /* --- Apertura di categoria e tag ---------------------------------------- */
+
+  .scheda--testata {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: clamp(20px, 2.6vw, 34px);
+    align-items: start;
+  }
+
+  .scheda--testata:hover {
+    opacity: 0.88;
+  }
+
+  .scheda--testata .scheda__media {
+    height: clamp(220px, 26vw, 320px);
+  }
+
+  .scheda--testata .scheda__media img {
+    border-radius: var(--raggio-lg);
+  }
+
+  .scheda--testata .scheda__testo {
+    gap: 14px;
+  }
+
+  .scheda--testata .scheda__categoria {
+    font-size: var(--testo-eyebrow);
+  }
+
+  .scheda--testata .scheda__titolo {
+    font-size: clamp(26px, 2.9vw, 38px);
+    line-height: 1.13;
+    font-weight: var(--peso-forte);
+    letter-spacing: -0.6px;
+  }
+
+  .scheda--testata .scheda__sommario {
+    font-size: 15px;
+    line-height: 1.56;
+    max-width: 60ch;
+  }
+
+  .scheda--testata .scheda__firma {
+    gap: 9px;
+    font-size: 12px;
+  }
+
+  .scheda--testata .scheda__avatar {
+    width: 28px;
+    height: 28px;
+  }
+
+  /* --- Scheda in griglia -------------------------------------------------- */
+
+  .scheda--scheda .scheda__media {
+    display: block;
+    height: 170px;
+  }
+
+  /* --- Riga dell'elenco "Ultime notizie" ---------------------------------- */
+
+  .scheda--riga {
+    flex-direction: row-reverse;
+    align-items: center;
+    gap: clamp(12px, 2vw, 24px);
+    padding: 16px 0;
+    border-bottom: 1px solid var(--colore-bordo);
+  }
+
+  .scheda--riga:hover {
+    opacity: 0.72;
+  }
+
+  .scheda--riga .scheda__media {
+    width: 104px;
+    height: 72px;
+    flex: 0 0 104px;
+  }
+
+  .scheda--riga .scheda__media img {
+    border-radius: var(--raggio-sm);
+  }
+
+  .scheda--riga .scheda__testo {
+    flex: 1;
+    gap: var(--spazio-2);
+  }
+
+  .scheda--riga .scheda__categoria {
+    font-size: var(--testo-micro);
+    letter-spacing: 1.6px;
+  }
+
+  .scheda--riga .scheda__titolo {
+    font-size: var(--titolo-lista);
+    line-height: 1.25;
+  }
+
+  /* --- Riga dei risultati di ricerca -------------------------------------- */
+
+  .scheda--risultato {
+    flex-direction: row;
+    align-items: flex-start;
+    gap: clamp(14px, 2vw, 22px);
+    padding: 20px 0;
+    border-top: 1px solid var(--colore-bordo);
+  }
+
+  .scheda--risultato:hover {
+    opacity: 0.75;
+  }
+
+  .scheda--risultato .scheda__media {
+    width: clamp(88px, 11vw, 132px);
+    height: clamp(64px, 8vw, 92px);
+    flex: 0 0 auto;
+  }
+
+  .scheda--risultato .scheda__media img {
+    border-radius: var(--raggio-sm);
+  }
+
+  .scheda--risultato .scheda__testo {
+    flex: 1;
+    gap: 7px;
+  }
+
+  .scheda--risultato .scheda__categoria {
+    font-size: var(--testo-micro);
+    letter-spacing: 1.6px;
+  }
+
+  .scheda--risultato .scheda__titolo {
+    font-size: var(--titolo-risultato);
+  }
+
+  .scheda--risultato .scheda__sommario {
+    font-size: 13px;
+    line-height: 1.55;
+    max-width: 80ch;
+  }
+</style>

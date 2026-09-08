@@ -1,0 +1,180 @@
+/* =============================================================================
+   Impaginazione del testo lungo.
+
+   Condiviso fra la pagina articolo e le pagine editoriali di servizio: entrambe
+   rendono HTML prodotto dall'editor del CMS e devono comporlo allo stesso modo.
+   Tenerlo qui invece che in un <style is:global> di una sola pagina evita che
+   le pagine statiche perdano la formattazione del corpo.
+   ============================================================================= */
+
+/* --- Immagini ------------------------------------------------------------ */
+
+.articolo__copertina {
+  margin: 0;
+  padding-top: clamp(22px, 3vw, 34px);
+}
+
+.articolo__copertina img {
+  width: 100%;
+  height: clamp(200px, 34vw, 420px);
+  object-fit: cover;
+  border-radius: var(--raggio-lg);
+  background: var(--colore-superficie);
+}
+
+.figura {
+  margin: 32px 0;
+}
+
+.figura img {
+  width: 100%;
+  border-radius: var(--raggio-md);
+  background: var(--colore-superficie);
+}
+
+.figura__didascalia {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  padding-top: 10px;
+  font-size: var(--testo-xs);
+  line-height: var(--interlinea-normale);
+  color: var(--colore-testo-tenue);
+}
+
+.figura__crediti {
+  color: var(--colore-testo-debole);
+}
+
+/* --- Corpo --------------------------------------------------------------- */
+
+.articolo__corpo {
+  padding-top: clamp(26px, 3.4vw, 40px);
+  font-size: var(--testo-lettura);
+  line-height: var(--interlinea-lettura);
+  color: var(--colore-testo-corpo);
+}
+
+.articolo__corpo p {
+  margin: 0 0 22px;
+}
+
+/* Le prime parole in carattere da titolo: attacco tipografico dai design. */
+.articolo__corpo .attacco {
+  font-family: var(--font-titoli);
+  font-size: 1.35em;
+  font-weight: var(--peso-medio);
+}
+
+.articolo__corpo h2 {
+  margin: 34px 0 14px;
+  font-size: var(--titolo-sezione);
+  line-height: var(--interlinea-titoletto);
+  font-weight: var(--peso-forte);
+}
+
+.articolo__corpo h3 {
+  margin: 28px 0 12px;
+  font-size: clamp(20px, 2vw, 23px);
+}
+
+.articolo__corpo a {
+  text-decoration: underline;
+  text-decoration-color: var(--colore-bordo-forte);
+  text-underline-offset: 3px;
+}
+
+.articolo__corpo a:hover {
+  text-decoration-color: var(--colore-accento);
+}
+
+.articolo__corpo ul,
+.articolo__corpo ol {
+  margin: 0 0 22px;
+  padding-left: 22px;
+}
+
+.articolo__corpo li {
+  margin-bottom: 10px;
+}
+
+.articolo__corpo li:last-child {
+  margin-bottom: 0;
+}
+
+/* Citazione in evidenza: deborda dalla colonna di lettura, come nei design. */
+.citazione {
+  margin: 34px calc(-1 * clamp(0px, 6vw, 120px));
+  padding: clamp(22px, 3vw, 32px) clamp(18px, 4vw, 40px);
+  background: var(--colore-superficie);
+  border-radius: var(--raggio-lg);
+}
+
+.citazione__testo {
+  font-family: var(--font-titoli);
+  font-size: clamp(21px, 2.4vw, 28px);
+  line-height: 1.34;
+  font-weight: var(--peso-medio);
+  font-style: italic;
+  margin: 0;
+  text-wrap: pretty;
+}
+
+.citazione__fonte {
+  display: block;
+  padding-top: 14px;
+  font-family: var(--font-testo);
+  font-size: 12px;
+  font-style: normal;
+  font-weight: var(--peso-forte);
+  letter-spacing: 1.4px;
+  text-transform: uppercase;
+  color: var(--colore-testo-meta);
+}
+
+/* --- Embed --------------------------------------------------------------- */
+
+.embed {
+  margin: 32px 0;
+}
+
+.embed__segnaposto {
+  padding: clamp(20px, 3vw, 28px);
+  background: var(--colore-superficie);
+  border: 1px dashed var(--colore-bordo-forte);
+  border-radius: var(--raggio-lg);
+  text-align: center;
+  font-size: var(--testo-base);
+  color: var(--colore-testo-tenue);
+}
+
+.embed__carica {
+  font: inherit;
+  font-size: var(--testo-sm);
+  font-weight: var(--peso-forte);
+  padding: 9px 20px;
+  border: 0;
+  border-radius: var(--raggio-pill);
+  background: var(--colore-inverso);
+  color: var(--colore-testo-inverso);
+  cursor: pointer;
+  margin-block: var(--spazio-4);
+}
+
+.embed__carica:hover {
+  background: var(--colore-inverso-hover);
+}
+
+.embed__cornice {
+  position: relative;
+  aspect-ratio: 16 / 9;
+}
+
+.embed__cornice iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  border-radius: var(--raggio-md);
+}

@@ -1,0 +1,170 @@
+---
+import '@/styles/tokens.css'
+import '@/styles/base.css'
+
+import SiteHeader from '@/components/SiteHeader.astro'
+import SiteFooter from '@/components/SiteFooter.astro'
+import CookieBanner from '@/components/islands/CookieBanner.tsx'
+import { getCategories, getFooterPages, getSiteSettings } from '@/lib/payload'
+import { absoluteUrl, mediaUrl, resolveTitle, truncate, websiteJsonLd } from '@/lib/seo'
+import type { MetaInput } from '@/lib/seo'
+import { populated } from '@/lib/types'
+import type { Page } from '@/lib/types'
+
+interface Props extends MetaInput {
+  /** Struttura dati aggiuntiva (Article, Breadcrumb...) serializzata in JSON-LD. */
+  jsonLd?: string[]
+}
+
+const {
+  title,
+  description,
+  canonical,
+  image,
+  imageAlt,
+  noIndex = false,
+  type = 'website',
+  publishedTime,
+  modifiedTime,
+  authors = [],
+  section,
+  tags = [],
+  jsonLd = [],
+} = Astro.props
+
+const settings = await getSiteSettings()
+const categories = await getCategories()
+const footerPages = await getFooterPages()
+
+const canonicalUrl = canonical ?? absoluteUrl(Astro.url.pathname)
+const pageTitle = resolveTitle(title, null, settings.siteName)
+const metaDescription = truncate(description ?? settings.tagline, 160)
+const ogImage = image ?? mediaUrl(settings.defaultOgImage, 'og')
+
+/*
+ * Nota sulla cache: NON viene impostata qui.
+ *
+ * Astro trasmette la risposta in streaming, quindi un header scritto durante
+ * il rendering di un componente arriva a risposta gia' iniziata e viene
+ * scartato senza errori. La politica di cache sta percio' in src/middleware.ts,
+ * che gira prima del rendering. Vedi il commento in quel file.
+ */
+
+const analytics = settings.analytics
+const cookiePage = populated<Page>(settings.cookieBanner?.cookiePage)
+const privacyPage = populated<Page>(settings.cookieBanner?.privacyPage)
+---
+
+<!doctype html>
+<html lang="it">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>{pageTitle}</title>
+    {metaDescription && <meta name="description" content={metaDescription} />}
+    <link rel="canonical" href={canonicalUrl} />
+
+    {noIndex && <meta name="robots" content="noindex, nofollow" />}
+    {!noIndex && <meta name="robots" content="index, follow, max-image-preview:large" />}
+
+    {/*
+      Newsreader per i titoli, Archivo per l'interfaccia — dai design consegnati.
+      `preconnect` apre la connessione prima che il CSS venga richiesto e
+      `display=swap` evita che il testo resti invisibile durante il caricamento:
+      insieme tolgono al font quasi tutto il costo sul primo render (RNF-01).
+    */}
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600;6..72,700;6..72,800&display=swap"
+    />
+
+    {/* Open Graph — RF-P-06 */}
+    <meta property="og:type" content={type} />
+    <meta property="og:site_name" content={settings.siteName} />
+    <meta property="og:title" content={title} />
+    {metaDescription && <meta property="og:description" content={metaDescription} />}
+    <meta property="og:url" content={canonicalUrl} />
+    <meta property="og:locale" content="it_IT" />
+    {ogImage && <meta property="og:image" content={ogImage} />}
+    {ogImage && <meta property="og:image:width" content="1200" />}
+    {ogImage && <meta property="og:image:height" content="630" />}
+    {imageAlt && <meta property="og:image:alt" content={imageAlt} />}
+
+    {type === 'article' && publishedTime && (
+      <meta property="article:published_time" content={publishedTime} />
+    )}
+    {type === 'article' && modifiedTime && (
+      <meta property="article:modified_time" content={modifiedTime} />
+    )}
+    {type === 'article' && section && <meta property="article:section" content={section} />}
+    {type === 'article' &&
+      tags.map((tag) => <meta property="article:tag" content={tag} />)}
+    {type === 'article' &&
+      authors.map((a) => <meta property="article:author" content={a} />)}
+
+    {/* Twitter Card — RF-P-06 */}
+    <meta name="twitter:card" content={ogImage ? 'summary_large_image' : 'summary'} />
+    {settings.twitterHandle && (
+      <meta name="twitter:site" content={`@${settings.twitterHandle}`} />
+    )}
+
+    {/* Feed RSS — RF-P-11 */}
+    <link
+      rel="alternate"
+      type="application/rss+xml"
+      title={`${settings.siteName} — ultime notizie`}
+      href={absoluteUrl('/rss.xml')}
+    />
+
+    <link rel="sitemap" type="application/xml" href={absoluteUrl('/sitemap.xml')} />
+
+    <script is:inline type="application/ld+json" set:html={websiteJsonLd(settings)} />
+    {jsonLd.map((block) => <script is:inline type="application/ld+json" set:html={block} />)}
+
+    {/*
+      Misurazione senza cookie: si carica subito perche' non richiede consenso
+      preventivo. GA4 invece viene attivato dal banner solo dopo il consenso
+      (RF-P-09, RNF-04).
+    */}
+    {analytics?.provider === 'plausible' && analytics.siteId && (
+      <script
+        is:inline
+        defer
+        data-domain={analytics.siteId}
+        src={analytics.scriptUrl ?? 'https://plausible.io/js/script.js'}
+      />
+    )}
+    {analytics?.provider === 'umami' && analytics.siteId && analytics.scriptUrl && (
+      <script is:inline defer data-website-id={analytics.siteId} src={analytics.scriptUrl} />
+    )}
+  </head>
+
+  <body>
+    <a class="salta-contenuto" href="#contenuto">Salta al contenuto principale</a>
+
+    <div class="pagina">
+      <div class="contenitore">
+        <SiteHeader settings={settings} categories={categories} />
+
+        <main id="contenuto">
+          <slot />
+        </main>
+
+        <SiteFooter settings={settings} pages={footerPages} categories={categories} />
+      </div>
+    </div>
+
+    {settings.cookieBanner?.enabled !== false && (
+      <CookieBanner
+        client:idle
+        message={settings.cookieBanner?.message ?? ''}
+        cookiePolicyHref={cookiePage ? `/pagina/${cookiePage.slug}` : null}
+        privacyPolicyHref={privacyPage ? `/pagina/${privacyPage.slug}` : null}
+        gaMeasurementId={analytics?.provider === 'ga4' ? (analytics.siteId ?? null) : null}
+      />
+    )}
+  </body>
+</html>

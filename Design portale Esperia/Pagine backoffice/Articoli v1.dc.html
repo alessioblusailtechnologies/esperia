@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet data-dc-atomics>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600;6..72,700;6..72,800&display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#f5f1e8;font-family:Archivo,sans-serif;color:#211d18}
+a{color:#1d5c63;text-decoration:none}
+a:hover{color:#164a50}
+input::placeholder{color:#a49b8b}
+select,input{font-family:Archivo,sans-serif}
+</style>
+</helmet>
+
+<div style="display:flex;min-height:100vh;background:#f5f1e8;align-items:stretch">
+  <dc-import name="Nav Laterale v1" active="Articoli" style="background:#211d18;align-self:stretch" hint-size="230px,100vh"></dc-import>
+
+  <div style="flex:1;display:flex;flex-direction:column;min-width:0">
+    <dc-import name="Barra Superiore v1" title="Articoli" search-placeholder="Cerca articoli, autori, tag" hint-size="100%,70px"></dc-import>
+
+    <!-- FILTRI -->
+    <div style="display:flex;flex-direction:column;gap:12px;padding:18px clamp(16px,2.4vw,32px) 0">
+      <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+        <div style="font-size:10px;font-weight:700;letter-spacing:1.6px;color:#8a8378">FILTRI</div>
+        <div style="height:1px;background:#e0d9c8;flex:1"></div>
+        <div onClick="{{ cycleView }}" style="font-size:11px;color:#a49b8b;cursor:pointer;border-bottom:1px dotted #cdc4b2" style-hover="color:#211d18">vista prototipo: {{ viewLabel }}</div>
+        <div style="font-size:12px;font-weight:700;background:#1d5c63;color:#faf7f0;border-radius:999px;padding:9px 18px;cursor:pointer" style-hover="background:#164a50">+ Nuovo articolo</div>
+      </div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;background:#faf7f0;border:1px solid #e0d9c8;border-radius:12px;padding:12px 14px">
+        <div style="display:flex;align-items:center;gap:7px;background:#f1ebdd;border-radius:8px;padding:8px 12px;flex:1 1 220px;min-width:170px">
+          <span style="font-size:12px;color:#8a8378">⌕</span>
+          <input value="{{ q }}" onChange="{{ onQ }}" placeholder="Cerca per titolo o autore" style="background:none;border:none;outline:none;font-size:12.5px;color:#211d18;width:100%">
+        </div>
+        <select value="{{ fStatus }}" onChange="{{ onStatus }}" style="font-size:12.5px;color:#211d18;background:#f1ebdd;border:none;outline:none;border-radius:8px;padding:9px 12px;cursor:pointer;min-width:130px">
+          <option value="">Stato: tutti</option>
+          <option value="bozza">Bozza</option>
+          <option value="revisione">In revisione</option>
+          <option value="approvato">Approvato</option>
+          <option value="programmato">Programmato</option>
+          <option value="pubblicato">Pubblicato</option>
+        </select>
+        <select value="{{ fCat }}" onChange="{{ onCat }}" style="font-size:12.5px;color:#211d18;background:#f1ebdd;border:none;outline:none;border-radius:8px;padding:9px 12px;cursor:pointer;min-width:130px">
+          <option value="">Categoria: tutte</option>
+          <option value="Politica">Politica</option>
+          <option value="Mondo">Mondo</option>
+          <option value="Economia">Economia</option>
+          <option value="Cultura">Cultura</option>
+          <option value="Opinioni">Opinioni</option>
+        </select>
+        <select value="{{ fAuthor }}" onChange="{{ onAuthor }}" style="font-size:12.5px;color:#211d18;background:#f1ebdd;border:none;outline:none;border-radius:8px;padding:9px 12px;cursor:pointer;min-width:130px">
+          <option value="">Autore: tutti</option>
+          <option value="Emanuele Ragusa">Emanuele Ragusa</option>
+          <option value="Luca Ferraro">Luca Ferraro</option>
+          <option value="Elena Costa">Elena Costa</option>
+          <option value="Giulia Sanna">Giulia Sanna</option>
+          <option value="Davide Priori">Davide Priori</option>
+        </select>
+        <div style="display:flex;align-items:center;gap:6px;background:#f1ebdd;border-radius:8px;padding:6px 10px">
+          <span style="font-size:10px;font-weight:700;letter-spacing:1px;color:#8a8378">DAL</span>
+          <input type="date" value="{{ fFrom }}" onChange="{{ onFrom }}" style="background:none;border:none;outline:none;font-size:12px;color:#211d18">
+          <span style="font-size:10px;font-weight:700;letter-spacing:1px;color:#8a8378">AL</span>
+          <input type="date" value="{{ fTo }}" onChange="{{ onTo }}" style="background:none;border:none;outline:none;font-size:12px;color:#211d18">
+        </div>
+        <span onClick="{{ reset }}" style="font-size:12px;font-weight:600;color:#1d5c63;cursor:pointer;padding:0 4px" style-hover="color:#164a50">Azzera</span>
+      </div>
+    </div>
+
+    <!-- AZIONI DI GRUPPO -->
+    <sc-if value="{{ hasSelection }}" hint-placeholder-val="{{ false }}">
+    <div style="margin:14px clamp(16px,2.4vw,32px) 0;background:#211d18;color:#faf7f0;border-radius:12px;padding:11px 16px;display:flex;align-items:center;gap:14px;flex-wrap:wrap">
+      <div style="font-size:12.5px;font-weight:700;flex:1;min-width:130px">{{ selectionLabel }}</div>
+      <div style="font-size:11.5px;font-weight:700;border:1px solid #4a443a;border-radius:999px;padding:7px 14px;cursor:pointer" style-hover="border-color:#faf7f0">Invia in revisione</div>
+      <div style="font-size:11.5px;font-weight:700;border:1px solid #4a443a;border-radius:999px;padding:7px 14px;cursor:pointer" style-hover="border-color:#faf7f0">Approva</div>
+      <div style="font-size:11.5px;font-weight:700;border:1px solid #4a443a;border-radius:999px;padding:7px 14px;cursor:pointer" style-hover="border-color:#faf7f0">Archivia</div>
+      <div style="font-size:11.5px;font-weight:700;color:#f0a49c;border:1px solid #6b3a35;border-radius:999px;padding:7px 14px;cursor:pointer" style-hover="border-color:#f0a49c">Elimina</div>
+      <span onClick="{{ clearSel }}" style="font-size:11.5px;color:#a49b8b;cursor:pointer" style-hover="color:#faf7f0">Deseleziona</span>
+    </div>
+    </sc-if>
+
+    <!-- TABELLA -->
+    <div style="padding:14px clamp(16px,2.4vw,32px) 0;overflow-x:auto">
+      <div style="min-width:980px;display:flex;flex-direction:column">
+        <div style="display:grid;grid-template-columns:30px 1fr 130px 108px 128px 132px 108px 44px;gap:12px;align-items:center;padding:9px 14px;font-size:9.5px;font-weight:700;letter-spacing:1.4px;color:#8a8378">
+          <div onClick="{{ toggleAll }}" style="width:16px;height:16px;border-radius:4px;border:1px solid #cdc4b2;background:{{ allBg }};display:flex;align-items:center;justify-content:center;font-size:10px;color:#faf7f0;cursor:pointer">{{ allMark }}</div>
+          <div>TITOLO</div><div>AUTORE</div><div>CATEGORIA</div><div>STATO</div><div>PUBBLICAZIONE</div><div>MODIFICATO</div><div></div>
+        </div>
+        <sc-for list="{{ rows }}" as="r" hint-placeholder-count="6">
+          <div style="display:grid;grid-template-columns:30px 1fr 130px 108px 128px 132px 108px 44px;gap:12px;align-items:center;padding:11px 14px;background:{{ r.rowBg }};border:1px solid #e0d9c8;border-bottom:none;position:relative" style-hover="background:#fffdf8">
+            <div onClick="{{ r.toggle }}" style="width:16px;height:16px;border-radius:4px;border:1px solid #cdc4b2;background:{{ r.checkBg }};display:flex;align-items:center;justify-content:center;font-size:10px;color:#faf7f0;cursor:pointer">{{ r.checkMark }}</div>
+            <div style="display:flex;flex-direction:column;gap:2px;min-width:0">
+              <div style="font-family:'Newsreader',serif;font-size:15.5px;font-weight:600;line-height:1.25;cursor:pointer" style-hover="color:#1d5c63">{{ r.title }}</div>
+              <div style="font-size:10.5px;color:#a49b8b">{{ r.meta }}</div>
+            </div>
+            <div style="font-size:12px;color:#5c554a">{{ r.author }}</div>
+            <div style="font-size:10.5px;font-weight:700;letter-spacing:0.8px;color:#1d5c63">{{ r.cat }}</div>
+            <div><dc-import name="Pastiglia Stato v1" status="{{ r.status }}" hint-size="120px,24px"></dc-import></div>
+            <div style="font-size:11.5px;color:#5c554a">{{ r.pubDate }}</div>
+            <div style="font-size:11.5px;color:#8a8378">{{ r.updated }}</div>
+            <div onClick="{{ r.menu }}" style="font-size:15px;color:#8a8378;text-align:center;cursor:pointer;border-radius:6px;padding:2px 0" style-hover="background:#f1ebdd;color:#211d18">⋯</div>
+            <sc-if value="{{ r.menuOpen }}" hint-placeholder-val="{{ false }}">
+              <div style="position:absolute;right:10px;top:{{ r.menuTop }};bottom:{{ r.menuBottom }};z-index:15;width:180px;background:#faf7f0;border:1px solid #e0d9c8;border-radius:10px;box-shadow:0 14px 30px rgba(33,29,24,.18);padding:6px;display:flex;flex-direction:column">
+                <div style="font-size:12.5px;font-weight:600;padding:8px 10px;border-radius:7px;cursor:pointer" style-hover="background:#f1ebdd">Modifica</div>
+                <div style="font-size:12.5px;font-weight:600;padding:8px 10px;border-radius:7px;cursor:pointer" style-hover="background:#f1ebdd">Duplica</div>
+                <div style="font-size:12.5px;font-weight:600;padding:8px 10px;border-radius:7px;cursor:pointer" style-hover="background:#f1ebdd">Archivia</div>
+                <div style="height:1px;background:#eee7d9;margin:4px 0"></div>
+                <div style="font-size:12.5px;font-weight:600;padding:8px 10px;border-radius:7px;cursor:pointer;color:#b3261e" style-hover="background:#f7e6e4">Elimina</div>
+              </div>
+            </sc-if>
+          </div>
+        </sc-for>
+        <sc-if value="{{ hasRows }}" hint-placeholder-val="{{ true }}">
+          <div style="height:1px;background:#e0d9c8"></div>
+        </sc-if>
+      </div>
+    </div>
+
+    <!-- STATO VUOTO -->
+    <sc-if value="{{ isEmpty }}" hint-placeholder-val="{{ false }}">
+    <div style="margin:0 clamp(16px,2.4vw,32px);background:#faf7f0;border:1px dashed #d9d2c4;border-radius:12px;padding:clamp(30px,5vw,56px);display:flex;flex-direction:column;gap:12px;align-items:center;text-align:center">
+      <div style="font-family:'Newsreader',serif;font-size:24px;font-weight:700">Nessun articolo con questi filtri</div>
+      <div style="font-size:13px;line-height:1.6;color:#5c554a;max-width:52ch">Prova ad allargare l'intervallo di date o ad azzerare stato e categoria. Puoi anche iniziare un nuovo pezzo da qui.</div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;padding-top:6px">
+        <div onClick="{{ reset }}" style="font-size:12.5px;font-weight:700;border:1px solid #d9d2c4;border-radius:999px;padding:10px 18px;cursor:pointer" style-hover="border-color:#211d18">Azzera i filtri</div>
+        <div style="font-size:12.5px;font-weight:700;background:#1d5c63;color:#faf7f0;border-radius:999px;padding:10px 18px;cursor:pointer" style-hover="background:#164a50">+ Nuovo articolo</div>
+      </div>
+    </div>
+    </sc-if>
+
+    <!-- PAGINAZIONE -->
+    <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:18px clamp(16px,2.4vw,32px) 40px">
+      <div style="font-size:11.5px;color:#8a8378;flex:1;min-width:180px">{{ countLabel }}</div>
+      <div style="display:flex;align-items:center;gap:5px">
+        <span onClick="{{ prev }}" style="font-size:12px;font-weight:600;color:{{ prevColor }};padding:8px 12px;cursor:pointer" style-hover="color:#211d18">← Precedente</span>
+        <span onClick="{{ p1 }}" style="font-size:12px;font-weight:700;min-width:30px;text-align:center;padding:8px 0;border-radius:999px;cursor:pointer;background:{{ p1Bg }};color:{{ p1Color }}">1</span>
+        <span onClick="{{ p2 }}" style="font-size:12px;font-weight:700;min-width:30px;text-align:center;padding:8px 0;border-radius:999px;cursor:pointer;background:{{ p2Bg }};color:{{ p2Color }}">2</span>
+        <span onClick="{{ p3 }}" style="font-size:12px;font-weight:700;min-width:30px;text-align:center;padding:8px 0;border-radius:999px;cursor:pointer;background:{{ p3Bg }};color:{{ p3Color }}">3</span>
+        <span onClick="{{ next }}" style="font-size:12px;font-weight:600;color:#5c554a;padding:8px 12px;cursor:pointer" style-hover="color:#211d18">Successiva →</span>
+      </div>
+      <select value="{{ perPage }}" onChange="{{ onPerPage }}" style="font-size:11.5px;color:#5c554a;background:#f1ebdd;border:none;outline:none;border-radius:8px;padding:8px 10px;cursor:pointer">
+        <option value="25">25 per pagina</option>
+        <option value="50">50 per pagina</option>
+        <option value="100">100 per pagina</option>
+      </select>
+    </div>
+  </div>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{}">
+const ART = [
+  { id: 1, title: "Manovra, il governo trova l'intesa sul taglio dell'Irpef per il ceto medio", author: 'Emanuele Ragusa', cat: 'Politica', status: 'pubblicato', pub: '27 ago 2026, 07:15', upd: '27 ago, 11:48', words: 1420 },
+  { id: 2, title: 'Vertice UE sui dazi: Roma chiede una clausola per l\u2019agroalimentare', author: 'Luca Ferraro', cat: 'Mondo', status: 'revisione', pub: '—', upd: '27 ago, 10:22', words: 980 },
+  { id: 3, title: 'Contributo delle banche, l\u2019Abi chiede garanzie sulla durata del prelievo', author: 'Elena Costa', cat: 'Economia', status: 'approvato', pub: '28 ago 2026, 06:00', upd: '27 ago, 09:40', words: 1105 },
+  { id: 4, title: 'Pensioni, il tavolo tecnico slitta: nessuna quota nella bozza', author: 'Elena Costa', cat: 'Economia', status: 'programmato', pub: '27 ago 2026, 18:00', upd: '27 ago, 08:55', words: 760 },
+  { id: 5, title: 'Regionali in Veneto, il campo largo tratta sul nome del candidato', author: 'Davide Priori', cat: 'Politica', status: 'bozza', pub: '—', upd: '27 ago, 08:10', words: 430 },
+  { id: 6, title: 'Musei statali, ingressi in crescita del 9%: il sorpasso di Pompei', author: 'Giulia Sanna', cat: 'Cultura', status: 'pubblicato', pub: '26 ago 2026, 17:30', upd: '26 ago, 18:02', words: 890 },
+  { id: 7, title: '«Le aree interne non si salvano con un decreto»', author: 'Giulia Sanna', cat: 'Opinioni', status: 'revisione', pub: '—', upd: '26 ago, 16:12', words: 640 },
+  { id: 8, title: 'Milleduecento emendamenti: la strategia delle opposizioni sulla sanità', author: 'Emanuele Ragusa', cat: 'Politica', status: 'approvato', pub: '28 ago 2026, 07:00', upd: '26 ago, 15:30', words: 1210 },
+  { id: 9, title: 'Tregua in Sudan, l\u2019inviato ONU: «Corridoi aperti entro settantadue ore»', author: 'Luca Ferraro', cat: 'Mondo', status: 'pubblicato', pub: '26 ago 2026, 09:58', upd: '26 ago, 12:04', words: 1030 },
+  { id: 10, title: 'Stellantis rinvia il piano Mirafiori: incontro al Mimit con i sindacati', author: 'Elena Costa', cat: 'Economia', status: 'revisione', pub: '—', upd: '26 ago, 11:20', words: 870 },
+  { id: 11, title: 'Premierato, la riforma torna in Senato a ottobre: il calendario', author: 'Davide Priori', cat: 'Politica', status: 'bozza', pub: '—', upd: '25 ago, 19:44', words: 320 },
+  { id: 12, title: 'Venezia 83, standing ovation per il film sul processo di Palermo', author: 'Giulia Sanna', cat: 'Cultura', status: 'programmato', pub: '29 ago 2026, 08:00', upd: '25 ago, 17:05', words: 940 }
+];
+
+class Component extends DCLogic {
+  state = { q: '', status: '', cat: '', author: '', from: '', to: '', sel: [], menu: null, page: 1, perPage: '25', view: 'tutti' };
+
+  filtered() {
+    const s = this.state;
+    const q = s.q.trim().toLowerCase();
+    return ART.filter(a =>
+      (!s.status || a.status === s.status) &&
+      (!s.cat || a.cat === s.cat) &&
+      (!s.author || a.author === s.author) &&
+      (!q || a.title.toLowerCase().includes(q) || a.author.toLowerCase().includes(q))
+    );
+  }
+
+  renderVals() {
+    const s = this.state;
+    const list = this.filtered();
+    const sel = s.sel;
+    const pg = n => ({ bg: s.page === n ? '#211d18' : 'transparent', color: s.page === n ? '#faf7f0' : '#5c554a' });
+    const a1 = pg(1), a2 = pg(2), a3 = pg(3);
+    const views = ['tutti', 'in revisione', 'nessun risultato'];
+    return {
+      q: s.q, fStatus: s.status, fCat: s.cat, fAuthor: s.author, fFrom: s.from, fTo: s.to,
+      onQ: e => this.setState({ q: e.target.value, page: 1 }),
+      onStatus: e => this.setState({ status: e.target.value, page: 1 }),
+      onCat: e => this.setState({ cat: e.target.value, page: 1 }),
+      onAuthor: e => this.setState({ author: e.target.value, page: 1 }),
+      onFrom: e => this.setState({ from: e.target.value }),
+      onTo: e => this.setState({ to: e.target.value }),
+      reset: () => this.setState({ q: '', status: '', cat: '', author: '', from: '', to: '', page: 1, view: 'tutti' }),
+      viewLabel: s.view,
+      cycleView: () => {
+        const next = views[(views.indexOf(s.view) + 1) % views.length];
+        if (next === 'tutti') this.setState({ view: next, q: '', status: '', cat: '', author: '' });
+        else if (next === 'in revisione') this.setState({ view: next, q: '', status: 'revisione', cat: '', author: '' });
+        else this.setState({ view: next, q: 'quorum', status: '', cat: '', author: '' });
+      },
+      rows: list.map((a, i) => ({
+        menuTop: i >= list.length - 3 ? 'auto' : '38px',
+        menuBottom: i >= list.length - 3 ? '38px' : 'auto',
+        title: a.title, author: a.author, cat: a.cat.toUpperCase(), status: a.status,
+        pubDate: a.pub, updated: a.upd,
+        meta: a.words + ' parole · /articoli/' + a.id,
+        rowBg: sel.includes(a.id) ? '#f1ebdd' : '#faf7f0',
+        checkBg: sel.includes(a.id) ? '#1d5c63' : 'transparent',
+        checkMark: sel.includes(a.id) ? '✓' : '',
+        toggle: () => this.setState(p => ({ sel: p.sel.includes(a.id) ? p.sel.filter(x => x !== a.id) : p.sel.concat(a.id) })),
+        menu: () => this.setState(p => ({ menu: p.menu === a.id ? null : a.id })),
+        menuOpen: s.menu === a.id
+      })),
+      hasRows: list.length > 0,
+      isEmpty: list.length === 0,
+      allBg: sel.length && sel.length === list.length ? '#1d5c63' : 'transparent',
+      allMark: sel.length && sel.length === list.length ? '✓' : '',
+      toggleAll: () => this.setState(p => ({ sel: p.sel.length === list.length ? [] : list.map(a => a.id) })),
+      hasSelection: sel.length > 0,
+      selectionLabel: sel.length + (sel.length === 1 ? ' articolo selezionato' : ' articoli selezionati'),
+      clearSel: () => this.setState({ sel: [] }),
+      countLabel: list.length === 0
+        ? 'Nessun articolo · 38 in archivio'
+        : list.length + ' articoli su 38 · pagina ' + s.page + ' di 3',
+      perPage: s.perPage,
+      onPerPage: e => this.setState({ perPage: e.target.value }),
+      prev: () => this.setState(p => ({ page: Math.max(1, p.page - 1) })),
+      next: () => this.setState(p => ({ page: Math.min(3, p.page + 1) })),
+      prevColor: s.page === 1 ? '#cdc4b2' : '#5c554a',
+      p1: () => this.setState({ page: 1 }), p2: () => this.setState({ page: 2 }), p3: () => this.setState({ page: 3 }),
+      p1Bg: a1.bg, p1Color: a1.color, p2Bg: a2.bg, p2Color: a2.color, p3Bg: a3.bg, p3Color: a3.color
+    };
+  }
+}
+
+</script>
+</body>
+</html>

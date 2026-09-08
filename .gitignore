@@ -1,0 +1,30 @@
+node_modules/
+.pnpm-store/
+
+# build
+dist/
+.next/
+.turbo/
+.astro/
+build/
+
+# env
+.env
+.env.*
+!.env.example
+
+# payload
+apps/cms/src/payload-types.ts.bak
+media/
+
+# os / editor
+.DS_Store
+Thumbs.db
+.vscode/*
+!.vscode/extensions.json
+.idea/
+
+# log
+*.log
+npm-debug.log*
+pnpm-debug.log*

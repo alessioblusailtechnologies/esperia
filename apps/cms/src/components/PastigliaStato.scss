@@ -1,0 +1,44 @@
+.pastiglia {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-body);
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  border-radius: 999px;
+  padding: 4px 11px;
+  white-space: nowrap;
+}
+
+.pastiglia__punto {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: currentcolor;
+}
+
+.pastiglia--bozza {
+  background: var(--stato-bozza-bg);
+  color: var(--stato-bozza-fg);
+}
+
+.pastiglia--revisione {
+  background: var(--stato-revisione-bg);
+  color: var(--stato-revisione-fg);
+}
+
+.pastiglia--approvato {
+  background: var(--stato-approvato-bg);
+  color: var(--stato-approvato-fg);
+}
+
+.pastiglia--programmato {
+  background: var(--stato-programmato-bg);
+  color: var(--stato-programmato-fg);
+}
+
+.pastiglia--pubblicato {
+  background: var(--stato-pubblicato-bg);
+  color: var(--stato-pubblicato-fg);
+}

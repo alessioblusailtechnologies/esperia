@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet data-dc-atomics>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600;6..72,700;6..72,800&display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#faf7f0;font-family:Archivo,sans-serif;color:#211d18}
+a{color:#211d18;text-decoration:none}
+a:hover{color:#b3261e}
+input::placeholder{color:#8a8378}
+</style>
+</helmet>
+
+<div style="min-height:100vh;background:#faf7f0;padding-bottom:40px">
+<div style="max-width:1280px;margin:0 auto">
+
+  <!-- ============ HEADER ============ -->
+  <div style="display:flex;align-items:center;gap:18px;flex-wrap:wrap;padding:18px clamp(16px,3vw,40px);border-bottom:1px solid #e6dfd1">
+    <div style="font-family:'Newsreader',serif;font-size:26px;font-weight:800;letter-spacing:-0.5px;cursor:pointer">Esperia</div>
+    <div style="display:flex;gap:clamp(12px,1.6vw,20px);font-size:13px;font-weight:600;color:#5c554a;flex-wrap:wrap;flex:1;min-width:200px">
+      <span style="color:#b3261e;cursor:pointer">Politica</span>
+      <span style="cursor:pointer" style-hover="color:#b3261e">Mondo</span>
+      <span style="cursor:pointer" style-hover="color:#b3261e">Economia</span>
+      <span style="cursor:pointer" style-hover="color:#b3261e">Cultura</span>
+      <span style="cursor:pointer" style-hover="color:#b3261e">Opinioni</span>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px;background:#f1ebdd;border-radius:999px;padding:8px 14px;flex:0 1 200px;min-width:120px">
+      <span style="font-size:13px;color:#8a8378">⌕</span>
+      <input placeholder="Cerca su Esperia" style="background:none;border:none;outline:none;font-size:12px;color:#211d18;font-family:Archivo,sans-serif;width:100%">
+    </div>
+    <div style="display:flex;align-items:center;gap:8px;font-size:12.5px;font-weight:600;white-space:nowrap">
+      <span style="cursor:pointer" style-hover="color:#b3261e">Accedi</span>
+      <span style="color:#cdc4b2">/</span>
+      <span style="cursor:pointer;text-decoration:underline;text-decoration-color:#cdc4b2;text-underline-offset:3px" style-hover="color:#b3261e">Registrati</span>
+    </div>
+  </div>
+
+  <!-- ============ 1. ARTICOLI IN EVIDENZA ============ -->
+  <div style="padding:clamp(22px,3vw,34px) clamp(16px,3vw,40px) 0">
+    <div style="display:flex;align-items:center;gap:14px;padding-bottom:22px">
+      <div style="font-size:10.5px;font-weight:700;letter-spacing:2px;color:#8a8378">ARTICOLI IN EVIDENZA</div>
+      <div style="height:1px;background:#e6dfd1;flex:1"></div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:18px;cursor:pointer" style-hover="opacity:.9">
+      <div style="height:clamp(220px,38vw,440px)"><x-import component-from-global-scope="image-slot" from="./image-slot.js" id="hv1-hero" shape="rounded" radius="14" placeholder="foto apertura: Palazzo Chigi" hint-size="100%,440px"></x-import></div>
+      <div style="font-size:10.5px;font-weight:700;letter-spacing:2px;color:#b3261e">POLITICA</div>
+      <div style="font-family:'Newsreader',serif;font-size:clamp(32px,4.6vw,60px);line-height:1.06;font-weight:700;letter-spacing:-1px;text-wrap:pretty;max-width:16ch;min-width:100%">Manovra, il governo trova l'intesa sul taglio dell'Irpef per il ceto medio</div>
+      <div style="font-size:clamp(15px,1.3vw,17px);line-height:1.55;color:#5c554a;max-width:70ch">Accordo raggiunto nella notte a Palazzo Chigi: seconda aliquota al 33% fino a 60 mila euro, coperture dalle banche e dalla revisione delle detrazioni. Le opposizioni annunciano battaglia in commissione Bilancio.</div>
+      <div style="display:flex;align-items:center;gap:10px;font-size:12.5px;color:#8a8378;flex-wrap:wrap">
+        <div style="width:30px;height:30px;border-radius:50%;background:repeating-linear-gradient(45deg,#e0d8c8 0 4px,#efe9dc 4px 8px)"></div>
+        <span style="color:#211d18;font-weight:700">Emanuele Ragusa</span>
+        <span>·</span><span>27 agosto 2026</span>
+        <span>·</span><span>8 min di lettura</span>
+      </div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:clamp(20px,2.4vw,30px);padding:clamp(28px,3vw,40px) 0 clamp(30px,4vw,48px)">
+      <div style="display:flex;flex-direction:column;gap:11px;cursor:pointer" style-hover="opacity:.85">
+        <div style="height:170px"><x-import component-from-global-scope="image-slot" from="./image-slot.js" id="hv1-sec1" shape="rounded" radius="12" placeholder="foto: Bruxelles" hint-size="100%,170px"></x-import></div>
+        <div style="font-size:10px;font-weight:700;letter-spacing:2px;color:#b3261e">MONDO</div>
+        <div style="font-family:'Newsreader',serif;font-size:22px;line-height:1.22;font-weight:600;text-wrap:pretty">Vertice UE sui dazi: Roma chiede una clausola di salvaguardia per l'agroalimentare</div>
+        <div style="font-size:13.5px;line-height:1.5;color:#5c554a">Il tavolo di Bruxelles slitta a settembre. Confagricoltura stima 400 milioni di export a rischio.</div>
+        <div style="display:flex;align-items:center;gap:8px;font-size:11.5px;color:#8a8378">
+          <div style="width:24px;height:24px;border-radius:50%;background:repeating-linear-gradient(45deg,#e0d8c8 0 4px,#efe9dc 4px 8px)"></div>
+          <span style="color:#211d18;font-weight:700">Luca Ferraro</span><span>· 27 ago · 5 min</span>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:11px;cursor:pointer" style-hover="opacity:.85">
+        <div style="height:170px"><x-import component-from-global-scope="image-slot" from="./image-slot.js" id="hv1-sec2" shape="rounded" radius="12" placeholder="foto: cantiere alta velocità" hint-size="100%,170px"></x-import></div>
+        <div style="font-size:10px;font-weight:700;letter-spacing:2px;color:#b3261e">ECONOMIA</div>
+        <div style="font-family:'Newsreader',serif;font-size:22px;line-height:1.22;font-weight:600;text-wrap:pretty">Alta velocità Salerno-Reggio, il cronoprogramma slitta di due anni</div>
+        <div style="font-size:13.5px;line-height:1.5;color:#5c554a">La relazione della Corte dei conti sui lotti calabresi: appalti fermi e costi rivisti del 12%.</div>
+        <div style="display:flex;align-items:center;gap:8px;font-size:11.5px;color:#8a8378">
+          <div style="width:24px;height:24px;border-radius:50%;background:repeating-linear-gradient(45deg,#e0d8c8 0 4px,#efe9dc 4px 8px)"></div>
+          <span style="color:#211d18;font-weight:700">Elena Costa</span><span>· 27 ago · 6 min</span>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:11px;cursor:pointer" style-hover="opacity:.85">
+        <div style="height:170px"><x-import component-from-global-scope="image-slot" from="./image-slot.js" id="hv1-sec3" shape="rounded" radius="12" placeholder="foto: aula universitaria" hint-size="100%,170px"></x-import></div>
+        <div style="font-size:10px;font-weight:700;letter-spacing:2px;color:#b3261e">CULTURA</div>
+        <div style="font-family:'Newsreader',serif;font-size:22px;line-height:1.22;font-weight:600;text-wrap:pretty">Musei statali, ingressi in crescita del 9%: il sorpasso di Pompei su Firenze</div>
+        <div style="font-size:13.5px;line-height:1.5;color:#5c554a">I dati del ministero sul primo semestre. Cresce il pubblico under 25, calano le scolastiche.</div>
+        <div style="display:flex;align-items:center;gap:8px;font-size:11.5px;color:#8a8378">
+          <div style="width:24px;height:24px;border-radius:50%;background:repeating-linear-gradient(45deg,#e0d8c8 0 4px,#efe9dc 4px 8px)"></div>
+          <span style="color:#211d18;font-weight:700">Giulia Sanna</span><span>· 26 ago · 4 min</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ 2. ULTIME NOTIZIE ============ -->
+  <div style="padding:0 clamp(16px,3vw,40px) clamp(30px,4vw,46px)">
+    <div style="display:flex;align-items:center;gap:14px;padding-bottom:6px">
+      <div style="font-size:10.5px;font-weight:700;letter-spacing:2px;color:#8a8378">ULTIME NOTIZIE</div>
+      <div style="height:1px;background:#e6dfd1;flex:1"></div>
+    </div>
+    <div style="display:flex;flex-direction:column">
+      <div style="display:flex;align-items:center;gap:clamp(12px,2vw,24px);padding:16px 0;border-bottom:1px solid #e6dfd1;cursor:pointer" style-hover="opacity:.72">
+        <div style="display:flex;flex-direction:column;gap:6px;flex:1">
+          <div style="font-size:9.5px;font-weight:700;letter-spacing:1.6px;color:#b3261e">POLITICA</div>
+          <div style="font-family:'Newsreader',serif;font-size:clamp(17px,1.5vw,20px);line-height:1.25;font-weight:600;text-wrap:pretty">Consiglio dei ministri convocato per giovedì: sul tavolo il decreto Aree interne</div>
+          <div style="font-size:11.5px;color:#8a8378">11:42</div>
+        </div>
+        <div style="width:104px;height:72px;flex:0 0 104px"><x-import component-from-global-scope="image-slot" from="./image-slot.js" id="hv1-l1" shape="rounded" radius="8" placeholder="foto" hint-size="104px,72px"></x-import></div>
+      </div>
+      <div style="display:flex;align-items:center;gap:clamp(12px,2vw,24px);padding:16px 0;border-bottom:1px solid #e6dfd1;cursor:pointer" style-hover="opacity:.72">
+        <div style="display:flex;flex-direction:column;gap:6px;flex:1">
+          <div style="font-size:9.5px;font-weight:700;letter-spacing:1.6px;color:#b3261e">ECONOMIA</div>
+          <div style="font-family:'Newsreader',serif;font-size:clamp(17px,1.5vw,20px);line-height:1.25;font-weight:600;text-wrap:pretty">Istat: inflazione ferma all'1,8% ad agosto, rallenta il carrello della spesa</div>
+          <div style="font-size:11.5px;color:#8a8378">11:05</div>
+        </div>
+        <div style="width:104px;height:72px;flex:0 0 104px"><x-import component-from-global-scope="image-slot" from="./image-slot.js" id="hv1-l2" shape="rounded" radius="8" placeholder="foto" hint-size="104px,72px"></x-import></div>
+      </div>
+      <div style="display:flex;align-items:center;gap:clamp(12px,2vw,24px);padding:16px 0;border-bottom:1px solid #e6dfd1;cursor:pointer" style-hover="opacity:.72">
+        <div style="display:flex;flex-direction:column;gap:6px;flex:1">
+          <div style="font-size:9.5px;font-weight:700;letter-spacing:1.6px;color:#b3261e">CRONACA</div>
+          <div style="font-family:'Newsreader',serif;font-size:clamp(17px,1.5vw,20px);line-height:1.25;font-weight:600;text-wrap:pretty">Maltempo in Liguria, allerta arancione sul levante: scuole chiuse a Chiavari</div>
+          <div style="font-size:11.5px;color:#8a8378">10:31</div>
+        </div>
+        <div style="width:104px;height:72px;flex:0 0 104px"><x-import component-from-global-scope="image-slot" from="./image-slot.js" id="hv1-l3" shape="rounded" radius="8" placeholder="foto" hint-size="104px,72px"></x-import></div>
+      </div>
+      <div style="display:flex;align-items:center;gap:clamp(12px,2vw,24px);padding:16px 0;border-bottom:1px solid #e6dfd1;cursor:pointer" style-hover="opacity:.72">
+        <div style="display:flex;flex-direction:column;gap:6px;flex:1">
+          <div style="font-size:9.5px;font-weight:700;letter-spacing:1.6px;color:#b3261e">MONDO</div>
+          <div style="font-family:'Newsreader',serif;font-size:clamp(17px,1.5vw,20px);line-height:1.25;font-weight:600;text-wrap:pretty">Tregua in Sudan, l'inviato ONU: «Corridoi umanitari aperti entro settantadue ore»</div>
+          <div style="font-size:11.5px;color:#8a8378">09:58</div>
+        </div>
+        <div style="width:104px;height:72px;flex:0 0 104px"><x-import component-from-global-scope="image-slot" from="./image-slot.js" id="hv1-l4" shape="rounded" radius="8" placeholder="foto" hint-size="104px,72px"></x-import></div>
+      </div>
+      <div style="display:flex;align-items:center;gap:clamp(12px,2vw,24px);padding:16px 0;border-bottom:1px solid #e6dfd1;cursor:pointer" style-hover="opacity:.72">
+        <div style="display:flex;flex-direction:column;gap:6px;flex:1">
+          <div style="font-size:9.5px;font-weight:700;letter-spacing:1.6px;color:#b3261e">POLITICA</div>
+          <div style="font-family:'Newsreader',serif;font-size:clamp(17px,1.5vw,20px);line-height:1.25;font-weight:600;text-wrap:pretty">Regionali, il campo largo tratta in Veneto: vertice a Roma tra i segretari</div>
+          <div style="font-size:11.5px;color:#8a8378">09:20</div>
+        </div>
+        <div style="width:104px;height:72px;flex:0 0 104px"><x-import component-from-global-scope="image-slot" from="./image-slot.js" id="hv1-l5" shape="rounded" radius="8" placeholder="foto" hint-size="104px,72px"></x-import></div>
+      </div>
+      <div style="display:flex;align-items:center;gap:clamp(12px,2vw,24px);padding:16px 0;border-bottom:1px solid #e6dfd1;cursor:pointer" style-hover="opacity:.72">
+        <div style="display:flex;flex-direction:column;gap:6px;flex:1">
+          <div style="font-size:9.5px;font-weight:700;letter-spacing:1.6px;color:#b3261e">ECONOMIA</div>
+          <div style="font-family:'Newsreader',serif;font-size:clamp(17px,1.5vw,20px);line-height:1.25;font-weight:600;text-wrap:pretty">Stellantis rinvia il piano Mirafiori: incontro al Mimit con i sindacati</div>
+          <div style="font-size:11.5px;color:#8a8378">08:47</div>
+        </div>
+        <div style="width:104px;height:72px;flex:0 0 104px"><x-import component-from-global-scope="image-slot" from="./image-slot.js" id="hv1-l6" shape="rounded" radius="8" placeholder="foto" hint-size="104px,72px"></x-import></div>
+      </div>
+      <div style="display:flex;align-items:center;gap:clamp(12px,2vw,24px);padding:16px 0;border-bottom:1px solid #e6dfd1;cursor:pointer" style-hover="opacity:.72">
+        <div style="display:flex;flex-direction:column;gap:6px;flex:1">
+          <div style="font-size:9.5px;font-weight:700;letter-spacing:1.6px;color:#b3261e">CULTURA</div>
+          <div style="font-family:'Newsreader',serif;font-size:clamp(17px,1.5vw,20px);line-height:1.25;font-weight:600;text-wrap:pretty">Venezia 83, standing ovation per il film sul processo di Palermo</div>
+          <div style="font-size:11.5px;color:#8a8378">08:15</div>
+        </div>
+        <div style="width:104px;height:72px;flex:0 0 104px"><x-import component-from-global-scope="image-slot" from="./image-slot.js" id="hv1-l7" shape="rounded" radius="8" placeholder="foto" hint-size="104px,72px"></x-import></div>
+      </div>
+      <div style="display:flex;align-items:center;gap:clamp(12px,2vw,24px);padding:16px 0;border-bottom:1px solid #e6dfd1;cursor:pointer" style-hover="opacity:.72">
+        <div style="display:flex;flex-direction:column;gap:6px;flex:1">
+          <div style="font-size:9.5px;font-weight:700;letter-spacing:1.6px;color:#b3261e">OPINIONI</div>
+          <div style="font-family:'Newsreader',serif;font-size:clamp(17px,1.5vw,20px);line-height:1.25;font-weight:600;text-wrap:pretty">Il federalismo fiscale che nessuno vuole nominare</div>
+          <div style="font-size:11.5px;color:#8a8378">07:40</div>
+        </div>
+        <div style="width:104px;height:72px;flex:0 0 104px"><x-import component-from-global-scope="image-slot" from="./image-slot.js" id="hv1-l8" shape="rounded" radius="8" placeholder="foto" hint-size="104px,72px"></x-import></div>
+      </div>
+    </div>
+    <div style="padding-top:20px">
+      <span style="font-size:13px;font-weight:600;border-bottom:1px solid #b3261e;padding-bottom:2px;cursor:pointer;color:#b3261e" style-hover="color:#8f1e17">Tutte le notizie in archivio →</span>
+    </div>
+  </div>
+
+  <!-- ============ 3. ACCESSI RAPIDI ALLE CATEGORIE ============ -->
+  <sc-if value="{{ showQuick }}" hint-placeholder-val="{{ true }}">
+  <div style="margin:0 clamp(16px,3vw,40px);background:#f1ebdd;border-radius:14px;padding:clamp(22px,3vw,34px)">
+    <div style="font-size:10.5px;font-weight:700;letter-spacing:2px;color:#8a8378;padding-bottom:22px">ACCESSI RAPIDI ALLE CATEGORIE</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:clamp(18px,2vw,26px)">
+      <div style="display:flex;flex-direction:column;gap:12px">
+        <div style="font-family:'Newsreader',serif;font-size:20px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:6px" style-hover="color:#b3261e">Politica <span style="font-size:14px;color:#b3261e">→</span></div>
+        <div style="height:1px;background:#e0d8c8"></div>
+        <div style="font-size:13.5px;line-height:1.42;color:#5c554a;cursor:pointer" style-hover="color:#b3261e">Irpef, la mediazione sul ceto medio passa dalle banche</div>
+        <div style="font-size:13.5px;line-height:1.42;color:#5c554a;cursor:pointer" style-hover="color:#b3261e">Premierato, la riforma torna in Senato a ottobre</div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:12px">
+        <div style="font-family:'Newsreader',serif;font-size:20px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:6px" style-hover="color:#b3261e">Mondo <span style="font-size:14px;color:#b3261e">→</span></div>
+        <div style="height:1px;background:#e0d8c8"></div>
+        <div style="font-size:13.5px;line-height:1.42;color:#5c554a;cursor:pointer" style-hover="color:#b3261e">Dazi USA, l'Europa prepara la lista di ritorsione</div>
+        <div style="font-size:13.5px;line-height:1.42;color:#5c554a;cursor:pointer" style-hover="color:#b3261e">Sudan, la tregua regge nel Darfur settentrionale</div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:12px">
+        <div style="font-family:'Newsreader',serif;font-size:20px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:6px" style-hover="color:#b3261e">Economia <span style="font-size:14px;color:#b3261e">→</span></div>
+        <div style="height:1px;background:#e0d8c8"></div>
+        <div style="font-size:13.5px;line-height:1.42;color:#5c554a;cursor:pointer" style-hover="color:#b3261e">Mutui, le banche tagliano gli spread sui fissi</div>
+        <div style="font-size:13.5px;line-height:1.42;color:#5c554a;cursor:pointer" style-hover="color:#b3261e">Turismo, il conto dell'estate: presenze +3%, spesa media giù</div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:12px">
+        <div style="font-family:'Newsreader',serif;font-size:20px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:6px" style-hover="color:#b3261e">Cultura <span style="font-size:14px;color:#b3261e">→</span></div>
+        <div style="height:1px;background:#e0d8c8"></div>
+        <div style="font-size:13.5px;line-height:1.42;color:#5c554a;cursor:pointer" style-hover="color:#b3261e">Pompei apre la Casa dei Vettii anche di sera</div>
+        <div style="font-size:13.5px;line-height:1.42;color:#5c554a;cursor:pointer" style-hover="color:#b3261e">Il Premio Strega restringe la rosa a cinque titoli</div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:12px">
+        <div style="font-family:'Newsreader',serif;font-size:20px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:6px" style-hover="color:#b3261e">Opinioni <span style="font-size:14px;color:#b3261e">→</span></div>
+        <div style="height:1px;background:#e0d8c8"></div>
+        <div style="font-size:13.5px;line-height:1.42;color:#5c554a;font-style:italic;cursor:pointer" style-hover="color:#b3261e">«Le aree interne non si salvano con un decreto»</div>
+        <div style="font-size:13.5px;line-height:1.42;color:#5c554a;font-style:italic;cursor:pointer" style-hover="color:#b3261e">Il salario minimo e la trappola delle deleghe</div>
+      </div>
+    </div>
+  </div>
+  </sc-if>
+
+  <!-- ============ FOOTER ============ -->
+  <div style="margin:clamp(34px,4vw,54px) clamp(16px,3vw,40px) 0;padding-top:30px;border-top:1px solid #e6dfd1">
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:clamp(20px,3vw,40px)">
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <div style="font-family:'Newsreader',serif;font-size:24px;font-weight:800;letter-spacing:-0.5px">Esperia</div>
+        <div style="font-size:12px;line-height:1.5;color:#8a8378;max-width:26ch">Quotidiano online di politica e attualità. Registrazione Tribunale di Roma n. 214/2024.</div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:9px">
+        <div style="font-size:10px;font-weight:700;letter-spacing:1.8px;color:#8a8378">CATEGORIE</div>
+        <span style="font-size:13px;cursor:pointer" style-hover="color:#b3261e">Politica</span>
+        <span style="font-size:13px;cursor:pointer" style-hover="color:#b3261e">Mondo</span>
+        <span style="font-size:13px;cursor:pointer" style-hover="color:#b3261e">Economia</span>
+        <span style="font-size:13px;cursor:pointer" style-hover="color:#b3261e">Cultura</span>
+        <span style="font-size:13px;cursor:pointer" style-hover="color:#b3261e">Opinioni</span>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:9px">
+        <div style="font-size:10px;font-weight:700;letter-spacing:1.8px;color:#8a8378">TESTATA</div>
+        <span style="font-size:13px;cursor:pointer" style-hover="color:#b3261e">Chi siamo</span>
+        <span style="font-size:13px;cursor:pointer" style-hover="color:#b3261e">Contatti</span>
+        <span style="font-size:13px;cursor:pointer" style-hover="color:#b3261e">Privacy policy</span>
+        <span style="font-size:13px;cursor:pointer" style-hover="color:#b3261e">Cookie policy</span>
+        <span onClick="{{ openPrefs }}" style="font-size:13px;cursor:pointer;color:#5c554a" style-hover="color:#b3261e">Preferenze cookie</span>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:9px">
+        <div style="font-size:10px;font-weight:700;letter-spacing:1.8px;color:#8a8378">SEGUI ESPERIA</div>
+        <span style="font-size:13px;cursor:pointer;display:flex;align-items:center;gap:7px" style-hover="color:#b3261e"><span style="font-size:10px;font-weight:700;letter-spacing:0.5px;background:#e8b04b;color:#211d18;border-radius:4px;padding:2px 6px">RSS</span> Feed RSS</span>
+        <span style="font-size:13px;cursor:pointer" style-hover="color:#b3261e">Newsletter</span>
+        <span style="font-size:13px;cursor:pointer" style-hover="color:#b3261e">Community</span>
+      </div>
+    </div>
+    <div style="display:flex;flex-wrap:wrap;gap:8px 20px;padding:26px 0 8px;font-size:11.5px;color:#8a8378;border-top:1px solid #e6dfd1;margin-top:28px">
+      <span>© 2026 Esperia Editoriale S.r.l. — P. IVA 04871230581 — Via dei Serpenti 42, 00184 Roma</span>
+      <span>Direttore responsabile: Emanuele Ragusa</span>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<!-- ============ STATO: BANNER CONSENSO COOKIE ============ -->
+<sc-if value="{{ bannerOpen }}" hint-placeholder-val="{{ true }}">
+<div style="position:fixed;left:0;right:0;bottom:0;padding:clamp(12px,2vw,20px);display:flex;justify-content:center;pointer-events:none;z-index:50">
+  <div style="pointer-events:auto;width:100%;max-width:1000px;background:#211d18;color:#faf7f0;border-radius:14px;padding:clamp(18px,2vw,24px) clamp(18px,2.4vw,28px);display:flex;align-items:center;gap:clamp(16px,2.4vw,32px);flex-wrap:wrap;box-shadow:0 18px 40px rgba(33,29,24,.28)">
+    <div style="display:flex;flex-direction:column;gap:7px;flex:1;min-width:260px">
+      <div style="font-size:14.5px;font-weight:700">Su questo sito usiamo i cookie</div>
+      <div style="font-size:13px;line-height:1.5;color:#cdc4b2;max-width:62ch">Cookie tecnici sempre attivi; quelli di statistica e profilazione solo con il tuo consenso. Puoi cambiare idea in qualsiasi momento.</div>
+      <span onClick="{{ openPrefs }}" style="font-size:12.5px;font-weight:600;color:#e8b04b;text-decoration:underline;text-underline-offset:3px;cursor:pointer;width:fit-content" style-hover="color:#faf7f0">Gestisci le preferenze</span>
+    </div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap">
+      <div onClick="{{ reject }}" style="font-size:13px;font-weight:700;border:1px solid #6b6459;color:#faf7f0;border-radius:999px;padding:11px 24px;cursor:pointer;text-align:center;min-width:130px" style-hover="border-color:#faf7f0">Rifiuta</div>
+      <div onClick="{{ accept }}" style="font-size:13px;font-weight:700;border:1px solid #6b6459;color:#faf7f0;border-radius:999px;padding:11px 24px;cursor:pointer;text-align:center;min-width:130px" style-hover="border-color:#faf7f0">Accetta</div>
+    </div>
+  </div>
+</div>
+</sc-if>
+
+<!-- ============ STATO: GESTIONE GRANULARE ============ -->
+<sc-if value="{{ prefsOpen }}" hint-placeholder-val="{{ false }}">
+<div style="position:fixed;inset:0;background:rgba(33,29,24,.42);display:flex;align-items:flex-end;justify-content:center;padding:clamp(12px,2vw,24px);z-index:60">
+  <div style="width:100%;max-width:560px;background:#faf7f0;border-radius:14px;padding:clamp(20px,2.4vw,28px);display:flex;flex-direction:column;gap:16px;box-shadow:0 22px 50px rgba(33,29,24,.32)">
+    <div style="font-family:'Newsreader',serif;font-size:24px;font-weight:700">Preferenze cookie</div>
+    <div style="display:flex;flex-direction:column;gap:2px">
+      <div style="display:flex;align-items:center;gap:14px;padding:14px 0;border-top:1px solid #e6dfd1">
+        <div style="flex:1">
+          <div style="font-size:13.5px;font-weight:700">Tecnici</div>
+          <div style="font-size:12px;color:#8a8378;line-height:1.45">Necessari al funzionamento del sito.</div>
+        </div>
+        <div style="font-size:11px;font-weight:700;letter-spacing:1px;color:#8a8378">SEMPRE ATTIVI</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:14px;padding:14px 0;border-top:1px solid #e6dfd1">
+        <div style="flex:1">
+          <div style="font-size:13.5px;font-weight:700">Statistiche</div>
+          <div style="font-size:12px;color:#8a8378;line-height:1.45">Misurazione anonima del traffico.</div>
+        </div>
+        <div onClick="{{ toggleStats }}" style="width:46px;height:26px;border-radius:999px;padding:3px;cursor:pointer;background:{{ statsBg }};display:flex">
+          <div style="width:20px;height:20px;border-radius:50%;background:#faf7f0;margin-left:{{ statsShift }}"></div>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:14px;padding:14px 0;border-top:1px solid #e6dfd1;border-bottom:1px solid #e6dfd1">
+        <div style="flex:1">
+          <div style="font-size:13.5px;font-weight:700">Profilazione</div>
+          <div style="font-size:12px;color:#8a8378;line-height:1.45">Annunci e contenuti personalizzati.</div>
+        </div>
+        <div onClick="{{ toggleMkt }}" style="width:46px;height:26px;border-radius:999px;padding:3px;cursor:pointer;background:{{ mktBg }};display:flex">
+          <div style="width:20px;height:20px;border-radius:50%;background:#faf7f0;margin-left:{{ mktShift }}"></div>
+        </div>
+      </div>
+    </div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end">
+      <div onClick="{{ reject }}" style="font-size:13px;font-weight:700;border:1px solid #cdc4b2;border-radius:999px;padding:11px 22px;cursor:pointer" style-hover="border-color:#211d18">Rifiuta tutto</div>
+      <div onClick="{{ savePrefs }}" style="font-size:13px;font-weight:700;border:1px solid #cdc4b2;border-radius:999px;padding:11px 22px;cursor:pointer" style-hover="border-color:#211d18">Salva preferenze</div>
+    </div>
+  </div>
+</div>
+</sc-if>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;showCookieBanner&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Stati&quot;},&quot;showQuickCategories&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Sezioni&quot;}}">
+class Component extends DCLogic {
+  state = { banner: null, prefs: false, stats: false, mkt: false };
+  renderVals() {
+    const open = this.state.banner === null ? (this.props.showCookieBanner ?? true) : this.state.banner;
+    return {
+      showQuick: this.props.showQuickCategories ?? true,
+      bannerOpen: open && !this.state.prefs,
+      prefsOpen: this.state.prefs,
+      statsBg: this.state.stats ? '#b3261e' : '#d8d0be',
+      mktBg: this.state.mkt ? '#b3261e' : '#d8d0be',
+      statsShift: this.state.stats ? '20px' : '0px',
+      mktShift: this.state.mkt ? '20px' : '0px',
+      accept: () => this.setState({ banner: false, prefs: false, stats: true, mkt: true }),
+      reject: () => this.setState({ banner: false, prefs: false, stats: false, mkt: false }),
+      openPrefs: () => this.setState({ prefs: true }),
+      savePrefs: () => this.setState({ prefs: false, banner: false }),
+      toggleStats: () => this.setState(s => ({ stats: !s.stats })),
+      toggleMkt: () => this.setState(s => ({ mkt: !s.mkt }))
+    };
+  }
+}
+
+</script>
+</body>
+</html>

@@ -1,0 +1,61 @@
+---
+import Base from '@/layouts/Base.astro'
+import ArticleListing from '@/components/ArticleListing.astro'
+import { ARTICLES_PER_PAGE, getArticles, getCategoryBySlug } from '@/lib/payload'
+import { absoluteUrl, breadcrumbJsonLd } from '@/lib/seo'
+import { populatedList } from '@/lib/types'
+import type { Tag } from '@/lib/types'
+
+/** Listing di categoria con paginazione — RF-P-02. Impaginazione dai design (Listing v1). */
+
+const { slug } = Astro.params
+const categoria = slug ? await getCategoryBySlug(slug) : null
+if (!categoria) return Astro.rewrite('/404')
+
+const pagina = Math.max(1, Number(Astro.url.searchParams.get('pagina') ?? '1') || 1)
+const risultati = await getArticles({
+  categorySlug: categoria.slug,
+  page: pagina,
+  limit: ARTICLES_PER_PAGE,
+})
+
+// Pagina inesistente: 404 invece di una lista vuota indicizzabile.
+if (pagina > 1 && risultati.docs.length === 0) return Astro.rewrite('/404')
+
+/*
+ * Tag correlati ricavati dagli articoli in pagina invece che da una query
+ * dedicata: sono gli argomenti di cui la sezione sta parlando adesso, che è
+ * l'informazione utile, e non costa un giro in più verso il CMS.
+ */
+const tagCorrelati = [
+  ...new Map(
+    risultati.docs
+      .flatMap((a) => populatedList<Tag>(a.tags))
+      .map((t) => [t.id, t] as const),
+  ).values(),
+].slice(0, 7)
+
+const base = `/categoria/${categoria.slug}`
+const canonical = absoluteUrl(pagina > 1 ? `${base}?pagina=${pagina}` : base)
+const titoloSeo = pagina > 1 ? `${categoria.name} — pagina ${pagina}` : categoria.name
+---
+
+<Base
+  title={categoria.seo?.metaTitle || titoloSeo}
+  description={categoria.seo?.metaDescription || categoria.description}
+  canonical={canonical}
+  jsonLd={[
+    breadcrumbJsonLd([
+      { name: 'Home', url: '/' },
+      { name: categoria.name, url: base },
+    ]),
+  ]}
+>
+  <ArticleListing
+    titolo={categoria.name}
+    descrizione={categoria.description}
+    tagCorrelati={tagCorrelati}
+    risultati={risultati}
+    base={base}
+  />
+</Base>

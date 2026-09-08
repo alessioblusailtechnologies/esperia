@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet data-dc-atomics>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600;6..72,700;6..72,800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#f5f1e8;font-family:Archivo,sans-serif;color:#211d18}
+a{color:#211d18;text-decoration:none}
+a:hover{color:#1d5c63}
+textarea,input,select{font-family:inherit}
+</style>
+</helmet>
+
+<div style="display:flex;min-height:100vh">
+  <!-- SIDEBAR -->
+  <div style="width:220px;flex-shrink:0;background:#211d18;color:#faf7f0;display:flex;flex-direction:column;padding:22px 0">
+    <div style="padding:0 22px 20px;border-bottom:1px solid #3a352c;display:flex;flex-direction:column;gap:3px">
+      <div style="font-family:'Newsreader',serif;font-size:22px;font-weight:800;letter-spacing:-0.5px">Esperia</div>
+      <div style="font-size:9.5px;font-weight:700;letter-spacing:2px;color:#6fb5bd">REDAZIONE</div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:2px;padding:16px 12px;flex:1">
+      <div onClick="{{ goList }}" style="font-size:12.5px;font-weight:600;padding:9px 12px;border-radius:8px;cursor:pointer;background:{{ navListBg }};color:{{ navListFg }}" style-hover="background:#3a352c">Articoli</div>
+      <div style="font-size:12.5px;font-weight:600;padding:9px 12px;border-radius:8px;cursor:pointer;color:#a49b8b" style-hover="background:#3a352c">Media</div>
+      <div style="font-size:12.5px;font-weight:600;padding:9px 12px;border-radius:8px;cursor:pointer;color:#a49b8b" style-hover="background:#3a352c">Community</div>
+      <div style="font-size:12.5px;font-weight:600;padding:9px 12px;border-radius:8px;cursor:pointer;color:#a49b8b" style-hover="background:#3a352c">Newsletter</div>
+      <div style="font-size:12.5px;font-weight:600;padding:9px 12px;border-radius:8px;cursor:pointer;color:#a49b8b" style-hover="background:#3a352c">Impostazioni</div>
+    </div>
+    <div style="display:flex;align-items:center;gap:10px;padding:16px 22px;border-top:1px solid #3a352c">
+      <div style="width:30px;height:30px;border-radius:50%;background:repeating-linear-gradient(45deg,#3a352c 0 4px,#4a443a 4px 8px)"></div>
+      <div style="display:flex;flex-direction:column;gap:1px">
+        <div style="font-size:12px;font-weight:700">Marta Renzi</div>
+        <div style="font-size:10px;color:#a49b8b">Inviata politica</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ LISTA ============ -->
+  <sc-if value="{{ isList }}" hint-placeholder-val="{{ true }}">
+  <div style="flex:1;display:flex;flex-direction:column">
+    <div style="display:flex;align-items:center;gap:16px;padding:20px 32px;border-bottom:1px solid #e0d9c8;background:#faf7f0">
+      <div style="font-family:'Newsreader',serif;font-size:24px;font-weight:700;flex:1">Articoli</div>
+      <div style="display:flex;align-items:center;gap:8px;background:#f1ebdd;border-radius:999px;padding:8px 16px;font-size:12px;color:#8a8378;width:200px;cursor:text">⌕ Cerca articoli</div>
+      <div onClick="{{ newArticle }}" style="font-size:12px;font-weight:700;background:#1d5c63;color:#faf7f0;border-radius:999px;padding:9px 18px;cursor:pointer" style-hover="background:#164a50">+ Nuovo articolo</div>
+    </div>
+    <div style="display:flex;gap:8px;padding:18px 32px 0">
+      <div style="font-size:11px;font-weight:700;background:#211d18;color:#faf7f0;border-radius:999px;padding:6px 14px;cursor:pointer">Tutti · {{ countAll }}</div>
+      <div style="font-size:11px;font-weight:600;background:#f1ebdd;color:#5c554a;border-radius:999px;padding:6px 14px;cursor:pointer" style-hover="background:#ece4d1">Pubblicati · {{ countPub }}</div>
+      <div style="font-size:11px;font-weight:600;background:#f1ebdd;color:#5c554a;border-radius:999px;padding:6px 14px;cursor:pointer" style-hover="background:#ece4d1">Bozze · {{ countDraft }}</div>
+    </div>
+    <div style="display:flex;flex-direction:column;padding:14px 32px 40px">
+      <div style="display:grid;grid-template-columns:1fr 130px 110px 120px 90px;gap:16px;padding:10px 16px;font-size:10px;font-weight:700;letter-spacing:1.5px;color:#8a8378">
+        <div>TITOLO</div><div>SEZIONE</div><div>STATO</div><div>MODIFICATO</div><div></div>
+      </div>
+      <sc-for list="{{ rows }}" as="r" hint-placeholder-count="5">
+        <div onClick="{{ r.open }}" style="display:grid;grid-template-columns:1fr 130px 110px 120px 90px;gap:16px;align-items:center;padding:14px 16px;background:#faf7f0;border:1px solid #e0d9c8;border-radius:12px;margin-bottom:8px;cursor:pointer" style-hover="border-color:#1d5c63">
+          <div style="display:flex;flex-direction:column;gap:3px">
+            <div style="font-family:'Newsreader',serif;font-size:16.5px;font-weight:600;line-height:1.25">{{ r.title }}</div>
+            <div style="font-size:11px;color:#8a8378">{{ r.author }}</div>
+          </div>
+          <div style="font-size:11px;font-weight:700;letter-spacing:1px;color:#1d5c63">{{ r.cat }}</div>
+          <div><span style="font-size:10.5px;font-weight:700;border-radius:999px;padding:4px 10px;background:{{ r.badgeBg }};color:{{ r.badgeFg }}">{{ r.statusLabel }}</span></div>
+          <div style="font-size:11.5px;color:#8a8378">{{ r.updated }}</div>
+          <div style="font-size:11.5px;font-weight:700;color:#1d5c63;text-align:right">Apri →</div>
+        </div>
+      </sc-for>
+    </div>
+  </div>
+  </sc-if>
+
+  <!-- ============ EDITOR ============ -->
+  <sc-if value="{{ isEditor }}" hint-placeholder-val="{{ false }}">
+  <div style="flex:1;display:flex;flex-direction:column;min-width:0">
+    <div style="display:flex;align-items:center;gap:14px;padding:16px 32px;border-bottom:1px solid #e0d9c8;background:#faf7f0">
+      <div onClick="{{ goList }}" style="font-size:12px;font-weight:700;color:#5c554a;cursor:pointer" style-hover="color:#1d5c63">← Articoli</div>
+      <div style="flex:1"></div>
+      <span style="font-size:10.5px;font-weight:700;border-radius:999px;padding:5px 12px;background:{{ edBadgeBg }};color:{{ edBadgeFg }}">{{ edStatusLabel }}</span>
+      <div style="font-size:11.5px;color:#8a8378">{{ saveNote }}</div>
+      <div onClick="{{ toggleAi }}" style="font-size:12px;font-weight:700;background:#211d18;color:#e8b04b;border-radius:999px;padding:8px 16px;cursor:pointer;display:flex;align-items:center;gap:6px" style-hover="background:#3a352c">✦ Hot topic AI</div>
+      <div onClick="{{ saveDraft }}" style="font-size:12px;font-weight:700;border:1px solid #d9d2c4;border-radius:999px;padding:8px 16px;cursor:pointer" style-hover="border-color:#211d18">Salva bozza</div>
+      <div onClick="{{ publish }}" style="font-size:12px;font-weight:700;background:#1d5c63;color:#faf7f0;border-radius:999px;padding:8px 18px;cursor:pointer" style-hover="background:#164a50">{{ publishLabel }}</div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 300px;gap:0;flex:1;min-height:0">
+      <div style="padding:36px 48px;display:flex;flex-direction:column;gap:18px;max-width:820px;width:100%;box-sizing:border-box;margin:0 auto">
+        <input value="{{ fTitle }}" onChange="{{ onTitle }}" placeholder="Titolo dell'articolo" style="border:none;outline:none;background:transparent;font-family:'Newsreader',serif;font-size:34px;font-weight:700;letter-spacing:-0.5px;color:#211d18;line-height:1.15;width:100%">
+        <textarea value="{{ fSummary }}" onChange="{{ onSummary }}" placeholder="Sommario / occhiello" rows="2" style="border:none;outline:none;background:transparent;resize:none;font-size:16px;line-height:1.5;color:#5c554a;width:100%"></textarea>
+        <div style="display:flex;gap:8px;border-top:1px solid #e0d9c8;border-bottom:1px solid #e0d9c8;padding:8px 0;font-size:12px;font-weight:700;color:#5c554a">
+          <div style="padding:5px 10px;border-radius:6px;cursor:pointer" style-hover="background:#f1ebdd"><b>B</b></div>
+          <div style="padding:5px 10px;border-radius:6px;cursor:pointer;font-style:italic" style-hover="background:#f1ebdd">I</div>
+          <div style="padding:5px 10px;border-radius:6px;cursor:pointer" style-hover="background:#f1ebdd">H2</div>
+          <div style="padding:5px 10px;border-radius:6px;cursor:pointer" style-hover="background:#f1ebdd">"</div>
+          <div style="padding:5px 10px;border-radius:6px;cursor:pointer" style-hover="background:#f1ebdd">🔗</div>
+          <div style="padding:5px 10px;border-radius:6px;cursor:pointer" style-hover="background:#f1ebdd">Immagine</div>
+        </div>
+        <textarea value="{{ fBody }}" onChange="{{ onBody }}" placeholder="Scrivi qui l'articolo…" rows="14" style="border:none;outline:none;background:transparent;resize:vertical;font-size:16px;line-height:1.75;color:#3a352c;width:100%;min-height:280px"></textarea>
+        <div style="font-size:11px;color:#8a8378;border-top:1px solid #e0d9c8;padding-top:10px">{{ wordCount }} parole · lettura {{ readTime }} min</div>
+      </div>
+      <div style="border-left:1px solid #e0d9c8;background:#faf7f0;padding:24px;display:flex;flex-direction:column;gap:20px">
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <div style="font-size:10px;font-weight:700;letter-spacing:2px;color:#8a8378">SEZIONE</div>
+          <select value="{{ fCat }}" onChange="{{ onCat }}" style="border:1px solid #d9d2c4;border-radius:10px;padding:9px 12px;font-size:12.5px;background:#fff;outline:none">
+            <option>Politica</option><option>Mondo</option><option>Economia</option><option>Opinioni</option>
+          </select>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <div style="font-size:10px;font-weight:700;letter-spacing:2px;color:#8a8378">IMMAGINE DI COPERTINA</div>
+          <div style="height:140px"><x-import component-from-global-scope="image-slot" from="./image-slot.js" id="bo-cover" shape="rounded" radius="10" placeholder="trascina la copertina" hint-size="100%,140px"></x-import></div>
+          <input value="{{ fCredit }}" onChange="{{ onCredit }}" placeholder="Didascalia / credit" style="border:1px solid #d9d2c4;border-radius:10px;padding:8px 12px;font-size:11.5px;outline:none;background:#fff">
+        </div>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <div style="font-size:10px;font-weight:700;letter-spacing:2px;color:#8a8378">TAG</div>
+          <input value="{{ fTags }}" onChange="{{ onTags }}" placeholder="separa con virgole" style="border:1px solid #d9d2c4;border-radius:10px;padding:9px 12px;font-size:12.5px;outline:none;background:#fff">
+        </div>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <div style="font-size:10px;font-weight:700;letter-spacing:2px;color:#8a8378">EDIZIONE</div>
+          <div style="display:flex;gap:6px">
+            <div style="font-size:11px;font-weight:700;background:#211d18;color:#faf7f0;border-radius:999px;padding:6px 14px;cursor:pointer">Italia</div>
+            <div style="font-size:11px;font-weight:600;background:#f1ebdd;color:#5c554a;border-radius:999px;padding:6px 14px;cursor:pointer" style-hover="background:#ece4d1">US</div>
+          </div>
+        </div>
+        <div style="border-top:1px solid #e0d9c8;padding-top:16px;display:flex;flex-direction:column;gap:6px">
+          <div style="font-size:10px;font-weight:700;letter-spacing:2px;color:#8a8378">ANTEPRIMA</div>
+          <div style="font-size:12px;font-weight:700;color:#1d5c63;cursor:pointer" style-hover="color:#164a50">Apri anteprima sul portale →</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  </sc-if>
+
+  <!-- ============ PANNELLO AI ============ -->
+  <sc-if value="{{ aiOpen }}" hint-placeholder-val="{{ false }}">
+  <div style="position:fixed;top:0;right:0;bottom:0;width:380px;background:#211d18;color:#faf7f0;box-shadow:-16px 0 40px rgba(33,29,24,.25);display:flex;flex-direction:column;z-index:50">
+    <div style="display:flex;align-items:center;gap:10px;padding:20px 24px;border-bottom:1px solid #3a352c">
+      <div style="font-size:15px;font-weight:800;display:flex;align-items:center;gap:8px;flex:1"><span style="color:#e8b04b">✦</span> Hot topic AI</div>
+      <div onClick="{{ closeAi }}" style="font-size:16px;color:#a49b8b;cursor:pointer;padding:4px 8px" style-hover="color:#faf7f0">✕</div>
+    </div>
+
+    <sc-if value="{{ aiScanning }}" hint-placeholder-val="{{ false }}">
+      <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:40px">
+        <div style="font-size:26px;color:#e8b04b">✦</div>
+        <div style="font-size:13px;font-weight:700">Analisi delle fonti in corso…</div>
+        <div style="font-size:11.5px;color:#a49b8b;text-align:center;line-height:1.6">ANSA · AGI · Reuters · Il Sole 24 Ore<br>Rilevo i temi in crescita nelle ultime 2 ore</div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ aiIdle }}" hint-placeholder-val="{{ false }}">
+      <sc-if value="{{ aiTopicOpen }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex;flex-direction:column;flex:1;min-height:0">
+          <div style="padding:18px 24px 0;display:flex;flex-direction:column;gap:10px">
+            <div onClick="{{ aiBack }}" style="font-size:11.5px;font-weight:700;color:#a49b8b;cursor:pointer" style-hover="color:#faf7f0">← Tutti i topic</div>
+            <div style="font-family:'Newsreader',serif;font-size:19px;line-height:1.3;font-weight:600;text-wrap:pretty">{{ aiSelTitle }}</div>
+            <div onClick="{{ aiUseAsDraft }}" style="font-size:11.5px;font-weight:700;background:#e8b04b;color:#211d18;border-radius:999px;padding:8px 16px;cursor:pointer;align-self:flex-start" style-hover="background:#f0c26a">Usa come base della bozza</div>
+          </div>
+          <div style="flex:1;overflow-y:auto;padding:16px 24px 20px;display:flex;flex-direction:column;gap:12px">
+            <sc-for list="{{ aiSelSnippets }}" as="sn" hint-placeholder-count="3">
+              <div style="background:#2c2720;border:1px solid #3a352c;border-radius:12px;padding:14px 16px;display:flex;flex-direction:column;gap:8px">
+                <div style="font-size:9.5px;font-weight:700;letter-spacing:2px;color:#6fb5bd">{{ sn.kind }}</div>
+                <div style="font-size:13px;line-height:1.6;color:#e8e2d4">{{ sn.text }}</div>
+                <div style="display:flex;align-items:center;gap:10px">
+                  <div style="font-size:10px;color:#a49b8b;flex:1">{{ sn.src }}</div>
+                  <div onClick="{{ sn.insert }}" style="font-size:11px;font-weight:700;border:1px solid #4a443a;border-radius:999px;padding:5px 12px;cursor:pointer" style-hover="border-color:#e8b04b;color:#e8b04b">+ Inserisci</div>
+                </div>
+              </div>
+            </sc-for>
+            <div style="font-size:10.5px;line-height:1.6;color:#a49b8b;border-top:1px solid #3a352c;padding-top:12px">Testi generati da fonti verificate. Rileggi e verifica sempre prima di pubblicare: la responsabilità editoriale resta della redazione.</div>
+          </div>
+        </div>
+      </sc-if>
+      <sc-if value="{{ aiNoTopic }}" hint-placeholder-val="{{ false }}">
+        <div style="flex:1;overflow-y:auto;padding:18px 24px;display:flex;flex-direction:column;gap:10px">
+          <div style="font-size:10px;font-weight:700;letter-spacing:2px;color:#a49b8b;padding-bottom:2px">TEMI IN CRESCITA · ULTIME 2 ORE</div>
+          <sc-for list="{{ aiTopicList }}" as="t" hint-placeholder-count="3">
+            <div onClick="{{ t.select }}" style="background:#2c2720;border:1px solid #3a352c;border-radius:12px;padding:14px 16px;display:flex;flex-direction:column;gap:7px;cursor:pointer" style-hover="border-color:#e8b04b">
+              <div style="display:flex;align-items:center;gap:8px">
+                <div style="font-size:10px;font-weight:700;color:#e8b04b">{{ t.trend }}</div>
+                <div style="font-size:10px;color:#a49b8b">· {{ t.freshness }}</div>
+              </div>
+              <div style="font-family:'Newsreader',serif;font-size:16.5px;line-height:1.3;font-weight:600">{{ t.title }}</div>
+              <div style="font-size:10.5px;color:#6fb5bd;font-weight:600">Fonti: {{ t.sourcesLabel }}</div>
+            </div>
+          </sc-for>
+        </div>
+      </sc-if>
+    </sc-if>
+  </div>
+  </sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{}">
+class Component extends DCLogic {
+  state = {
+    screen: 'list',
+    editingId: null,
+    saveNote: '',
+    aiOpen: false,
+    aiTopicId: null,
+    aiScanning: false,
+    articles: [
+      { id: 1, title: 'Nuovo attacco di Trump a Meloni, la politica italiana reagisce', summary: "Dal governo all'opposizione, le risposte alle parole del presidente americano.", body: "Roma — Le nuove parole di Donald Trump rivolte a Giorgia Meloni riaccendono il dibattito politico italiano.\n\nLa linea del governo è quella della prudenza: il ministro degli Esteri invita a non alimentare polemiche.", cat: 'Politica', tags: 'trump, meloni, usa-italia', credit: 'Ansa', author: 'Marta Renzi', status: 'published', updated: 'oggi, 09:40' },
+      { id: 2, title: 'Meloni verso il vertice di Ankara: i dossier sul tavolo', summary: 'Rapporti transatlantici, difesa europea e Mediterraneo.', body: '', cat: 'Mondo', tags: 'ankara, vertice', credit: '', author: 'Elena Costa', status: 'published', updated: 'oggi, 08:15' },
+      { id: 3, title: "Carburanti, un pieno costa 3 euro in più: l'allarme dei gestori", summary: "L'impatto dei rincari su pendolari e famiglie.", body: '', cat: 'Economia', tags: 'carburanti, rincari', credit: '', author: 'Elena Costa', status: 'published', updated: 'ieri, 18:22' },
+      { id: 4, title: 'Di Battista prepara il ritorno in politica, «fuori dai poli»', summary: '', body: '', cat: 'Politica', tags: '', credit: '', author: 'Luca Ferraro', status: 'draft', updated: 'ieri, 16:40' },
+      { id: 5, title: 'Spese militari, La Russa rivendica l\u2019autonomia delle scelte italiane', summary: '', body: '', cat: 'Politica', tags: 'difesa', credit: '', author: 'Marta Renzi', status: 'draft', updated: 'ieri, 11:05' },
+    ],
+    draft: null,
+  };
+
+  aiTopics = [
+    { id: 't1', title: 'Trump attacca di nuovo Meloni: le reazioni della politica', trend: '▲ molto caldo', freshness: 'rilevato 4 min fa', sources: ['ANSA', 'AGI', 'Reuters'],
+      snippets: [
+        { kind: 'ATTACCO', text: "Le nuove dichiarazioni di Donald Trump rivolte a Giorgia Meloni riaccendono lo scontro politico in Italia, con reazioni immediate da maggioranza e opposizione.", src: 'da 3 lanci ANSA · 2 AGI' },
+        { kind: 'CONTESTO', text: "Il caso arriva alla vigilia del vertice di Ankara, dove la premier è attesa nelle prossime ore con i dossier su rapporti transatlantici e difesa europea.", src: 'da ANSA · Reuters' },
+        { kind: 'DICHIARAZIONI', text: "«Parole che si commentano da sole», ha dichiarato il ministro degli Esteri, invitando a non alimentare polemiche. Più duri i toni dell'opposizione.", src: 'da AGI, con virgolettati verificati' },
+      ]},
+    { id: 't2', title: 'Esplosioni vicino all\u2019hotel di Macron a Damasco', trend: '▲ in crescita', freshness: 'rilevato 12 min fa', sources: ['Reuters', 'ANSA'],
+      snippets: [
+        { kind: 'ATTACCO', text: "Due esplosioni sono avvenute nei pressi dell'hotel che ospita Emmanuel Macron a Damasco. Il presidente francese è illeso e la visita prosegue.", src: 'da Reuters · ANSA' },
+        { kind: 'CONTESTO', text: "Si tratta della prima visita di un capo di Stato occidentale nella capitale siriana dopo la transizione, un passaggio ad alto rischio per la diplomazia europea.", src: 'da Reuters' },
+      ]},
+    { id: 't3', title: 'Carburanti, rincari alla pompa: l\u2019allarme dei gestori', trend: '● stabile', freshness: 'rilevato 25 min fa', sources: ['ANSA', 'AGI'],
+      snippets: [
+        { kind: 'ATTACCO', text: "Un pieno costa in media 3 euro in più rispetto a un mese fa: è l'allarme lanciato dai gestori, che chiedono un intervento sulle accise.", src: 'da ANSA · AGI' },
+        { kind: 'DATI', text: "Secondo le rilevazioni, la benzina self service ha superato la soglia psicologica in diverse regioni, con punte più alte sulla rete autostradale.", src: 'da AGI, dati Mimit' },
+      ]},
+  ];
+
+  openArticle(id) {
+    const a = this.state.articles.find(x => x.id === id);
+    this.setState({ screen: 'editor', editingId: id, draft: Object.assign({}, a), saveNote: '' });
+    window.scrollTo(0, 0);
+  }
+
+  setDraft(key, value) {
+    this.setState(s => ({ draft: Object.assign({}, s.draft, { [key]: value }), saveNote: 'modifiche non salvate' }));
+  }
+
+  commit(status) {
+    this.setState(s => {
+      const d = Object.assign({}, s.draft, { status, updated: 'adesso' });
+      return {
+        articles: s.articles.map(a => a.id === d.id ? d : a),
+        draft: d,
+        saveNote: status === 'published' ? 'pubblicato adesso' : 'bozza salvata adesso',
+      };
+    });
+  }
+
+  renderVals() {
+    const s = this.state;
+    const d = s.draft || {};
+    const badge = st => st === 'published'
+      ? { bg: '#dcebe4', fg: '#1e6b47', label: 'Pubblicato' }
+      : { bg: '#f3e6c9', fg: '#8a6413', label: 'Bozza' };
+    const words = (d.body || '').trim() ? (d.body || '').trim().split(/\s+/).length : 0;
+    const edB = badge(d.status || 'draft');
+    return {
+      isList: s.screen === 'list',
+      isEditor: s.screen === 'editor',
+      goList: () => this.setState({ screen: 'list' }),
+      navListBg: '#3a352c',
+      navListFg: '#faf7f0',
+      newArticle: () => {
+        const id = Math.max.apply(null, s.articles.map(a => a.id)) + 1;
+        const a = { id, title: '', summary: '', body: '', cat: 'Politica', tags: '', credit: '', author: 'Marta Renzi', status: 'draft', updated: 'adesso' };
+        this.setState(prev => ({ articles: prev.articles.concat([a]), screen: 'editor', editingId: id, draft: a, saveNote: '' }));
+      },
+      countAll: s.articles.length,
+      countPub: s.articles.filter(a => a.status === 'published').length,
+      countDraft: s.articles.filter(a => a.status === 'draft').length,
+      rows: s.articles.slice().reverse().map(a => {
+        const b = badge(a.status);
+        return {
+          title: a.title || '(senza titolo)',
+          author: a.author, cat: a.cat.toUpperCase(), updated: a.updated,
+          statusLabel: b.label, badgeBg: b.bg, badgeFg: b.fg,
+          open: () => this.openArticle(a.id),
+        };
+      }),
+      fTitle: d.title || '', fSummary: d.summary || '', fBody: d.body || '',
+      fCat: d.cat || 'Politica', fTags: d.tags || '', fCredit: d.credit || '',
+      onTitle: e => this.setDraft('title', e.target.value),
+      onSummary: e => this.setDraft('summary', e.target.value),
+      onBody: e => this.setDraft('body', e.target.value),
+      onCat: e => this.setDraft('cat', e.target.value),
+      onTags: e => this.setDraft('tags', e.target.value),
+      onCredit: e => this.setDraft('credit', e.target.value),
+      edStatusLabel: edB.label, edBadgeBg: edB.bg, edBadgeFg: edB.fg,
+      saveNote: s.saveNote,
+      saveDraft: () => this.commit('draft'),
+      publish: () => this.commit('published'),
+      publishLabel: (d.status === 'published') ? 'Aggiorna' : 'Pubblica',
+      wordCount: words,
+      readTime: Math.max(1, Math.round(words / 200)),
+      aiOpen: s.aiOpen,
+      aiScanning: s.aiScanning,
+      aiIdle: !s.aiScanning,
+      toggleAi: () => {
+        if (!s.aiOpen) {
+          this.setState({ aiOpen: true, aiScanning: true, aiTopicId: null });
+          setTimeout(() => this.setState({ aiScanning: false }), 1200);
+        } else {
+          this.setState({ aiOpen: false });
+        }
+      },
+      closeAi: () => this.setState({ aiOpen: false }),
+      aiTopicOpen: s.aiTopicId !== null,
+      aiNoTopic: s.aiTopicId === null,
+      aiTopicList: this.aiTopics.map(t => ({
+        title: t.title, trend: t.trend, freshness: t.freshness,
+        sourcesLabel: t.sources.join(' · '),
+        select: () => this.setState({ aiTopicId: t.id }),
+      })),
+      aiBack: () => this.setState({ aiTopicId: null }),
+      aiSelTitle: (this.aiTopics.find(t => t.id === s.aiTopicId) || {}).title || '',
+      aiSelSnippets: ((this.aiTopics.find(t => t.id === s.aiTopicId) || {}).snippets || []).map(sn => ({
+        kind: sn.kind, text: sn.text, src: sn.src,
+        insert: () => this.setDraft('body', ((this.state.draft.body || '').trim() ? this.state.draft.body.trim() + '\n\n' : '') + sn.text),
+      })),
+      aiUseAsDraft: () => {
+        const t = this.aiTopics.find(x => x.id === this.state.aiTopicId);
+        if (!t) return;
+        this.setState(prev => ({ draft: Object.assign({}, prev.draft, {
+          title: prev.draft.title || t.title,
+          summary: prev.draft.summary || t.snippets[0].text,
+          body: ((prev.draft.body || '').trim() ? prev.draft.body.trim() + '\n\n' : '') + t.snippets.map(x => x.text).join('\n\n'),
+        }), saveNote: 'modifiche non salvate' }));
+      },
+    };
+  }
+}
+</script>
+</body>
+</html>

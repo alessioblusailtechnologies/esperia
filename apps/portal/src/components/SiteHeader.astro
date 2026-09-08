@@ -1,0 +1,221 @@
+---
+import type { Category, SiteSettings } from '@/lib/types'
+import { mediaUrl } from '@/lib/seo'
+
+interface Props {
+  settings: SiteSettings
+  categories: Category[]
+}
+
+const { settings, categories } = Astro.props
+const menu = categories.filter((c) => c.showInMenu !== false)
+const logo = mediaUrl(settings.logo)
+const percorso = Astro.url.pathname
+
+/*
+ * Testata — dai design (Home v1).
+ *
+ * Il menu è un <nav> con una lista: la struttura semantica è quella che usano
+ * screen reader e motori di ricerca (RNF-07, RF-P-07). Sotto i 760px il menu
+ * orizzontale non ci sta e diventa un <details>, che si apre anche senza
+ * JavaScript.
+ */
+---
+
+<header class="testata">
+  <div class="testata__barra">
+    <a href="/" class="testata__marchio" aria-label={`${settings.siteName} — vai alla home`}>
+      {logo ? (
+        <img src={logo} alt={settings.siteName} height="30" width="120" />
+      ) : (
+        settings.siteName
+      )}
+    </a>
+
+    <nav class="testata__nav" aria-label="Sezioni del giornale">
+      <ul>
+        {menu.map((c) => (
+          <li>
+            <a
+              href={`/categoria/${c.slug}`}
+              class:list={['testata__voce', { 'testata__voce--attiva': percorso === `/categoria/${c.slug}` }]}
+              aria-current={percorso === `/categoria/${c.slug}` ? 'page' : undefined}
+            >
+              {c.name}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </nav>
+
+    <form class="testata__ricerca" action="/ricerca" method="get" role="search">
+      <span class="testata__lente" aria-hidden="true">⌕</span>
+      <label class="solo-lettori-schermo" for="q-testata">Cerca su {settings.siteName}</label>
+      <input
+        type="search"
+        id="q-testata"
+        name="q"
+        placeholder={`Cerca su ${settings.siteName}`}
+        autocomplete="off"
+        minlength="2"
+      />
+    </form>
+
+    <div class="testata__accesso">
+      <a href="/accedi">Accedi</a>
+      <span aria-hidden="true">/</span>
+      <a href="/registrati" class="testata__registrati">Registrati</a>
+    </div>
+  </div>
+
+  <details class="testata__mobile">
+    <summary>Sezioni</summary>
+    <ul>
+      {menu.map((c) => (
+        <li><a href={`/categoria/${c.slug}`}>{c.name}</a></li>
+      ))}
+    </ul>
+  </details>
+</header>
+
+<style>
+  .testata {
+    border-bottom: 1px solid var(--colore-bordo);
+  }
+
+  .testata__barra {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    flex-wrap: wrap;
+    padding: 18px var(--padding-laterale);
+  }
+
+  .testata__marchio {
+    font-family: var(--font-titoli);
+    font-size: 26px;
+    font-weight: var(--peso-extra);
+    letter-spacing: -0.5px;
+    flex-shrink: 0;
+    line-height: 1;
+  }
+
+  .testata__marchio:hover {
+    color: var(--colore-testo);
+  }
+
+  .testata__nav {
+    flex: 1;
+    min-width: 200px;
+  }
+
+  .testata__nav ul {
+    display: flex;
+    gap: clamp(12px, 1.6vw, 20px);
+    flex-wrap: wrap;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .testata__voce {
+    font-size: 13px;
+    font-weight: var(--peso-medio);
+    color: var(--colore-testo-tenue);
+  }
+
+  .testata__voce:hover,
+  .testata__voce--attiva {
+    color: var(--colore-accento);
+  }
+
+  .testata__ricerca {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--colore-superficie);
+    border-radius: var(--raggio-pill);
+    padding: 8px 14px;
+    flex: 0 1 200px;
+    min-width: 120px;
+  }
+
+  .testata__lente {
+    font-size: 13px;
+    color: var(--colore-testo-meta);
+  }
+
+  .testata__ricerca input {
+    background: none;
+    border: none;
+    outline: none;
+    font-size: 12px;
+    color: var(--colore-testo);
+    width: 100%;
+  }
+
+  /* La pillola intera prende l'anello di focus, non il solo input. */
+  .testata__ricerca:focus-within {
+    outline: 2px solid var(--colore-focus);
+    outline-offset: 2px;
+  }
+
+  .testata__accesso {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: var(--testo-sm);
+    font-weight: var(--peso-medio);
+    white-space: nowrap;
+  }
+
+  .testata__accesso > span {
+    color: var(--colore-bordo-forte);
+  }
+
+  .testata__registrati {
+    text-decoration: underline;
+    text-decoration-color: var(--colore-bordo-forte);
+    text-underline-offset: 3px;
+  }
+
+  .testata__mobile {
+    display: none;
+  }
+
+  @media (max-width: 760px) {
+    .testata__nav {
+      display: none;
+    }
+
+    .testata__ricerca {
+      flex: 1;
+      order: 3;
+    }
+
+    .testata__mobile {
+      display: block;
+      border-top: 1px solid var(--colore-bordo);
+      padding: var(--spazio-4) var(--padding-laterale);
+    }
+
+    .testata__mobile summary {
+      cursor: pointer;
+      font-size: var(--testo-eyebrow);
+      font-weight: var(--peso-forte);
+      letter-spacing: var(--spaziatura-eyebrow);
+      text-transform: uppercase;
+      color: var(--colore-testo-meta);
+    }
+
+    .testata__mobile ul {
+      list-style: none;
+      margin: var(--spazio-4) 0 0;
+      padding: 0;
+      display: grid;
+      gap: var(--spazio-4);
+      font-size: 14px;
+      font-weight: var(--peso-medio);
+    }
+  }
+</style>

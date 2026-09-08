@@ -1,0 +1,191 @@
+---
+import Base from '@/layouts/Base.astro'
+import ArticleCard from '@/components/ArticleCard.astro'
+import Pagination from '@/components/Pagination.astro'
+import { getCategories, searchArticles, CmsUnavailableError } from '@/lib/payload'
+
+/** Ricerca full-text — RF-P-05. Impaginazione dai design (Ricerca v1). */
+
+const query = (Astro.url.searchParams.get('q') ?? '').trim()
+const pagina = Math.max(1, Number(Astro.url.searchParams.get('pagina') ?? '1') || 1)
+
+let risultati = null
+let errore = false
+
+if (query.length >= 2) {
+  try {
+    risultati = await searchArticles(query, pagina)
+  } catch (err) {
+    if (!(err instanceof CmsUnavailableError)) throw err
+    errore = true
+  }
+}
+
+// Nello stato vuoto i design propongono delle vie d'uscita invece di un
+// vicolo cieco: le sezioni del giornale.
+const categorie = (await getCategories()).filter((c) => c.showInMenu !== false).slice(0, 6)
+
+const rigaEsito = !risultati
+  ? null
+  : risultati.totalDocs === 0
+    ? `Nessun risultato per “${query}”.`
+    : `${risultati.totalDocs} ${risultati.totalDocs === 1 ? 'risultato' : 'risultati'} per “${query}”.`
+---
+
+<!--
+  Le pagine di risultati non vanno indicizzate: generano URL infinite di scarso
+  valore che Google considera "soft 404". RF-P-07.
+-->
+<Base
+  title={query ? `Ricerca: ${query}` : 'Ricerca'}
+  description="Cerca fra gli articoli pubblicati."
+  noIndex
+>
+  <div class="ricerca">
+    <div class="ricerca__testata">
+      <h1 class="filo-sezione eyebrow">Ricerca</h1>
+
+      <form class="ricerca__campo" action="/ricerca" method="get" role="search">
+        <span class="ricerca__lente" aria-hidden="true">⌕</span>
+        <label class="solo-lettori-schermo" for="q-pagina">Cerca fra gli articoli</label>
+        <input
+          type="search"
+          id="q-pagina"
+          name="q"
+          value={query}
+          placeholder="Cerca fra gli articoli…"
+          minlength="2"
+          autofocus
+        />
+        <button type="submit" class="ricerca__invio">Cerca</button>
+      </form>
+
+      {rigaEsito && <p class="ricerca__esito">{rigaEsito}</p>}
+      {query.length > 0 && query.length < 2 && (
+        <p class="ricerca__esito">Inserisci almeno due caratteri.</p>
+      )}
+      {errore && (
+        <p class="ricerca__esito">La ricerca non è al momento disponibile. Riprova fra qualche minuto.</p>
+      )}
+    </div>
+
+    {risultati && risultati.docs.length > 0 && (
+      <div class="ricerca__risultati">
+        {risultati.docs.map((a) => (
+          <ArticleCard
+            article={a}
+            variante="risultato"
+            livelloTitolo={2}
+            sommarioHtml={a.evidenza ?? null}
+          />
+        ))}
+      </div>
+    )}
+
+    {risultati && (
+      <Pagination
+        paginaCorrente={risultati.page}
+        paginaTotali={risultati.totalPages}
+        base="/ricerca"
+        extra={{ q: query }}
+      />
+    )}
+
+    {(!risultati || risultati.docs.length === 0) && !errore && (
+      <div class="ricerca__vuoto">
+        <p class="ricerca__vuoto-testo">
+          {query.length >= 2
+            ? 'Prova con parole diverse, oppure sfoglia una sezione del giornale.'
+            : 'Cerca un argomento, un nome o una parola chiave. Oppure parti da una sezione.'}
+        </p>
+        <nav class="ricerca__sezioni" aria-label="Sezioni del giornale">
+          {categorie.map((c) => (
+            <a href={`/categoria/${c.slug}`} class="pastiglia">{c.name}</a>
+          ))}
+        </nav>
+      </div>
+    )}
+  </div>
+</Base>
+
+<style>
+  .ricerca__testata {
+    padding: clamp(26px, 3.6vw, 44px) var(--padding-laterale) 0;
+  }
+
+  /* Campo ampio in carattere da titolo: la ricerca è un gesto editoriale,
+     non un accessorio dell'interfaccia. */
+  .ricerca__campo {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    border-bottom: 2px solid var(--colore-inverso);
+    padding: 0 2px 12px;
+  }
+
+  .ricerca__campo:focus-within {
+    border-bottom-color: var(--colore-accento);
+  }
+
+  .ricerca__lente {
+    font-size: clamp(20px, 2.4vw, 28px);
+    color: var(--colore-testo-meta);
+  }
+
+  .ricerca__campo input {
+    flex: 1;
+    min-width: 60px;
+    background: none;
+    border: none;
+    outline: none;
+    font-family: var(--font-titoli);
+    font-size: clamp(24px, 3.4vw, 40px);
+    font-weight: var(--peso-medio);
+    letter-spacing: -0.5px;
+    color: var(--colore-testo);
+  }
+
+  .ricerca__invio {
+    font-size: 12px;
+    font-weight: var(--peso-medio);
+    color: var(--colore-testo-meta);
+    background: none;
+    border: 0;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+
+  .ricerca__invio:hover {
+    color: var(--colore-accento);
+  }
+
+  .ricerca__esito {
+    font-size: 13px;
+    color: var(--colore-testo-tenue);
+    padding-top: 12px;
+  }
+
+  .ricerca__risultati {
+    display: flex;
+    flex-direction: column;
+    padding: clamp(20px, 2.4vw, 30px) var(--padding-laterale) 0;
+  }
+
+  .ricerca__vuoto {
+    padding: clamp(30px, 4vw, 48px) var(--padding-laterale) 0;
+  }
+
+  .ricerca__vuoto-testo {
+    font-size: clamp(15px, 1.3vw, 17px);
+    line-height: 1.55;
+    color: var(--colore-testo-tenue);
+    max-width: 60ch;
+  }
+
+  .ricerca__sezioni {
+    display: flex;
+    gap: 9px;
+    flex-wrap: wrap;
+    padding-top: var(--spazio-6);
+  }
+</style>

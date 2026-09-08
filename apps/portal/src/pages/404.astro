@@ -1,0 +1,88 @@
+---
+import Base from '@/layouts/Base.astro'
+import ArticleCard from '@/components/ArticleCard.astro'
+import { getArticles, getCategories } from '@/lib/payload'
+import type { Article, Category } from '@/lib/types'
+
+/*
+ * Una 404 utile: invece di un vicolo cieco, proponiamo le ultime notizie e le
+ * sezioni. Ci si arriva spesso da un link vecchio condiviso sui social.
+ */
+let recenti: Article[] = []
+let categorie: Category[] = []
+try {
+  recenti = (await getArticles({ limit: 3 })).docs
+  categorie = (await getCategories()).filter((c) => c.showInMenu !== false)
+} catch {
+  // Se anche il CMS è irraggiungibile, la 404 resta comunque leggibile.
+}
+
+Astro.response.status = 404
+---
+
+<Base title="Pagina non trovata" noIndex>
+  <div class="errore">
+    <p class="eyebrow">Errore 404</p>
+    <h1 class="errore__titolo">Questa pagina non esiste</h1>
+    <p class="errore__testo">
+      L’indirizzo che hai seguito non corrisponde a nessuna pagina: potrebbe essere stato
+      rimosso, oppure contenere un errore di battitura.
+    </p>
+
+    {categorie.length > 0 && (
+      <nav class="errore__sezioni" aria-label="Sezioni del giornale">
+        <a href="/" class="pastiglia">Home</a>
+        {categorie.map((c) => (
+          <a href={`/categoria/${c.slug}`} class="pastiglia">{c.name}</a>
+        ))}
+      </nav>
+    )}
+  </div>
+
+  {recenti.length > 0 && (
+    <section class="errore__suggeriti" aria-labelledby="t-404">
+      <h2 id="t-404" class="filo-sezione eyebrow">Ultime notizie</h2>
+      <div class="errore__griglia">
+        {recenti.map((a) => <ArticleCard article={a} livelloTitolo={3} />)}
+      </div>
+    </section>
+  )}
+</Base>
+
+<style>
+  .errore {
+    padding: clamp(50px, 9vw, 110px) var(--padding-laterale) clamp(30px, 4vw, 48px);
+    max-width: 46rem;
+  }
+
+  .errore__titolo {
+    font-size: var(--titolo-elenco);
+    line-height: 1.05;
+    letter-spacing: -1.2px;
+    padding-top: var(--spazio-3);
+  }
+
+  .errore__testo {
+    font-size: clamp(15px, 1.3vw, 17px);
+    line-height: 1.55;
+    color: var(--colore-testo-tenue);
+    padding-top: var(--spazio-5);
+  }
+
+  .errore__sezioni {
+    display: flex;
+    gap: 9px;
+    flex-wrap: wrap;
+    padding-top: var(--spazio-6);
+  }
+
+  .errore__suggeriti {
+    padding: 0 var(--padding-laterale);
+  }
+
+  .errore__griglia {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: clamp(20px, 2.4vw, 30px);
+  }
+</style>

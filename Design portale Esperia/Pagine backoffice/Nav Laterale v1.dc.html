@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<div style="width:230px;flex-shrink:0;background:#211d18;color:#faf7f0;display:flex;flex-direction:column;padding:22px 0;position:sticky;top:0;height:100vh;box-sizing:border-box">
+  <div style="padding:0 22px 18px;border-bottom:1px solid #3a352c;display:flex;flex-direction:column;gap:3px">
+    <div style="font-family:'Newsreader',serif;font-size:22px;font-weight:800;letter-spacing:-0.5px">Esperia</div>
+    <div style="font-size:9.5px;font-weight:700;letter-spacing:2px;color:#6fb5bd">REDAZIONE</div>
+  </div>
+  <div style="display:flex;flex-direction:column;gap:2px;padding:16px 12px;flex:1">
+    <sc-for list="{{ items }}" as="it" hint-placeholder-count="8">
+      <div onClick="{{ it.go }}" style="display:flex;align-items:center;gap:9px;font-size:12.5px;font-weight:600;padding:9px 12px;border-radius:8px;cursor:pointer;background:{{ it.bg }};color:{{ it.fg }}" style-hover="background:#3a352c">
+        <span style="flex:1">{{ it.label }}</span>
+        <span style="font-size:10px;font-weight:700;color:{{ it.countFg }}">{{ it.count }}</span>
+      </div>
+    </sc-for>
+  </div>
+  <div style="display:flex;align-items:center;gap:10px;padding:16px 22px;border-top:1px solid #3a352c">
+    <div style="width:30px;height:30px;border-radius:50%;flex:0 0 30px;background:repeating-linear-gradient(45deg,#4a443a 0 4px,#3a352c 4px 8px)"></div>
+    <div style="display:flex;flex-direction:column;gap:1px;min-width:0">
+      <div style="font-size:12px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ userName }}</div>
+      <div style="font-size:10px;color:#a49b8b;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ userRole }}</div>
+    </div>
+  </div>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:230,&quot;height&quot;:640},&quot;active&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;Dashboard&quot;,&quot;Articoli&quot;,&quot;Hot topic AI&quot;,&quot;Media&quot;,&quot;Categorie e tag&quot;,&quot;Moderazione&quot;,&quot;Utenti&quot;,&quot;Impostazioni&quot;],&quot;default&quot;:&quot;Articoli&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;userName&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;Emanuele Ragusa&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;userRole&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;Caposervizio · Politica&quot;,&quot;tsType&quot;:&quot;string&quot;}}">
+class Component extends DCLogic {
+  state = { active: null };
+  renderVals() {
+    const active = this.state.active || this.props.active || 'Articoli';
+    const defs = [
+      ['Dashboard', ''], ['Articoli', '38'], ['Hot topic AI', '6'], ['Media', ''],
+      ['Categorie e tag', ''], ['Moderazione', '12'], ['Utenti', ''], ['Impostazioni', '']
+    ];
+    return {
+      userName: this.props.userName ?? 'Emanuele Ragusa',
+      userRole: this.props.userRole ?? 'Caposervizio · Politica',
+      items: defs.map(([label, count]) => {
+        const on = label === active;
+        return {
+          label, count,
+          bg: on ? '#1d5c63' : 'transparent',
+          fg: on ? '#faf7f0' : '#a49b8b',
+          countFg: on ? '#bfe3e6' : '#6b6459',
+          go: () => this.setState({ active: label })
+        };
+      })
+    };
+  }
+}
+
+</script>
+</body>
+</html>

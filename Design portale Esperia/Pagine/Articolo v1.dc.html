@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet data-dc-atomics>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600;6..72,700;6..72,800&display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#faf7f0;font-family:Archivo,sans-serif;color:#211d18}
+a{color:#b3261e;text-decoration:underline;text-underline-offset:3px;text-decoration-color:#e0b6b2}
+a:hover{color:#8f1e17;text-decoration-color:#b3261e}
+input::placeholder,textarea::placeholder{color:#8a8378}
+</style>
+</helmet>
+
+<div style="min-height:100vh;background:#faf7f0;padding-bottom:40px">
+<div style="max-width:1280px;margin:0 auto">
+
+  <!-- ============ HEADER ============ -->
+  <div style="display:flex;align-items:center;gap:18px;flex-wrap:wrap;padding:18px clamp(16px,3vw,40px);border-bottom:1px solid #e6dfd1">
+    <div style="font-family:'Newsreader',serif;font-size:26px;font-weight:800;letter-spacing:-0.5px;cursor:pointer">Esperia</div>
+    <div style="display:flex;gap:clamp(12px,1.6vw,20px);font-size:13px;font-weight:600;color:#5c554a;flex-wrap:wrap;flex:1;min-width:200px">
+      <span style="color:#b3261e;cursor:pointer">Politica</span>
+      <span style="cursor:pointer" style-hover="color:#b3261e">Mondo</span>
+      <span style="cursor:pointer" style-hover="color:#b3261e">Economia</span>
+      <span style="cursor:pointer" style-hover="color:#b3261e">Cultura</span>
+      <span style="cursor:pointer" style-hover="color:#b3261e">Opinioni</span>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px;background:#f1ebdd;border-radius:999px;padding:8px 14px;flex:0 1 200px;min-width:120px">
+      <span style="font-size:13px;color:#8a8378">⌕</span>
+      <input placeholder="Cerca su Esperia" style="background:none;border:none;outline:none;font-size:12px;color:#211d18;font-family:Archivo,sans-serif;width:100%">
+    </div>
+    <div style="display:flex;align-items:center;gap:8px;font-size:12.5px;font-weight:600;white-space:nowrap;color:#211d18">
+      <span style="cursor:pointer" style-hover="color:#b3261e">Accedi</span>
+      <span style="color:#cdc4b2">/</span>
+      <span style="cursor:pointer;text-decoration:underline;text-decoration-color:#cdc4b2;text-underline-offset:3px" style-hover="color:#b3261e">Registrati</span>
+    </div>
+  </div>
+
+  <!-- ============ TESTATA ARTICOLO ============ -->
+  <div style="max-width:760px;margin:0 auto;padding:clamp(26px,4vw,48px) clamp(18px,4vw,40px) 0">
+    <div style="display:flex;align-items:center;gap:8px;font-size:10.5px;font-weight:700;letter-spacing:2px;color:#b3261e;padding-bottom:16px">
+      <span style="cursor:pointer" style-hover="color:#8f1e17">POLITICA</span>
+      <span style="color:#cdc4b2">›</span>
+      <span style="color:#8a8378">MANOVRA 2027</span>
+    </div>
+    <h1 style="margin:0;font-family:'Newsreader',serif;font-size:clamp(30px,4.4vw,54px);line-height:1.07;font-weight:700;letter-spacing:-1px;text-wrap:pretty">Manovra, il governo trova l'intesa sul taglio dell'Irpef per il ceto medio</h1>
+    <div style="font-family:'Newsreader',serif;font-size:clamp(18px,1.8vw,23px);line-height:1.42;font-weight:400;color:#5c554a;padding-top:16px;text-wrap:pretty">Seconda aliquota al 33% fino a 60 mila euro, coperture da banche e assicurazioni. Le opposizioni annunciano battaglia in commissione Bilancio.</div>
+
+    <div style="display:flex;align-items:flex-start;gap:20px;flex-wrap:wrap;padding:26px 0 24px;border-bottom:1px solid #e6dfd1;margin-top:6px">
+      <div style="display:flex;align-items:center;gap:11px;flex:1;min-width:250px">
+        <div style="width:40px;height:40px;border-radius:50%;flex:0 0 40px;background:repeating-linear-gradient(45deg,#e0d8c8 0 4px,#efe9dc 4px 8px)"></div>
+        <div style="display:flex;flex-direction:column;gap:3px">
+          <div style="font-size:13.5px;font-weight:700">Emanuele Ragusa</div>
+          <div style="display:flex;gap:7px;flex-wrap:wrap;font-size:11.5px;color:#8a8378">
+            <span>27 agosto 2026, 07:15</span>
+            <span>·</span>
+            <span>8 min di lettura</span>
+          </div>
+          <div style="font-size:11px;color:#a39c90;font-style:italic">Aggiornato il 27 agosto 2026 alle 11:48</div>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px">
+        <div style="width:34px;height:34px;border-radius:50%;border:1px solid #e0d8c8;display:flex;align-items:center;justify-content:center;font-size:13px;color:#5c554a;cursor:pointer" style-hover="border-color:#211d18;color:#211d18">✉</div>
+        <div style="width:34px;height:34px;border-radius:50%;border:1px solid #e0d8c8;display:flex;align-items:center;justify-content:center;font-size:13px;color:#5c554a;cursor:pointer" style-hover="border-color:#211d18;color:#211d18">↗</div>
+        <div style="width:34px;height:34px;border-radius:50%;border:1px solid #e0d8c8;display:flex;align-items:center;justify-content:center;font-size:13px;color:#5c554a;cursor:pointer" style-hover="border-color:#211d18;color:#211d18">⌘</div>
+        <div onClick="{{ toggleSave }}" style="width:34px;height:34px;border-radius:50%;border:1px solid #e0d8c8;display:flex;align-items:center;justify-content:center;font-size:13px;color:{{ saveColor }};cursor:pointer" style-hover="border-color:#211d18">☆</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ IMMAGINE DI APERTURA (più larga del testo) ============ -->
+  <div style="max-width:1000px;margin:0 auto;padding:clamp(22px,3vw,34px) clamp(18px,4vw,40px) 0">
+    <div style="height:clamp(200px,34vw,420px)"><x-import component-from-global-scope="image-slot" from="./image-slot.js" id="av1-hero" shape="rounded" radius="14" placeholder="foto apertura: Palazzo Chigi, notte" hint-size="100%,420px"></x-import></div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;padding-top:10px;font-size:11.5px;color:#8a8378;line-height:1.5">
+      <span>Il vertice a Palazzo Chigi si è chiuso poco dopo le due di notte.</span>
+      <span style="color:#a39c90">Foto: Alessio Bruni / Esperia</span>
+    </div>
+  </div>
+
+  <!-- ============ CORPO ============ -->
+  <div style="max-width:680px;margin:0 auto;padding:clamp(26px,3.4vw,40px) clamp(18px,5vw,40px) 0;font-size:clamp(17px,1.45vw,18.5px);line-height:1.72;color:#2b261f">
+    <p style="margin:0 0 22px"><span style="font-family:'Newsreader',serif;font-size:1.35em;font-weight:600">L'intesa</span> è arrivata poco dopo le due di notte, dopo sei ore di riunione a Palazzo Chigi. Il taglio della seconda aliquota Irpef dal 35 al 33 per cento salirà fino a 60 mila euro di reddito, un perimetro più ampio di quello discusso nella bozza tecnica di lunedì.</p>
+    <p style="margin:0 0 22px">Il costo dell'intervento è stimato in 4,2 miliardi per il primo anno. Le coperture, secondo la nota diffusa dal Mef, arriveranno per metà dal contributo di banche e assicurazioni e per il resto dalla revisione delle detrazioni sopra i 120 mila euro.</p>
+
+    <h2 style="margin:34px 0 14px;font-family:'Newsreader',serif;font-size:clamp(24px,2.4vw,29px);line-height:1.22;font-weight:700;letter-spacing:-0.3px;text-wrap:pretty">Il nodo delle coperture</h2>
+    <p style="margin:0 0 22px">Il contributo del settore creditizio resta la parte più fragile del quadro. L'Abi ha chiesto garanzie sulla natura temporanea del prelievo, mentre il viceministro all'Economia parla di «un accordo già scritto nei numeri». Le simulazioni della Ragioneria, pubblicate insieme alla <a href="#">relazione tecnica al disegno di legge</a>, indicano un effetto netto positivo sul gettito solo a partire dal 2028.</p>
+
+    <div style="margin:34px calc(-1 * clamp(0px,6vw,120px));padding:clamp(22px,3vw,32px) clamp(18px,4vw,40px);background:#f1ebdd;border-radius:14px">
+      <div style="font-family:'Newsreader',serif;font-size:clamp(21px,2.4vw,28px);line-height:1.34;font-weight:600;font-style:italic;text-wrap:pretty">«Non è una manovra elettorale: è la prima volta che il ceto medio entra davvero nel perimetro della riduzione fiscale.»</div>
+      <div style="padding-top:14px;font-size:12px;font-weight:700;letter-spacing:1.4px;color:#8a8378">IL MINISTRO DELL'ECONOMIA, IN CONFERENZA STAMPA</div>
+    </div>
+
+    <p style="margin:0 0 22px">Nel testo entrano anche due misure attese dagli enti locali: la proroga del fondo per le aree interne e il rifinanziamento del trasporto pubblico regionale, quest'ultimo con una dotazione ridotta rispetto al 2026.</p>
+
+    <h2 style="margin:34px 0 14px;font-family:'Newsreader',serif;font-size:clamp(24px,2.4vw,29px);line-height:1.22;font-weight:700;letter-spacing:-0.3px;text-wrap:pretty">Cosa cambia in busta paga</h2>
+    <ul style="margin:0 0 22px;padding-left:22px">
+      <li style="margin-bottom:10px">Redditi fino a 28 mila euro: nessuna variazione rispetto al 2026.</li>
+      <li style="margin-bottom:10px">Tra 28 e 50 mila euro: risparmio medio stimato di 440 euro annui.</li>
+      <li style="margin-bottom:10px">Tra 50 e 60 mila euro: beneficio pieno di 660 euro, il più alto della curva.</li>
+      <li style="margin-bottom:0">Oltre 120 mila euro: il vantaggio è riassorbito dal taglio delle detrazioni.</li>
+    </ul>
+
+    <div style="margin:32px 0">
+      <div style="height:clamp(180px,26vw,300px)"><x-import component-from-global-scope="image-slot" from="./image-slot.js" id="av1-inline" shape="rounded" radius="12" placeholder="foto: aula commissione Bilancio" hint-size="100%,300px"></x-import></div>
+      <div style="display:flex;flex-direction:column;gap:3px;padding-top:9px">
+        <div style="font-size:12.5px;line-height:1.5;color:#5c554a">La commissione Bilancio della Camera durante l'esame preliminare del provvedimento.</div>
+        <div style="font-size:11px;color:#a39c90">Foto: Chiara Vitali / Ansa</div>
+      </div>
+    </div>
+
+    <p style="margin:0 0 22px">L'esame parlamentare partirà martedì. Le opposizioni hanno già annunciato oltre milleduecento emendamenti, concentrati su sanità e contratti pubblici; la maggioranza punta all'approvazione entro il 20 dicembre.</p>
+    <p style="margin:0 0 22px">Resta aperta la partita sulle pensioni, rinviata a un tavolo tecnico che si riunirà la prossima settimana.</p>
+
+    <!-- TAG -->
+    <div style="display:flex;gap:9px;flex-wrap:wrap;padding:30px 0 0;border-top:1px solid #e6dfd1;margin-top:36px">
+      <span style="font-size:12px;font-weight:600;background:#f1ebdd;border-radius:999px;padding:7px 14px;cursor:pointer" style-hover="background:#211d18;color:#faf7f0">Manovra 2027</span>
+      <span style="font-size:12px;font-weight:600;background:#f1ebdd;border-radius:999px;padding:7px 14px;cursor:pointer" style-hover="background:#211d18;color:#faf7f0">Irpef</span>
+      <span style="font-size:12px;font-weight:600;background:#f1ebdd;border-radius:999px;padding:7px 14px;cursor:pointer" style-hover="background:#211d18;color:#faf7f0">Palazzo Chigi</span>
+      <span style="font-size:12px;font-weight:600;background:#f1ebdd;border-radius:999px;padding:7px 14px;cursor:pointer" style-hover="background:#211d18;color:#faf7f0">Fisco</span>
+      <span style="font-size:12px;font-weight:600;background:#f1ebdd;border-radius:999px;padding:7px 14px;cursor:pointer" style-hover="background:#211d18;color:#faf7f0">Commissione Bilancio</span>
+    </div>
+  </div>
+
+  <!-- ============ ARTICOLI CORRELATI ============ -->
+  <div style="padding:clamp(34px,4vw,52px) clamp(16px,3vw,40px) 0">
+    <div style="display:flex;align-items:center;gap:14px;padding-bottom:22px">
+      <div style="font-size:10.5px;font-weight:700;letter-spacing:2px;color:#8a8378">ARTICOLI CORRELATI</div>
+      <div style="height:1px;background:#e6dfd1;flex:1"></div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:clamp(20px,2.4vw,30px)">
+      <div style="display:flex;flex-direction:column;gap:11px;cursor:pointer" style-hover="opacity:.85">
+        <div style="height:170px"><x-import component-from-global-scope="image-slot" from="./image-slot.js" id="av1-rel1" shape="rounded" radius="12" placeholder="foto: sportello bancario" hint-size="100%,170px"></x-import></div>
+        <div style="font-size:10px;font-weight:700;letter-spacing:2px;color:#b3261e">ECONOMIA</div>
+        <div style="font-family:'Newsreader',serif;font-size:22px;line-height:1.22;font-weight:600;text-wrap:pretty">Contributo delle banche, l'Abi chiede garanzie sulla durata del prelievo</div>
+        <div style="font-size:13.5px;line-height:1.5;color:#5c554a">Il nodo della temporaneità torna al centro del confronto con il Mef.</div>
+        <div style="display:flex;align-items:center;gap:8px;font-size:11.5px;color:#8a8378">
+          <div style="width:24px;height:24px;border-radius:50%;background:repeating-linear-gradient(45deg,#e0d8c8 0 4px,#efe9dc 4px 8px)"></div>
+          <span style="color:#211d18;font-weight:700">Elena Costa</span><span>· 27 ago · 5 min</span>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:11px;cursor:pointer" style-hover="opacity:.85">
+        <div style="height:170px"><x-import component-from-global-scope="image-slot" from="./image-slot.js" id="av1-rel2" shape="rounded" radius="12" placeholder="foto: aula del Senato" hint-size="100%,170px"></x-import></div>
+        <div style="font-size:10px;font-weight:700;letter-spacing:2px;color:#b3261e">POLITICA</div>
+        <div style="font-family:'Newsreader',serif;font-size:22px;line-height:1.22;font-weight:600;text-wrap:pretty">Milleduecento emendamenti: la strategia delle opposizioni sulla sanità</div>
+        <div style="font-size:13.5px;line-height:1.5;color:#5c554a">Il calendario dei lavori porta il voto finale a metà dicembre.</div>
+        <div style="display:flex;align-items:center;gap:8px;font-size:11.5px;color:#8a8378">
+          <div style="width:24px;height:24px;border-radius:50%;background:repeating-linear-gradient(45deg,#e0d8c8 0 4px,#efe9dc 4px 8px)"></div>
+          <span style="color:#211d18;font-weight:700">Emanuele Ragusa</span><span>· 26 ago · 4 min</span>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:11px;cursor:pointer" style-hover="opacity:.85">
+        <div style="height:170px"><x-import component-from-global-scope="image-slot" from="./image-slot.js" id="av1-rel3" shape="rounded" radius="12" placeholder="foto: borgo appenninico" hint-size="100%,170px"></x-import></div>
+        <div style="font-size:10px;font-weight:700;letter-spacing:2px;color:#b3261e">CRONACA</div>
+        <div style="font-family:'Newsreader',serif;font-size:22px;line-height:1.22;font-weight:600;text-wrap:pretty">Aree interne, il fondo prorogato di un anno: i sindaci chiedono di più</div>
+        <div style="font-size:13.5px;line-height:1.5;color:#5c554a">Anci stima 320 comuni con bilanci in sofferenza già nel 2027.</div>
+        <div style="display:flex;align-items:center;gap:8px;font-size:11.5px;color:#8a8378">
+          <div style="width:24px;height:24px;border-radius:50%;background:repeating-linear-gradient(45deg,#e0d8c8 0 4px,#efe9dc 4px 8px)"></div>
+          <span style="color:#211d18;font-weight:700">Luca Ferraro</span><span>· 26 ago · 6 min</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ COMMENTI ============ -->
+  <div style="max-width:760px;margin:0 auto;padding:clamp(36px,4.5vw,56px) clamp(18px,4vw,40px) 0">
+    <div style="display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;padding-bottom:20px">
+      <div style="font-size:10.5px;font-weight:700;letter-spacing:2px;color:#8a8378">COMMENTI</div>
+      <div style="font-size:10.5px;font-weight:700;letter-spacing:2px;color:#b3261e">{{ commentCount }}</div>
+      <div style="height:1px;background:#e6dfd1;flex:1"></div>
+      <div onClick="{{ toggleAuth }}" style="font-size:11px;color:#a39c90;cursor:pointer;border-bottom:1px dotted #cdc4b2" style-hover="color:#211d18">vista prototipo: {{ authLabel }}</div>
+    </div>
+
+    <!-- variante: non autenticato -->
+    <sc-if value="{{ isGuest }}" hint-placeholder-val="{{ false }}">
+    <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;border:1px solid #e6dfd1;border-radius:12px;padding:20px 22px;margin-bottom:8px">
+      <div style="flex:1;min-width:220px;font-size:13.5px;line-height:1.55;color:#5c554a">Per partecipare alla discussione accedi al tuo profilo Esperia, oppure registrati: i commenti restano leggibili a tutti.</div>
+      <div style="display:flex;align-items:center;gap:10px;font-size:13px;font-weight:700">
+        <span onClick="{{ toggleAuth }}" style="cursor:pointer;color:#b3261e" style-hover="color:#8f1e17">Accedi</span>
+        <span style="color:#cdc4b2">/</span>
+        <span style="cursor:pointer;text-decoration:underline;text-underline-offset:3px;text-decoration-color:#cdc4b2" style-hover="color:#b3261e">Registrati</span>
+      </div>
+    </div>
+    </sc-if>
+
+    <!-- variante: autenticato -->
+    <sc-if value="{{ isAuth }}" hint-placeholder-val="{{ true }}">
+    <div style="display:flex;gap:12px;align-items:flex-start;padding-bottom:8px">
+      <div style="width:38px;height:38px;border-radius:50%;flex:0 0 38px;background:#211d18;color:#faf7f0;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700">GC</div>
+      <div style="flex:1;display:flex;flex-direction:column;gap:10px;border:1px solid #e0d8c8;border-radius:12px;padding:14px 16px;background:#fffdf8">
+        <textarea placeholder="Scrivi un commento — resta nel merito dell'articolo" style="border:none;outline:none;resize:vertical;background:none;font-family:Archivo,sans-serif;font-size:13.5px;line-height:1.6;color:#211d18;min-height:64px;width:100%"></textarea>
+        <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;border-top:1px solid #f1ebdd;padding-top:11px">
+          <div style="font-size:11.5px;color:#8a8378;flex:1;min-width:150px">Commenti come <span style="color:#211d18;font-weight:700">Giorgio Caruso</span> · 1500 caratteri</div>
+          <div style="font-size:12.5px;font-weight:700;background:#211d18;color:#faf7f0;border-radius:999px;padding:9px 20px;cursor:pointer" style-hover="background:#3d372e">Pubblica</div>
+        </div>
+      </div>
+    </div>
+    </sc-if>
+
+    <!-- elenco commenti -->
+    <div style="display:flex;flex-direction:column">
+      <div style="display:flex;gap:12px;align-items:flex-start;padding:20px 0;border-top:1px solid #e6dfd1">
+        <div style="width:36px;height:36px;border-radius:50%;flex:0 0 36px;background:repeating-linear-gradient(45deg,#e0d8c8 0 4px,#efe9dc 4px 8px)"></div>
+        <div style="flex:1;display:flex;flex-direction:column;gap:7px">
+          <div style="display:flex;gap:8px;align-items:baseline;flex-wrap:wrap">
+            <span style="font-size:13px;font-weight:700">Paolo Marchetti</span>
+            <span style="font-size:11.5px;color:#8a8378">2 ore fa</span>
+          </div>
+          <div style="font-size:13.5px;line-height:1.62;color:#2b261f">Il punto vero è la copertura: se il contributo delle banche è una tantum, l'anno prossimo il buco torna. Sarebbe utile un articolo sul 2028.</div>
+          <div style="display:flex;gap:16px;align-items:center;font-size:11.5px;color:#8a8378;padding-top:1px">
+            <span onClick="{{ like1 }}" style="cursor:pointer;display:flex;align-items:center;gap:5px;color:{{ like1Color }}" style-hover="color:#211d18">Mi piace · {{ like1Count }}</span>
+            <span style="cursor:pointer" style-hover="color:#211d18">Rispondi</span>
+            <span onClick="{{ openReport }}" style="cursor:pointer" style-hover="color:#b3261e">Segnala</span>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex;gap:12px;align-items:flex-start;padding:20px 0 20px clamp(16px,4vw,48px);border-top:1px solid #e6dfd1;border-left:2px solid #e6dfd1;margin-left:clamp(12px,3vw,26px)">
+        <div style="width:30px;height:30px;border-radius:50%;flex:0 0 30px;background:repeating-linear-gradient(45deg,#e0d8c8 0 4px,#efe9dc 4px 8px)"></div>
+        <div style="flex:1;display:flex;flex-direction:column;gap:7px">
+          <div style="display:flex;gap:8px;align-items:baseline;flex-wrap:wrap">
+            <span style="font-size:12.5px;font-weight:700">Emanuele Ragusa</span>
+            <span style="font-size:10px;font-weight:700;letter-spacing:1px;background:#f1ebdd;color:#5c554a;border-radius:4px;padding:2px 6px">REDAZIONE</span>
+            <span style="font-size:11.5px;color:#8a8378">1 ora fa</span>
+          </div>
+          <div style="font-size:13px;line-height:1.62;color:#2b261f">Grazie, ci stiamo lavorando: la relazione della Ragioneria sul 2028 è attesa a settembre e la analizzeremo.</div>
+          <div style="display:flex;gap:16px;align-items:center;font-size:11.5px;color:#8a8378">
+            <span onClick="{{ like2 }}" style="cursor:pointer;display:flex;align-items:center;gap:5px;color:{{ like2Color }}" style-hover="color:#211d18">Mi piace · {{ like2Count }}</span>
+            <span style="cursor:pointer" style-hover="color:#211d18">Rispondi</span>
+            <span onClick="{{ openReport }}" style="cursor:pointer" style-hover="color:#b3261e">Segnala</span>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex;gap:12px;align-items:flex-start;padding:20px 0;border-top:1px solid #e6dfd1">
+        <div style="width:36px;height:36px;border-radius:50%;flex:0 0 36px;background:repeating-linear-gradient(45deg,#e0d8c8 0 4px,#efe9dc 4px 8px)"></div>
+        <div style="flex:1;display:flex;flex-direction:column;gap:7px">
+          <div style="display:flex;gap:8px;align-items:baseline;flex-wrap:wrap">
+            <span style="font-size:13px;font-weight:700">Silvia D'Amico</span>
+            <span style="font-size:11.5px;color:#8a8378">3 ore fa</span>
+          </div>
+          <div style="font-size:13.5px;line-height:1.62;color:#2b261f">Nella tabella manca il caso dei redditi da pensione: con le detrazioni riviste il beneficio si azzera già a 40 mila euro. Utile approfondirlo.</div>
+          <div style="display:flex;gap:16px;align-items:center;font-size:11.5px;color:#8a8378">
+            <span onClick="{{ like3 }}" style="cursor:pointer;display:flex;align-items:center;gap:5px;color:{{ like3Color }}" style-hover="color:#211d18">Mi piace · {{ like3Count }}</span>
+            <span style="cursor:pointer" style-hover="color:#211d18">Rispondi</span>
+            <span onClick="{{ openReport }}" style="cursor:pointer" style-hover="color:#b3261e">Segnala</span>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex;gap:12px;align-items:flex-start;padding:20px 0;border-top:1px solid #e6dfd1;border-bottom:1px solid #e6dfd1">
+        <div style="width:36px;height:36px;border-radius:50%;flex:0 0 36px;background:repeating-linear-gradient(45deg,#e0d8c8 0 4px,#efe9dc 4px 8px)"></div>
+        <div style="flex:1;display:flex;flex-direction:column;gap:7px">
+          <div style="display:flex;gap:8px;align-items:baseline;flex-wrap:wrap">
+            <span style="font-size:13px;font-weight:700">Nicola Ferrero</span>
+            <span style="font-size:11.5px;color:#8a8378">ieri</span>
+          </div>
+          <div style="font-size:13.5px;line-height:1.62;color:#2b261f">Sul trasporto pubblico regionale la dotazione scende, e nei comuni sotto i cinquemila abitanti questo pesa più del taglio Irpef.</div>
+          <div style="display:flex;gap:16px;align-items:center;font-size:11.5px;color:#8a8378">
+            <span onClick="{{ like4 }}" style="cursor:pointer;display:flex;align-items:center;gap:5px;color:{{ like4Color }}" style-hover="color:#211d18">Mi piace · {{ like4Count }}</span>
+            <span style="cursor:pointer" style-hover="color:#211d18">Rispondi</span>
+            <span onClick="{{ openReport }}" style="cursor:pointer" style-hover="color:#b3261e">Segnala</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div style="padding-top:18px">
+      <span style="font-size:13px;font-weight:600;color:#b3261e;border-bottom:1px solid #b3261e;padding-bottom:2px;cursor:pointer" style-hover="color:#8f1e17">Mostra altri 8 commenti</span>
+    </div>
+  </div>
+
+  <!-- ============ FOOTER ============ -->
+  <div style="margin:clamp(40px,5vw,64px) clamp(16px,3vw,40px) 0;padding-top:30px;border-top:1px solid #e6dfd1">
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:clamp(20px,3vw,40px)">
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <div style="font-family:'Newsreader',serif;font-size:24px;font-weight:800;letter-spacing:-0.5px">Esperia</div>
+        <div style="font-size:12px;line-height:1.5;color:#8a8378;max-width:26ch">Quotidiano online di politica e attualità. Registrazione Tribunale di Roma n. 214/2024.</div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:9px">
+        <div style="font-size:10px;font-weight:700;letter-spacing:1.8px;color:#8a8378">CATEGORIE</div>
+        <span style="font-size:13px;cursor:pointer;color:#211d18" style-hover="color:#b3261e">Politica</span>
+        <span style="font-size:13px;cursor:pointer;color:#211d18" style-hover="color:#b3261e">Mondo</span>
+        <span style="font-size:13px;cursor:pointer;color:#211d18" style-hover="color:#b3261e">Economia</span>
+        <span style="font-size:13px;cursor:pointer;color:#211d18" style-hover="color:#b3261e">Cultura</span>
+        <span style="font-size:13px;cursor:pointer;color:#211d18" style-hover="color:#b3261e">Opinioni</span>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:9px">
+        <div style="font-size:10px;font-weight:700;letter-spacing:1.8px;color:#8a8378">TESTATA</div>
+        <span style="font-size:13px;cursor:pointer;color:#211d18" style-hover="color:#b3261e">Chi siamo</span>
+        <span style="font-size:13px;cursor:pointer;color:#211d18" style-hover="color:#b3261e">Contatti</span>
+        <span style="font-size:13px;cursor:pointer;color:#211d18" style-hover="color:#b3261e">Privacy policy</span>
+        <span style="font-size:13px;cursor:pointer;color:#211d18" style-hover="color:#b3261e">Cookie policy</span>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:9px">
+        <div style="font-size:10px;font-weight:700;letter-spacing:1.8px;color:#8a8378">SEGUI ESPERIA</div>
+        <span style="font-size:13px;cursor:pointer;color:#211d18;display:flex;align-items:center;gap:7px" style-hover="color:#b3261e"><span style="font-size:10px;font-weight:700;letter-spacing:0.5px;background:#e8b04b;color:#211d18;border-radius:4px;padding:2px 6px">RSS</span> Feed RSS</span>
+        <span style="font-size:13px;cursor:pointer;color:#211d18" style-hover="color:#b3261e">Newsletter</span>
+        <span style="font-size:13px;cursor:pointer;color:#211d18" style-hover="color:#b3261e">Community</span>
+      </div>
+    </div>
+    <div style="display:flex;flex-wrap:wrap;gap:8px 20px;padding:26px 0 8px;font-size:11.5px;color:#8a8378;border-top:1px solid #e6dfd1;margin-top:28px">
+      <span>© 2026 Esperia Editoriale S.r.l. — P. IVA 04871230581 — Via dei Serpenti 42, 00184 Roma</span>
+      <span>Direttore responsabile: Emanuele Ragusa</span>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<!-- ============ PANNELLO SEGNALAZIONE ============ -->
+<sc-if value="{{ reportOpen }}" hint-placeholder-val="{{ false }}">
+<div style="position:fixed;inset:0;background:rgba(33,29,24,.42);display:flex;align-items:center;justify-content:center;padding:clamp(12px,2vw,24px);z-index:60">
+  <div style="width:100%;max-width:520px;background:#faf7f0;border-radius:14px;padding:clamp(20px,2.4vw,28px);display:flex;flex-direction:column;gap:16px;box-shadow:0 22px 50px rgba(33,29,24,.32);max-height:90vh;overflow:auto">
+    <sc-if value="{{ reportSent }}" hint-placeholder-val="{{ false }}">
+      <div style="display:flex;flex-direction:column;gap:12px;align-items:flex-start">
+        <div style="font-family:'Newsreader',serif;font-size:24px;font-weight:700">Segnalazione inviata</div>
+        <div style="font-size:13.5px;line-height:1.6;color:#5c554a">La moderazione esamina le segnalazioni entro 24 ore. Se il commento viene rimosso ne riceverai notifica.</div>
+        <div onClick="{{ closeReport }}" style="font-size:13px;font-weight:700;background:#211d18;color:#faf7f0;border-radius:999px;padding:11px 22px;cursor:pointer" style-hover="background:#3d372e">Chiudi</div>
+      </div>
+    </sc-if>
+    <sc-if value="{{ reportForm }}" hint-placeholder-val="{{ true }}">
+      <div style="display:flex;flex-direction:column;gap:16px">
+        <div style="display:flex;flex-direction:column;gap:5px">
+          <div style="font-family:'Newsreader',serif;font-size:24px;font-weight:700">Segnala il commento</div>
+          <div style="font-size:12.5px;color:#8a8378;line-height:1.5">Commento di <span style="color:#211d18;font-weight:700">Paolo Marchetti</span> · seleziona una motivazione.</div>
+        </div>
+        <div style="display:flex;flex-direction:column">
+          <div onClick="{{ pickR1 }}" style="display:flex;align-items:center;gap:12px;padding:13px 0;border-top:1px solid #e6dfd1;cursor:pointer">
+            <div style="width:17px;height:17px;border-radius:50%;border:1px solid #cdc4b2;flex:0 0 17px;display:flex;align-items:center;justify-content:center;background:{{ r1Fill }}"><div style="width:6px;height:6px;border-radius:50%;background:{{ r1Dot }}"></div></div>
+            <div style="font-size:13.5px">Offese o linguaggio d'odio</div>
+          </div>
+          <div onClick="{{ pickR2 }}" style="display:flex;align-items:center;gap:12px;padding:13px 0;border-top:1px solid #e6dfd1;cursor:pointer">
+            <div style="width:17px;height:17px;border-radius:50%;border:1px solid #cdc4b2;flex:0 0 17px;display:flex;align-items:center;justify-content:center;background:{{ r2Fill }}"><div style="width:6px;height:6px;border-radius:50%;background:{{ r2Dot }}"></div></div>
+            <div style="font-size:13.5px">Spam o contenuto promozionale</div>
+          </div>
+          <div onClick="{{ pickR3 }}" style="display:flex;align-items:center;gap:12px;padding:13px 0;border-top:1px solid #e6dfd1;cursor:pointer">
+            <div style="width:17px;height:17px;border-radius:50%;border:1px solid #cdc4b2;flex:0 0 17px;display:flex;align-items:center;justify-content:center;background:{{ r3Fill }}"><div style="width:6px;height:6px;border-radius:50%;background:{{ r3Dot }}"></div></div>
+            <div style="font-size:13.5px">Informazioni false o fuorvianti</div>
+          </div>
+          <div onClick="{{ pickR4 }}" style="display:flex;align-items:center;gap:12px;padding:13px 0;border-top:1px solid #e6dfd1;border-bottom:1px solid #e6dfd1;cursor:pointer">
+            <div style="width:17px;height:17px;border-radius:50%;border:1px solid #cdc4b2;flex:0 0 17px;display:flex;align-items:center;justify-content:center;background:{{ r4Fill }}"><div style="width:6px;height:6px;border-radius:50%;background:{{ r4Dot }}"></div></div>
+            <div style="font-size:13.5px">Dati personali di terzi</div>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:7px">
+          <div style="font-size:11.5px;font-weight:700;letter-spacing:1px;color:#8a8378">NOTA PER LA MODERAZIONE (FACOLTATIVA)</div>
+          <textarea placeholder="Aggiungi un dettaglio utile alla verifica" style="border:1px solid #e0d8c8;border-radius:10px;background:#fffdf8;outline:none;resize:vertical;font-family:Archivo,sans-serif;font-size:13px;line-height:1.6;color:#211d18;min-height:70px;padding:12px 14px"></textarea>
+        </div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end">
+          <div onClick="{{ closeReport }}" style="font-size:13px;font-weight:700;border:1px solid #cdc4b2;border-radius:999px;padding:11px 22px;cursor:pointer" style-hover="border-color:#211d18">Annulla</div>
+          <div onClick="{{ sendReport }}" style="font-size:13px;font-weight:700;background:{{ sendBg }};color:{{ sendColor }};border-radius:999px;padding:11px 22px;cursor:pointer">Invia segnalazione</div>
+        </div>
+      </div>
+    </sc-if>
+  </div>
+</div>
+</sc-if>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;authenticated&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Commenti&quot;}}">
+class Component extends DCLogic {
+  state = { auth: null, saved: false, report: false, sent: false, reason: 0, likes: [24, 11, 9, 5], liked: [false, false, false, false] };
+  like(i) { return () => this.setState(s => {
+    const likes = s.likes.slice(), liked = s.liked.slice();
+    likes[i] += liked[i] ? -1 : 1; liked[i] = !liked[i];
+    return { likes, liked };
+  }); }
+  renderVals() {
+    const auth = this.state.auth === null ? (this.props.authenticated ?? true) : this.state.auth;
+    const s = this.state;
+    const c = i => (s.liked[i] ? '#b3261e' : '#8a8378');
+    return {
+      isAuth: auth, isGuest: !auth,
+      authLabel: auth ? 'utente autenticato' : 'utente non autenticato',
+      toggleAuth: () => this.setState({ auth: !auth }),
+      commentCount: '12',
+      saveColor: s.saved ? '#b3261e' : '#5c554a',
+      toggleSave: () => this.setState(p => ({ saved: !p.saved })),
+      like1: this.like(0), like2: this.like(1), like3: this.like(2), like4: this.like(3),
+      like1Count: s.likes[0], like2Count: s.likes[1], like3Count: s.likes[2], like4Count: s.likes[3],
+      like1Color: c(0), like2Color: c(1), like3Color: c(2), like4Color: c(3),
+      reportOpen: s.report, reportSent: s.report && s.sent, reportForm: s.report && !s.sent,
+      openReport: () => this.setState({ report: true, sent: false, reason: 0 }),
+      closeReport: () => this.setState({ report: false, sent: false }),
+      sendReport: () => { if (s.reason) this.setState({ sent: true }); },
+      pickR1: () => this.setState({ reason: 1 }), pickR2: () => this.setState({ reason: 2 }),
+      pickR3: () => this.setState({ reason: 3 }), pickR4: () => this.setState({ reason: 4 }),
+      r1Fill: s.reason === 1 ? '#b3261e' : 'transparent', r1Dot: s.reason === 1 ? '#faf7f0' : 'transparent',
+      r2Fill: s.reason === 2 ? '#b3261e' : 'transparent', r2Dot: s.reason === 2 ? '#faf7f0' : 'transparent',
+      r3Fill: s.reason === 3 ? '#b3261e' : 'transparent', r3Dot: s.reason === 3 ? '#faf7f0' : 'transparent',
+      r4Fill: s.reason === 4 ? '#b3261e' : 'transparent', r4Dot: s.reason === 4 ? '#faf7f0' : 'transparent',
+      sendBg: s.reason ? '#211d18' : '#e0d8c8', sendColor: s.reason ? '#faf7f0' : '#a39c90'
+    };
+  }
+}
+
+</script>
+</body>
+</html>

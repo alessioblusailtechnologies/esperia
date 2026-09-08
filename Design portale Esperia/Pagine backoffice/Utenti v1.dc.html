@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet data-dc-atomics>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600;6..72,700;6..72,800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#f5f1e8;font-family:Archivo,sans-serif;color:#211d18}
+a{color:#1d5c63;text-decoration:none}
+a:hover{color:#164a50}
+input,select,textarea{font-family:Archivo,sans-serif}
+input::placeholder{color:#a49b8b}
+</style>
+</helmet>
+
+<div style="display:flex;min-height:100vh;background:#f5f1e8;align-items:stretch">
+  <dc-import name="Nav Laterale v1" active="Utenti" style="background:#211d18;align-self:stretch" hint-size="230px,100vh"></dc-import>
+
+  <div style="flex:1;display:flex;flex-direction:column;min-width:0">
+    <dc-import name="Barra Superiore v1" title="Utenti" search-placeholder="Cerca un utente" user-role="AMMINISTRATORE" hint-size="100%,70px"></dc-import>
+
+    <div style="display:flex;gap:0;padding:0 clamp(16px,2.4vw,32px);background:#faf7f0;border-bottom:1px solid #e0d9c8">
+      <div onClick="{{ tabStaff }}" style="font-size:12.5px;font-weight:700;padding:13px 16px;cursor:pointer;color:{{ tab1Color }};border-bottom:2px solid {{ tab1Border }}">Account backoffice · {{ staffCount }}</div>
+      <div onClick="{{ tabCommunity }}" style="font-size:12.5px;font-weight:700;padding:13px 16px;cursor:pointer;color:{{ tab2Color }};border-bottom:2px solid {{ tab2Border }}">Utenti community · {{ commCount }}</div>
+    </div>
+
+    <!-- ================= BACKOFFICE ================= -->
+    <sc-if value="{{ isStaff }}" hint-placeholder-val="{{ true }}">
+    <div style="display:flex;flex-direction:column;gap:12px;padding:18px clamp(16px,2.4vw,32px) 48px">
+      <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+        <div style="font-size:11.5px;color:#8a8378;flex:1;min-width:200px">Gli account redazionali sono creati solo su invito: non esiste registrazione autonoma al backoffice.</div>
+        <div onClick="{{ openInvite }}" style="font-size:12px;font-weight:700;background:#1d5c63;color:#faf7f0;border-radius:8px;padding:10px 16px;cursor:pointer" style-hover="background:#164a50">+ Invita una persona</div>
+      </div>
+
+      <div style="overflow-x:auto">
+        <div style="min-width:820px;display:flex;flex-direction:column">
+          <div style="display:grid;grid-template-columns:1fr 210px 150px 150px 110px;gap:12px;padding:8px 12px;font-size:9.5px;font-weight:700;letter-spacing:1.3px;color:#8a8378">
+            <div>NOME</div><div>EMAIL</div><div>RUOLO</div><div>ULTIMO ACCESSO</div><div>STATO</div>
+          </div>
+          <sc-for list="{{ staff }}" as="u" hint-placeholder-count="5">
+            <div style="display:grid;grid-template-columns:1fr 210px 150px 150px 110px;gap:12px;align-items:center;padding:11px 12px;background:#fffdf8;border:1px solid #e0d9c8;border-bottom:none">
+              <div style="display:flex;align-items:center;gap:10px;min-width:0">
+                <div style="width:28px;height:28px;border-radius:50%;flex:0 0 28px;background:repeating-linear-gradient(45deg,#e0d8c8 0 4px,#efe9dc 4px 8px)"></div>
+                <div style="display:flex;flex-direction:column;gap:1px;min-width:0">
+                  <div style="font-size:13px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ u.name }}</div>
+                  <div style="font-size:10.5px;color:#a49b8b">{{ u.note }}</div>
+                </div>
+              </div>
+              <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#5c554a;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ u.email }}</div>
+              <select value="{{ u.role }}" onChange="{{ u.onRole }}" style="font-size:11.5px;background:#f1ebdd;border:none;outline:none;border-radius:7px;padding:7px 9px;cursor:pointer;color:#211d18">
+                <option value="redattore">Redattore</option>
+                <option value="caporedattore">Caporedattore</option>
+                <option value="amministratore">Amministratore</option>
+              </select>
+              <div style="font-size:11.5px;color:#5c554a">{{ u.last }}</div>
+              <div style="display:flex;align-items:center;gap:12px;justify-content:space-between">
+                <div style="display:flex;align-items:center;gap:6px">
+                  <span style="width:7px;height:7px;border-radius:50%;background:{{ u.dot }}"></span>
+                  <span style="font-size:11.5px;color:#5c554a">{{ u.status }}</span>
+                </div>
+                <span onClick="{{ u.toggle }}" style="font-size:11px;font-weight:700;color:#1d5c63;cursor:pointer;white-space:nowrap" style-hover="color:#164a50">{{ u.action }}</span>
+              </div>
+            </div>
+          </sc-for>
+          <div style="height:1px;background:#e0d9c8"></div>
+        </div>
+      </div>
+    </div>
+    </sc-if>
+
+    <!-- ================= COMMUNITY ================= -->
+    <sc-if value="{{ isCommunity }}" hint-placeholder-val="{{ false }}">
+    <div style="display:flex;flex-direction:column;gap:12px;padding:18px clamp(16px,2.4vw,32px) 48px">
+      <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;background:#faf7f0;border:1px solid #e0d9c8;border-radius:12px;padding:12px 14px">
+        <div style="display:flex;align-items:center;gap:7px;background:#f1ebdd;border-radius:8px;padding:8px 12px;flex:1 1 220px;min-width:170px">
+          <span style="font-size:12px;color:#8a8378">⌕</span>
+          <input value="{{ q }}" onChange="{{ onQ }}" placeholder="Cerca per nome o email" style="background:none;border:none;outline:none;font-size:12.5px;color:#211d18;width:100%">
+        </div>
+        <select value="{{ fStatus }}" onChange="{{ onStatus }}" style="font-size:12.5px;background:#f1ebdd;border:none;outline:none;border-radius:8px;padding:9px 11px;cursor:pointer;color:#211d18;min-width:150px">
+          <option value="">Stato: tutti</option>
+          <option value="attivo">Attivo</option>
+          <option value="bloccato">Bloccato</option>
+          <option value="da confermare">Da confermare</option>
+        </select>
+        <div style="flex:1"></div>
+        <div style="font-size:11.5px;color:#8a8378">{{ commLabel }}</div>
+      </div>
+
+      <div style="overflow-x:auto">
+        <div style="min-width:820px;display:flex;flex-direction:column">
+          <div style="display:grid;grid-template-columns:1fr 210px 130px 90px 190px;gap:12px;padding:8px 12px;font-size:9.5px;font-weight:700;letter-spacing:1.3px;color:#8a8378">
+            <div>NOME VISUALIZZATO</div><div>EMAIL</div><div>ISCRITTO IL</div><div>COMMENTI</div><div>STATO E AZIONI</div>
+          </div>
+          <sc-for list="{{ community }}" as="c" hint-placeholder-count="6">
+            <div style="display:grid;grid-template-columns:1fr 210px 130px 90px 190px;gap:12px;align-items:center;padding:11px 12px;background:#fffdf8;border:1px solid #e0d9c8;border-bottom:none">
+              <div style="display:flex;align-items:center;gap:10px;min-width:0">
+                <div style="width:28px;height:28px;border-radius:50%;flex:0 0 28px;background:repeating-linear-gradient(45deg,#e0d8c8 0 4px,#efe9dc 4px 8px)"></div>
+                <div style="font-size:13px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ c.name }}</div>
+              </div>
+              <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#5c554a;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ c.email }}</div>
+              <div style="font-size:11.5px;color:#5c554a">{{ c.since }}</div>
+              <div style="font-size:12.5px;font-weight:700">{{ c.comments }}</div>
+              <div style="display:flex;align-items:center;gap:10px;justify-content:space-between;flex-wrap:wrap">
+                <div style="display:flex;align-items:center;gap:6px">
+                  <span style="width:7px;height:7px;border-radius:50%;background:{{ c.dot }}"></span>
+                  <span style="font-size:11.5px;color:#5c554a">{{ c.status }}</span>
+                </div>
+                <div style="display:flex;gap:10px">
+                  <span onClick="{{ c.block }}" style="font-size:11px;font-weight:700;color:#1d5c63;cursor:pointer;white-space:nowrap" style-hover="color:#164a50">{{ c.blockLabel }}</span>
+                  <span onClick="{{ c.askDelete }}" style="font-size:11px;font-weight:600;color:#8a8378;cursor:pointer;white-space:nowrap" style-hover="color:#b3261e">Cancella</span>
+                </div>
+              </div>
+            </div>
+          </sc-for>
+          <div style="height:1px;background:#e0d9c8"></div>
+        </div>
+      </div>
+    </div>
+    </sc-if>
+  </div>
+</div>
+
+<!-- ===== PANNELLO INVITO ===== -->
+<sc-if value="{{ inviteOpen }}" hint-placeholder-val="{{ false }}">
+<div style="position:fixed;inset:0;z-index:90;background:rgba(33,29,24,.45);display:flex;align-items:center;justify-content:center;padding:clamp(12px,2vw,24px)">
+  <div style="width:100%;max-width:470px;background:#faf7f0;border:1px solid #e0d9c8;border-radius:14px;padding:20px;display:flex;flex-direction:column;gap:15px;box-shadow:0 22px 50px rgba(33,29,24,.32);max-height:92vh;overflow:auto">
+    <sc-if value="{{ inviteSent }}" hint-placeholder-val="{{ false }}">
+      <div style="display:flex;flex-direction:column;gap:12px;align-items:flex-start">
+        <div style="font-family:'Newsreader',serif;font-size:22px;font-weight:700">Invito inviato</div>
+        <div style="font-size:13px;line-height:1.6;color:#5c554a">{{ inviteSummary }} Il collegamento scade tra 72 ore; l'account risulta «invitato» finché non viene impostata la password.</div>
+        <div onClick="{{ closeInvite }}" style="font-size:12.5px;font-weight:700;background:#1d5c63;color:#faf7f0;border-radius:8px;padding:10px 18px;cursor:pointer" style-hover="background:#164a50">Chiudi</div>
+      </div>
+    </sc-if>
+    <sc-if value="{{ inviteForm }}" hint-placeholder-val="{{ true }}">
+    <div style="display:flex;flex-direction:column;gap:15px">
+      <div style="display:flex;align-items:baseline;gap:10px">
+        <div style="font-family:'Newsreader',serif;font-size:22px;font-weight:700;flex:1">Invita nel backoffice</div>
+        <span onClick="{{ closeInvite }}" style="font-size:16px;color:#8a8378;cursor:pointer" style-hover="color:#211d18">×</span>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:6px">
+        <div style="font-size:10px;font-weight:700;letter-spacing:1.2px;color:#8a8378">NOME E COGNOME</div>
+        <input value="{{ invName }}" onChange="{{ onInvName }}" placeholder="es. Giorgio Caruso" style="border:1px solid #e0d9c8;border-radius:8px;background:#fffdf8;outline:none;padding:10px 12px;font-size:13px;color:#211d18" style-focus="border-color:#1d5c63">
+      </div>
+      <div style="display:flex;flex-direction:column;gap:6px">
+        <div style="font-size:10px;font-weight:700;letter-spacing:1.2px;color:#8a8378">EMAIL DI LAVORO</div>
+        <input value="{{ invEmail }}" onChange="{{ onInvEmail }}" placeholder="nome.cognome@esperia.it" style="border:1px solid #e0d9c8;border-radius:8px;background:#fffdf8;outline:none;padding:10px 12px;font-family:'IBM Plex Mono',monospace;font-size:12px;color:#211d18" style-focus="border-color:#1d5c63">
+      </div>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <div style="font-size:10px;font-weight:700;letter-spacing:1.2px;color:#8a8378">RUOLO ASSEGNATO</div>
+        <sc-for list="{{ roles }}" as="r" hint-placeholder-count="3">
+          <div onClick="{{ r.pick }}" style="display:flex;gap:11px;align-items:flex-start;border:1px solid {{ r.border }};border-radius:10px;padding:11px 12px;cursor:pointer;background:{{ r.bg }}">
+            <div style="width:16px;height:16px;border-radius:50%;border:1px solid #cdc4b2;flex:0 0 16px;margin-top:2px;display:flex;align-items:center;justify-content:center;background:{{ r.fill }}"><div style="width:5px;height:5px;border-radius:50%;background:{{ r.dot }}"></div></div>
+            <div style="display:flex;flex-direction:column;gap:3px">
+              <div style="font-size:12.5px;font-weight:700">{{ r.label }}</div>
+              <div style="font-size:11.5px;line-height:1.5;color:#8a8378">{{ r.desc }}</div>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+      <div style="display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap">
+        <div onClick="{{ closeInvite }}" style="font-size:12.5px;font-weight:700;border:1px solid #d9d2c4;border-radius:8px;padding:10px 18px;cursor:pointer" style-hover="border-color:#211d18">Annulla</div>
+        <div onClick="{{ sendInvite }}" style="font-size:12.5px;font-weight:700;background:{{ invBg }};color:{{ invFg }};border-radius:8px;padding:10px 18px;cursor:{{ invCursor }}">Invia invito</div>
+      </div>
+    </div>
+    </sc-if>
+  </div>
+</div>
+</sc-if>
+
+<!-- ===== CANCELLAZIONE ACCOUNT COMMUNITY ===== -->
+<sc-if value="{{ deleteOpen }}" hint-placeholder-val="{{ false }}">
+<div style="position:fixed;inset:0;z-index:90;background:rgba(33,29,24,.45);display:flex;align-items:center;justify-content:center;padding:clamp(12px,2vw,24px)">
+  <div style="width:100%;max-width:500px;background:#faf7f0;border:1px solid #e0d9c8;border-radius:14px;padding:20px;display:flex;flex-direction:column;gap:15px;box-shadow:0 22px 50px rgba(33,29,24,.32);max-height:92vh;overflow:auto">
+    <div style="display:flex;align-items:baseline;gap:10px">
+      <div style="font-family:'Newsreader',serif;font-size:22px;font-weight:700;flex:1">Cancellare l'account di {{ deleteName }}?</div>
+      <span onClick="{{ closeDelete }}" style="font-size:16px;color:#8a8378;cursor:pointer" style-hover="color:#211d18">×</span>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:9px;background:#f7e6e4;border-radius:10px;padding:13px 14px">
+      <div style="font-size:11.5px;font-weight:700;letter-spacing:0.6px;color:#9c2a20">VENGONO RIMOSSI IN MODO IRREVERSIBILE</div>
+      <div style="font-size:12.5px;line-height:1.6;color:#211d18">· il profilo e i dati di registrazione (nome visualizzato, email, preferenze)<br>· {{ deleteComments }} commenti pubblicati e le relative reazioni<br>· le segnalazioni inviate e l'iscrizione alle newsletter</div>
+      <div style="font-size:12px;line-height:1.55;color:#5c554a">Restano nel sistema, in forma anonima e senza collegamento alla persona, i soli log tecnici di moderazione richiesti per legge.</div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:7px">
+      <div style="font-size:11.5px;color:#5c554a">Scrivi <b>CANCELLA</b> per confermare.</div>
+      <input value="{{ deleteConfirm }}" onChange="{{ onDeleteConfirm }}" placeholder="CANCELLA" style="border:1px solid #e0d9c8;border-radius:8px;background:#fffdf8;outline:none;padding:10px 12px;font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:#211d18;letter-spacing:1px" style-focus="border-color:#b3261e">
+    </div>
+    <div style="display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap">
+      <div onClick="{{ closeDelete }}" style="font-size:12.5px;font-weight:700;border:1px solid #d9d2c4;border-radius:8px;padding:10px 18px;cursor:pointer" style-hover="border-color:#211d18">Annulla</div>
+      <div onClick="{{ confirmDelete }}" style="font-size:12.5px;font-weight:700;background:{{ delBg }};color:{{ delFg }};border-radius:8px;padding:10px 18px;cursor:{{ delCursor }}">Cancella account e dati</div>
+    </div>
+  </div>
+</div>
+</sc-if>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{}">
+const STAFF = [
+  { id: 1, name: 'Emanuele Ragusa', note: 'inviato politica · dal 2023', email: 'e.ragusa@esperia.it', role: 'caporedattore', last: 'oggi, 11:48', status: 'attivo' },
+  { id: 2, name: 'Luca Ferraro', note: 'esteri', email: 'l.ferraro@esperia.it', role: 'redattore', last: 'oggi, 10:22', status: 'attivo' },
+  { id: 3, name: 'Elena Costa', note: 'economia', email: 'e.costa@esperia.it', role: 'redattore', last: 'oggi, 09:40', status: 'attivo' },
+  { id: 4, name: 'Davide Priori', note: 'desk politico', email: 'd.priori@esperia.it', role: 'caporedattore', last: 'ieri, 19:12', status: 'attivo' },
+  { id: 5, name: 'Giulia Sanna', note: 'cultura · collaboratrice', email: 'g.sanna@esperia.it', role: 'redattore', last: '3 giorni fa', status: 'sospeso' },
+  { id: 6, name: 'Chiara Vitali', note: 'foto e media', email: 'c.vitali@esperia.it', role: 'redattore', last: 'mai', status: 'invitato' },
+  { id: 7, name: 'Sistemi Esperia', note: 'account tecnico', email: 'admin@esperia.it', role: 'amministratore', last: 'oggi, 08:02', status: 'attivo' }
+];
+
+const COMMUNITY = [
+  { id: 21, name: 'Paolo Marchetti', email: 'p.marchetti@gmail.com', since: '12 mar 2024', comments: 34, status: 'attivo' },
+  { id: 22, name: 'Silvia D\u2019Amico', email: 's.damico@outlook.it', since: '3 gen 2026', comments: 7, status: 'attivo' },
+  { id: 23, name: 'Nicola Ferrero', email: 'nferrero@libero.it', since: '18 set 2025', comments: 61, status: 'attivo' },
+  { id: 24, name: 'utente_4471', email: 'utente4471@mail.com', since: 'ieri', comments: 1, status: 'da confermare' },
+  { id: 25, name: 'promo_immobili', email: 'promo.immobili@mail.com', since: '25 ago 2026', comments: 9, status: 'bloccato' },
+  { id: 26, name: 'Franco Bellini', email: 'f.bellini@fastwebnet.it', since: '4 apr 2025', comments: 22, status: 'attivo' }
+];
+
+const ROLES = [
+  { key: 'redattore', label: 'Redattore', desc: 'Scrive e modifica i propri articoli, li invia in revisione. Non pubblica.' },
+  { key: 'caporedattore', label: 'Caporedattore', desc: 'Rivede la coda della redazione, approva, pubblica e programma. Modera i commenti.' },
+  { key: 'amministratore', label: 'Amministratore', desc: 'Tutto il precedente, più account, categorie, impostazioni AI e chiavi dei provider.' }
+];
+
+class Component extends DCLogic {
+  state = {
+    tab: 'staff', staff: STAFF.map(s => Object.assign({}, s)), community: COMMUNITY.map(c => Object.assign({}, c)),
+    q: '', status: '',
+    invite: false, invName: '', invEmail: '', invRole: 'redattore', inviteSent: false,
+    del: null, delConfirm: ''
+  };
+
+  renderVals() {
+    const s = this.state;
+    const isStaff = s.tab === 'staff';
+    const q = s.q.trim().toLowerCase();
+    const dot = st => st === 'attivo' ? '#1e6b47' : (st === 'invitato' || st === 'da confermare' ? '#8a6413' : (st === 'bloccato' ? '#9c2a20' : '#a49b8b'));
+    const comm = s.community.filter(c => (!s.status || c.status === s.status) && (!q || c.name.toLowerCase().includes(q) || c.email.includes(q)));
+    const delUser = s.community.find(c => c.id === s.del);
+
+    return {
+      staffCount: s.staff.length, commCount: s.community.length,
+      tabStaff: () => this.setState({ tab: 'staff' }),
+      tabCommunity: () => this.setState({ tab: 'community' }),
+      tab1Color: isStaff ? '#211d18' : '#8a8378', tab1Border: isStaff ? '#1d5c63' : 'transparent',
+      tab2Color: isStaff ? '#8a8378' : '#211d18', tab2Border: isStaff ? 'transparent' : '#1d5c63',
+      isStaff: isStaff, isCommunity: !isStaff,
+      staff: s.staff.map(u => ({
+        name: u.name, note: u.note, email: u.email, role: u.role, last: u.last,
+        status: u.status, dot: dot(u.status),
+        action: u.status === 'sospeso' ? 'Riattiva' : (u.status === 'invitato' ? 'Rinvia invito' : 'Sospendi'),
+        onRole: e => this.setState(p => ({ staff: p.staff.map(x => x.id === u.id ? Object.assign({}, x, { role: e.target.value }) : x) })),
+        toggle: () => this.setState(p => ({ staff: p.staff.map(x => x.id === u.id ? Object.assign({}, x, { status: x.status === 'sospeso' ? 'attivo' : (x.status === 'invitato' ? 'invitato' : 'sospeso') }) : x) }))
+      })),
+      q: s.q, onQ: e => this.setState({ q: e.target.value }),
+      fStatus: s.status, onStatus: e => this.setState({ status: e.target.value }),
+      commLabel: comm.length + ' su ' + s.community.length + ' account community',
+      community: comm.map(c => ({
+        name: c.name, email: c.email, since: c.since, comments: c.comments,
+        status: c.status, dot: dot(c.status),
+        blockLabel: c.status === 'bloccato' ? 'Sblocca' : 'Blocca',
+        block: () => this.setState(p => ({ community: p.community.map(x => x.id === c.id ? Object.assign({}, x, { status: x.status === 'bloccato' ? 'attivo' : 'bloccato' }) : x) })),
+        askDelete: () => this.setState({ del: c.id, delConfirm: '' })
+      })),
+      inviteOpen: s.invite,
+      inviteForm: s.invite && !s.inviteSent,
+      inviteSent: s.invite && s.inviteSent,
+      openInvite: () => this.setState({ invite: true, inviteSent: false, invName: '', invEmail: '', invRole: 'redattore' }),
+      closeInvite: () => this.setState({ invite: false, inviteSent: false }),
+      invName: s.invName, onInvName: e => this.setState({ invName: e.target.value }),
+      invEmail: s.invEmail, onInvEmail: e => this.setState({ invEmail: e.target.value }),
+      roles: ROLES.map(r => ({
+        label: r.label, desc: r.desc,
+        border: s.invRole === r.key ? '#1d5c63' : '#e0d9c8',
+        bg: s.invRole === r.key ? '#eaf2f2' : '#fffdf8',
+        fill: s.invRole === r.key ? '#1d5c63' : 'transparent',
+        dot: s.invRole === r.key ? '#faf7f0' : 'transparent',
+        pick: () => this.setState({ invRole: r.key })
+      })),
+      invBg: s.invEmail.trim() ? '#1d5c63' : '#e0d9c8',
+      invFg: s.invEmail.trim() ? '#faf7f0' : '#a49b8b',
+      invCursor: s.invEmail.trim() ? 'pointer' : 'default',
+      sendInvite: () => {
+        if (!s.invEmail.trim()) return;
+        this.setState(p => ({
+          inviteSent: true,
+          staff: p.staff.concat({ id: Date.now(), name: p.invName.trim() || p.invEmail.trim(), note: 'invitato ora', email: p.invEmail.trim(), role: p.invRole, last: 'mai', status: 'invitato' })
+        }));
+      },
+      inviteSummary: 'Invito a ' + (s.invEmail || '—') + ' come ' + s.invRole + '.',
+      deleteOpen: !!delUser,
+      deleteName: delUser ? delUser.name : '',
+      deleteComments: delUser ? delUser.comments : 0,
+      deleteConfirm: s.delConfirm,
+      onDeleteConfirm: e => this.setState({ delConfirm: e.target.value }),
+      closeDelete: () => this.setState({ del: null, delConfirm: '' }),
+      delBg: s.delConfirm.trim().toUpperCase() === 'CANCELLA' ? '#b3261e' : '#e0d9c8',
+      delFg: s.delConfirm.trim().toUpperCase() === 'CANCELLA' ? '#faf7f0' : '#a49b8b',
+      delCursor: s.delConfirm.trim().toUpperCase() === 'CANCELLA' ? 'pointer' : 'default',
+      confirmDelete: () => {
+        if (s.delConfirm.trim().toUpperCase() !== 'CANCELLA') return;
+        this.setState(p => ({ community: p.community.filter(c => c.id !== p.del), del: null, delConfirm: '' }));
+      }
+    };
+  }
+}
+
+</script>
+</body>
+</html>

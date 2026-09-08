@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet data-dc-atomics>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600;6..72,700;6..72,800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#f5f1e8;font-family:Archivo,sans-serif;color:#211d18}
+a{color:#1d5c63;text-decoration:none}
+a:hover{color:#164a50}
+input,select,textarea{font-family:Archivo,sans-serif}
+input::placeholder,textarea::placeholder{color:#a49b8b}
+</style>
+</helmet>
+
+<div style="display:flex;min-height:100vh;background:#f5f1e8;align-items:stretch">
+  <dc-import name="Nav Laterale v1" active="Categorie e tag" style="background:#211d18;align-self:stretch" hint-size="230px,100vh"></dc-import>
+
+  <div style="flex:1;display:flex;flex-direction:column;min-width:0">
+    <dc-import name="Barra Superiore v1" title="Categorie e tag" search-placeholder="Cerca una categoria o un tag" hint-size="100%,70px"></dc-import>
+
+    <div style="display:flex;gap:0;padding:0 clamp(16px,2.4vw,32px);background:#faf7f0;border-bottom:1px solid #e0d9c8">
+      <div onClick="{{ tabCats }}" style="font-size:12.5px;font-weight:700;padding:13px 16px;cursor:pointer;color:{{ tab1Color }};border-bottom:2px solid {{ tab1Border }}">Categorie · {{ catCount }}</div>
+      <div onClick="{{ tabTags }}" style="font-size:12.5px;font-weight:700;padding:13px 16px;cursor:pointer;color:{{ tab2Color }};border-bottom:2px solid {{ tab2Border }}">Tag · {{ tagCount }}</div>
+    </div>
+
+    <!-- ================= CATEGORIE ================= -->
+    <sc-if value="{{ isCats }}" hint-placeholder-val="{{ true }}">
+    <div style="display:flex;flex-direction:column;gap:12px;padding:18px clamp(16px,2.4vw,32px) 48px">
+      <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+        <div style="font-size:11.5px;color:#8a8378;flex:1;min-width:200px">Trascina le righe per cambiare l'ordine con cui le categorie compaiono nella navigazione del portale.</div>
+        <div onClick="{{ newCat }}" style="font-size:12px;font-weight:700;background:#1d5c63;color:#faf7f0;border-radius:8px;padding:10px 16px;cursor:pointer" style-hover="background:#164a50">+ Nuova categoria</div>
+      </div>
+
+      <div style="overflow-x:auto">
+        <div style="min-width:760px;display:flex;flex-direction:column">
+          <div style="display:grid;grid-template-columns:34px 1fr 170px 90px 120px;gap:12px;padding:8px 12px;font-size:9.5px;font-weight:700;letter-spacing:1.3px;color:#8a8378">
+            <div>ORD.</div><div>NOME E DESCRIZIONE</div><div>SLUG</div><div>ARTICOLI</div><div></div>
+          </div>
+          <sc-for list="{{ cats }}" as="c" hint-placeholder-count="5">
+            <div draggable="true" onDragStart="{{ c.dragStart }}" onDragOver="{{ c.dragOver }}" onDrop="{{ c.drop }}" onDragEnd="{{ c.dragEnd }}" style="display:grid;grid-template-columns:34px 1fr 170px 90px 120px;gap:12px;align-items:center;padding:12px;background:{{ c.bg }};border:1px solid {{ c.border }};border-bottom:none">
+              <div style="display:flex;align-items:center;gap:6px;cursor:grab;color:#a49b8b;font-size:13px">⠿</div>
+              <div style="display:flex;flex-direction:column;gap:3px;min-width:0">
+                <div style="font-size:13.5px;font-weight:700">{{ c.name }}</div>
+                <div style="font-size:11.5px;line-height:1.45;color:#8a8378">{{ c.desc }}</div>
+              </div>
+              <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#5c554a">/{{ c.slug }}</div>
+              <div style="font-size:12.5px;font-weight:700;color:#211d18">{{ c.count }}</div>
+              <div style="display:flex;gap:12px;justify-content:flex-end">
+                <span onClick="{{ c.edit }}" style="font-size:11.5px;font-weight:700;color:#1d5c63;cursor:pointer" style-hover="color:#164a50">Modifica</span>
+                <span onClick="{{ c.remove }}" style="font-size:11.5px;font-weight:600;color:#8a8378;cursor:pointer" style-hover="color:#b3261e">Elimina</span>
+              </div>
+            </div>
+          </sc-for>
+          <div style="height:1px;background:#e0d9c8"></div>
+        </div>
+      </div>
+      <div style="font-size:11px;color:#a49b8b">Ordine corrente: {{ catOrder }}</div>
+    </div>
+    </sc-if>
+
+    <!-- ================= TAG ================= -->
+    <sc-if value="{{ isTags }}" hint-placeholder-val="{{ false }}">
+    <div style="display:flex;flex-direction:column;gap:12px;padding:18px clamp(16px,2.4vw,32px) 48px">
+      <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;background:#faf7f0;border:1px solid #e0d9c8;border-radius:12px;padding:12px 14px">
+        <div style="display:flex;align-items:center;gap:7px;background:#f1ebdd;border-radius:8px;padding:8px 12px;flex:1 1 220px;min-width:170px">
+          <span style="font-size:12px;color:#8a8378">⌕</span>
+          <input value="{{ tagQ }}" onChange="{{ onTagQ }}" placeholder="Cerca un tag" style="background:none;border:none;outline:none;font-size:12.5px;color:#211d18;width:100%">
+        </div>
+        <div style="font-size:11.5px;color:#8a8378;flex:1;min-width:120px">{{ tagCountLabel }}</div>
+        <div onClick="{{ newTag }}" style="font-size:12px;font-weight:700;background:#1d5c63;color:#faf7f0;border-radius:8px;padding:10px 16px;cursor:pointer" style-hover="background:#164a50">+ Nuovo tag</div>
+      </div>
+
+      <sc-if value="{{ hasMergeSelection }}" hint-placeholder-val="{{ false }}">
+      <div style="background:#211d18;color:#faf7f0;border-radius:12px;padding:12px 16px;display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+        <div style="font-size:12.5px;font-weight:700;flex:1;min-width:180px">{{ mergeLabel }}</div>
+        <div onClick="{{ doMerge }}" style="font-size:11.5px;font-weight:700;border:1px solid #4a443a;border-radius:999px;padding:7px 14px;cursor:{{ mergeCursor }};color:{{ mergeColor }}" style-hover="border-color:#faf7f0">Unisci i due tag</div>
+        <span onClick="{{ clearMerge }}" style="font-size:11.5px;color:#a49b8b;cursor:pointer" style-hover="color:#faf7f0">Annulla</span>
+      </div>
+      </sc-if>
+
+      <div style="overflow-x:auto">
+        <div style="min-width:700px;display:flex;flex-direction:column">
+          <div style="display:grid;grid-template-columns:30px 1fr 200px 90px 150px;gap:12px;padding:8px 12px;font-size:9.5px;font-weight:700;letter-spacing:1.3px;color:#8a8378">
+            <div></div><div>NOME</div><div>SLUG</div><div>ARTICOLI</div><div></div>
+          </div>
+          <sc-for list="{{ tags }}" as="t" hint-placeholder-count="6">
+            <div style="display:grid;grid-template-columns:30px 1fr 200px 90px 150px;gap:12px;align-items:center;padding:11px 12px;background:{{ t.bg }};border:1px solid #e0d9c8;border-bottom:none">
+              <div onClick="{{ t.select }}" style="width:16px;height:16px;border-radius:4px;border:1px solid #cdc4b2;background:{{ t.checkBg }};display:flex;align-items:center;justify-content:center;font-size:9.5px;font-weight:700;color:#faf7f0;cursor:pointer">{{ t.mark }}</div>
+              <div style="font-size:13px;font-weight:700">{{ t.name }}</div>
+              <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#5c554a">{{ t.slug }}</div>
+              <div style="font-size:12.5px;font-weight:700">{{ t.count }}</div>
+              <div style="display:flex;gap:12px;justify-content:flex-end">
+                <span onClick="{{ t.edit }}" style="font-size:11.5px;font-weight:700;color:#1d5c63;cursor:pointer" style-hover="color:#164a50">Modifica</span>
+                <span onClick="{{ t.remove }}" style="font-size:11.5px;font-weight:600;color:#8a8378;cursor:pointer" style-hover="color:#b3261e">Elimina</span>
+              </div>
+            </div>
+          </sc-for>
+          <div style="height:1px;background:#e0d9c8"></div>
+        </div>
+      </div>
+      <div style="font-size:11px;color:#a49b8b">Seleziona due tag per unirli: gli articoli del tag assorbito vengono riassegnati e il vecchio slug resta come reindirizzamento.</div>
+    </div>
+    </sc-if>
+  </div>
+</div>
+
+<!-- ===== PANNELLO CREAZIONE / MODIFICA ===== -->
+<sc-if value="{{ formOpen }}" hint-placeholder-val="{{ false }}">
+<div style="position:fixed;inset:0;z-index:90;background:rgba(33,29,24,.45);display:flex;align-items:center;justify-content:center;padding:clamp(12px,2vw,24px)">
+  <div style="width:100%;max-width:480px;background:#faf7f0;border:1px solid #e0d9c8;border-radius:14px;padding:20px;display:flex;flex-direction:column;gap:15px;box-shadow:0 22px 50px rgba(33,29,24,.32);max-height:92vh;overflow:auto">
+    <div style="display:flex;align-items:baseline;gap:10px">
+      <div style="font-family:'Newsreader',serif;font-size:22px;font-weight:700;flex:1">{{ formTitle }}</div>
+      <span onClick="{{ closeForm }}" style="font-size:16px;color:#8a8378;cursor:pointer" style-hover="color:#211d18">×</span>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:6px">
+      <div style="font-size:10px;font-weight:700;letter-spacing:1.2px;color:#8a8378">NOME</div>
+      <input value="{{ fName }}" onChange="{{ onFName }}" placeholder="es. Economia" style="border:1px solid #e0d9c8;border-radius:8px;background:#fffdf8;outline:none;padding:10px 12px;font-size:13px;color:#211d18" style-focus="border-color:#1d5c63">
+    </div>
+    <div style="display:flex;flex-direction:column;gap:6px">
+      <div style="font-size:10px;font-weight:700;letter-spacing:1.2px;color:#8a8378">SLUG</div>
+      <div style="display:flex;align-items:center;border:1px solid #e0d9c8;border-radius:8px;background:#fffdf8;padding:0 11px">
+        <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#a49b8b">esperia.it/</span>
+        <input value="{{ fSlug }}" onChange="{{ onFSlug }}" style="border:none;outline:none;background:none;padding:10px 2px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:#211d18;width:100%">
+      </div>
+    </div>
+    <sc-if value="{{ isCatForm }}" hint-placeholder-val="{{ true }}">
+    <div style="display:flex;flex-direction:column;gap:6px">
+      <div style="font-size:10px;font-weight:700;letter-spacing:1.2px;color:#8a8378">DESCRIZIONE DELLA SEZIONE</div>
+      <textarea value="{{ fDesc }}" onChange="{{ onFDesc }}" rows="3" placeholder="Compare nell'intestazione della pagina di listing" style="border:1px solid #e0d9c8;border-radius:8px;background:#fffdf8;outline:none;resize:vertical;padding:10px 12px;font-size:12.5px;line-height:1.55;color:#211d18" style-focus="border-color:#1d5c63"></textarea>
+    </div>
+    </sc-if>
+    <div style="font-size:11.5px;line-height:1.55;color:#8a8378;background:#f1ebdd;border-radius:8px;padding:10px 12px">{{ formNote }}</div>
+    <div style="display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap">
+      <div onClick="{{ closeForm }}" style="font-size:12.5px;font-weight:700;border:1px solid #d9d2c4;border-radius:8px;padding:10px 18px;cursor:pointer" style-hover="border-color:#211d18">Annulla</div>
+      <div onClick="{{ saveForm }}" style="font-size:12.5px;font-weight:700;background:#1d5c63;color:#faf7f0;border-radius:8px;padding:10px 18px;cursor:pointer" style-hover="background:#164a50">{{ formAction }}</div>
+    </div>
+  </div>
+</div>
+</sc-if>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{}">
+const CATS0 = [
+  { id: 1, name: 'Politica', slug: 'politica', desc: 'Governo, Parlamento, partiti e istituzioni.', count: 412 },
+  { id: 2, name: 'Mondo', slug: 'mondo', desc: 'Esteri, Unione europea, crisi internazionali.', count: 286 },
+  { id: 3, name: 'Economia', slug: 'economia', desc: 'Conti pubblici, lavoro, imprese e mercati.', count: 234 },
+  { id: 4, name: 'Cultura', slug: 'cultura', desc: 'Musei, editoria, spettacolo, patrimonio.', count: 158 },
+  { id: 5, name: 'Opinioni', slug: 'opinioni', desc: 'Editoriali, commenti e interventi firmati.', count: 96 }
+];
+const TAGS0 = [
+  { id: 11, name: 'Manovra 2027', slug: 'manovra-2027', count: 38 },
+  { id: 12, name: 'Irpef', slug: 'irpef', count: 24 },
+  { id: 13, name: 'irpef 2027', slug: 'irpef-2027', count: 6 },
+  { id: 14, name: 'Palazzo Chigi', slug: 'palazzo-chigi', count: 51 },
+  { id: 15, name: 'Commissione Bilancio', slug: 'commissione-bilancio', count: 19 },
+  { id: 16, name: 'Aree interne', slug: 'aree-interne', count: 12 },
+  { id: 17, name: 'Premierato', slug: 'premierato', count: 27 },
+  { id: 18, name: 'Abi', slug: 'abi', count: 8 }
+];
+
+class Component extends DCLogic {
+  state = { tab: 'cats', cats: CATS0.slice(), tags: TAGS0.slice(), drag: null, over: null, tagQ: '', merge: [], form: null, fName: '', fSlug: '', fDesc: '' };
+
+  renderVals() {
+    const s = this.state;
+    const isCats = s.tab === 'cats';
+    const q = s.tagQ.trim().toLowerCase();
+    const tagList = s.tags.filter(t => !q || t.name.toLowerCase().includes(q) || t.slug.includes(q));
+    const mergeNames = s.merge.map(id => (s.tags.find(t => t.id === id) || {}).name);
+
+    return {
+      catCount: s.cats.length, tagCount: s.tags.length,
+      tabCats: () => this.setState({ tab: 'cats' }),
+      tabTags: () => this.setState({ tab: 'tags' }),
+      tab1Color: isCats ? '#211d18' : '#8a8378', tab1Border: isCats ? '#1d5c63' : 'transparent',
+      tab2Color: isCats ? '#8a8378' : '#211d18', tab2Border: isCats ? 'transparent' : '#1d5c63',
+      isCats: isCats, isTags: !isCats,
+      cats: s.cats.map((c, i) => ({
+        name: c.name, slug: c.slug, desc: c.desc, count: c.count,
+        bg: s.drag === c.id ? '#f1ebdd' : '#fffdf8',
+        border: s.over === c.id && s.drag !== c.id ? '#1d5c63' : '#e0d9c8',
+        dragStart: () => this.setState({ drag: c.id }),
+        dragOver: e => { e.preventDefault(); if (s.over !== c.id) this.setState({ over: c.id }); },
+        drop: e => {
+          e.preventDefault();
+          this.setState(p => {
+            const from = p.cats.findIndex(x => x.id === p.drag);
+            const to = p.cats.findIndex(x => x.id === c.id);
+            if (from < 0 || to < 0 || from === to) return { drag: null, over: null };
+            const next = p.cats.slice();
+            const [moved] = next.splice(from, 1);
+            next.splice(to, 0, moved);
+            return { cats: next, drag: null, over: null };
+          });
+        },
+        dragEnd: () => this.setState({ drag: null, over: null }),
+        edit: () => this.setState({ form: { kind: 'cat', id: c.id }, fName: c.name, fSlug: c.slug, fDesc: c.desc }),
+        remove: () => this.setState(p => ({ cats: p.cats.filter(x => x.id !== c.id) }))
+      })),
+      catOrder: s.cats.map(c => c.name).join(' · '),
+      newCat: () => this.setState({ form: { kind: 'cat', id: null }, fName: '', fSlug: '', fDesc: '' }),
+      tagQ: s.tagQ, onTagQ: e => this.setState({ tagQ: e.target.value }),
+      tagCountLabel: tagList.length + ' tag su ' + s.tags.length,
+      tags: tagList.map(t => {
+        const i = s.merge.indexOf(t.id);
+        return {
+          name: t.name, slug: t.slug, count: t.count,
+          bg: i > -1 ? '#f1ebdd' : '#fffdf8',
+          checkBg: i > -1 ? '#1d5c63' : 'transparent',
+          mark: i === 0 ? 'A' : (i === 1 ? 'B' : ''),
+          select: () => this.setState(p => ({ merge: p.merge.includes(t.id) ? p.merge.filter(x => x !== t.id) : p.merge.concat(t.id).slice(-2) })),
+          edit: () => this.setState({ form: { kind: 'tag', id: t.id }, fName: t.name, fSlug: t.slug, fDesc: '' }),
+          remove: () => this.setState(p => ({ tags: p.tags.filter(x => x.id !== t.id), merge: p.merge.filter(x => x !== t.id) }))
+        };
+      }),
+      newTag: () => this.setState({ form: { kind: 'tag', id: null }, fName: '', fSlug: '', fDesc: '' }),
+      hasMergeSelection: s.merge.length > 0,
+      mergeLabel: s.merge.length === 2
+        ? 'Unisci «' + mergeNames[1] + '» in «' + mergeNames[0] + '»: gli articoli passano al primo tag.'
+        : 'Selezionato «' + mergeNames[0] + '». Scegli un secondo tag da assorbire.',
+      mergeCursor: s.merge.length === 2 ? 'pointer' : 'default',
+      mergeColor: s.merge.length === 2 ? '#faf7f0' : '#6b6459',
+      clearMerge: () => this.setState({ merge: [] }),
+      doMerge: () => {
+        if (s.merge.length !== 2) return;
+        this.setState(p => {
+          const keep = p.tags.find(t => t.id === p.merge[0]);
+          const drop = p.tags.find(t => t.id === p.merge[1]);
+          return {
+            tags: p.tags.filter(t => t.id !== drop.id).map(t => t.id === keep.id ? Object.assign({}, t, { count: t.count + drop.count }) : t),
+            merge: []
+          };
+        });
+      },
+      formOpen: !!s.form,
+      isCatForm: !!s.form && s.form.kind === 'cat',
+      formTitle: s.form ? (s.form.id ? (s.form.kind === 'cat' ? 'Modifica categoria' : 'Modifica tag') : (s.form.kind === 'cat' ? 'Nuova categoria' : 'Nuovo tag')) : '',
+      formAction: s.form && s.form.id ? 'Salva modifiche' : 'Crea',
+      formNote: s.form && s.form.kind === 'cat'
+        ? 'Le categorie compaiono nella navigazione del portale: cambiare lo slug crea un reindirizzamento dal vecchio indirizzo.'
+        : 'I tag non compaiono nella navigazione principale: alimentano le pagine di argomento e i correlati.',
+      fName: s.fName, onFName: e => this.setState({ fName: e.target.value }),
+      fSlug: s.fSlug, onFSlug: e => this.setState({ fSlug: e.target.value }),
+      fDesc: s.fDesc, onFDesc: e => this.setState({ fDesc: e.target.value }),
+      closeForm: () => this.setState({ form: null }),
+      saveForm: () => this.setState(p => {
+        const name = p.fName.trim() || 'Senza nome';
+        const slug = p.fSlug.trim() || name.toLowerCase().replace(/\s+/g, '-');
+        if (p.form.kind === 'cat') {
+          if (p.form.id) return { cats: p.cats.map(c => c.id === p.form.id ? Object.assign({}, c, { name, slug, desc: p.fDesc }) : c), form: null };
+          return { cats: p.cats.concat({ id: Date.now(), name, slug, desc: p.fDesc, count: 0 }), form: null };
+        }
+        if (p.form.id) return { tags: p.tags.map(t => t.id === p.form.id ? Object.assign({}, t, { name, slug }) : t), form: null };
+        return { tags: p.tags.concat({ id: Date.now(), name, slug, count: 0 }), form: null };
+      })
+    };
+  }
+}
+
+</script>
+</body>
+</html>

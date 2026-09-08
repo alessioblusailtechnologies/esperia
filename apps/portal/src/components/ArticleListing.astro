@@ -1,0 +1,162 @@
+---
+import ArticleCard from '@/components/ArticleCard.astro'
+import Pagination from '@/components/Pagination.astro'
+import type { Article, Paginated, Tag } from '@/lib/types'
+
+interface Props {
+  /** Etichetta sopra il titolo: "Argomento", "Archivio"... Assente per le categorie. */
+  eyebrow?: string | null
+  titolo: string
+  descrizione?: string | null
+  /** Tag suggeriti sotto l'intestazione, mostrati solo alla prima pagina. */
+  tagCorrelati?: Tag[]
+  risultati: Paginated<Article>
+  base: string
+  messaggioVuoto?: string
+}
+
+const {
+  eyebrow = null,
+  titolo,
+  descrizione = null,
+  tagCorrelati = [],
+  risultati,
+  base,
+  messaggioVuoto = 'Non ci sono ancora articoli in questa sezione.',
+} = Astro.props
+
+const primaPagina = risultati.page === 1
+
+/*
+ * Alla prima pagina il primo articolo diventa l'apertura su due colonne
+ * (dai design, Listing v1); dalla seconda in poi la griglia è uniforme —
+ * dare rilievo al primo articolo di pagina 4 non avrebbe senso editoriale.
+ */
+const apertura = primaPagina ? risultati.docs[0] : undefined
+const griglia = primaPagina ? risultati.docs.slice(1) : risultati.docs
+---
+
+<div class="elenco">
+  <header class="elenco__testata">
+    {eyebrow && <p class="eyebrow">{eyebrow}</p>}
+    <h1 class="elenco__titolo">{titolo}</h1>
+    {descrizione && primaPagina && <p class="elenco__descrizione">{descrizione}</p>}
+    {!primaPagina && (
+      <p class="elenco__descrizione elenco__pagina">Pagina {risultati.page} di {risultati.totalPages}</p>
+    )}
+
+    <div class="elenco__filo"></div>
+
+    {tagCorrelati.length > 0 && primaPagina && (
+      <nav class="elenco__tag" aria-label="Argomenti correlati">
+        <span class="elenco__tag-etichetta">Correlati</span>
+        {tagCorrelati.map((t) => (
+          <a href={`/tag/${t.slug}`} class="pastiglia">{t.name}</a>
+        ))}
+      </nav>
+    )}
+  </header>
+
+  {risultati.docs.length === 0 ? (
+    <p class="elenco__vuoto">{messaggioVuoto}</p>
+  ) : (
+    <>
+      {apertura && (
+        <div class="elenco__apertura">
+          <ArticleCard article={apertura} variante="testata" prioritaria livelloTitolo={2} />
+        </div>
+      )}
+
+      {griglia.length > 0 && (
+        <div class="elenco__griglia">
+          {griglia.map((a) => (
+            <ArticleCard article={a} livelloTitolo={2} prioritaria={!apertura && a === griglia[0]} />
+          ))}
+        </div>
+      )}
+    </>
+  )}
+
+  <Pagination
+    paginaCorrente={risultati.page}
+    paginaTotali={risultati.totalPages}
+    base={base}
+  />
+</div>
+
+<style>
+  .elenco__testata {
+    padding: clamp(26px, 3.6vw, 44px) var(--padding-laterale) 0;
+  }
+
+  .elenco__titolo {
+    font-size: var(--titolo-elenco);
+    line-height: 1.05;
+    font-weight: var(--peso-forte);
+    letter-spacing: -1.2px;
+    padding-top: var(--spazio-2);
+  }
+
+  .elenco__descrizione {
+    font-size: clamp(14px, 1.3vw, 16px);
+    line-height: 1.55;
+    color: var(--colore-testo-tenue);
+    max-width: 64ch;
+    padding-top: var(--spazio-4);
+  }
+
+  .elenco__pagina {
+    font-size: var(--testo-sm);
+  }
+
+  .elenco__filo {
+    height: 1px;
+    background: var(--colore-bordo);
+    margin-top: var(--spazio-6);
+  }
+
+  .elenco__tag {
+    display: flex;
+    gap: 9px;
+    flex-wrap: wrap;
+    align-items: center;
+    padding-top: 20px;
+  }
+
+  .elenco__tag-etichetta {
+    font-size: 11px;
+    font-weight: var(--peso-forte);
+    letter-spacing: 1.4px;
+    text-transform: uppercase;
+    color: var(--colore-testo-meta);
+    padding-right: 4px;
+  }
+
+  .elenco__apertura {
+    padding: clamp(26px, 3vw, 36px) var(--padding-laterale) clamp(26px, 3vw, 36px);
+  }
+
+  .elenco__apertura::after {
+    content: '';
+    display: block;
+    height: 1px;
+    background: var(--colore-bordo);
+    margin-top: clamp(26px, 3vw, 36px);
+  }
+
+  .elenco__griglia {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: clamp(26px, 3vw, 38px) clamp(20px, 2.4vw, 30px);
+    padding: clamp(26px, 3vw, 36px) var(--padding-laterale) 0;
+  }
+
+  .elenco__vuoto {
+    margin: clamp(30px, 4vw, 48px) var(--padding-laterale);
+    padding: clamp(30px, 4vw, 48px);
+    text-align: center;
+    color: var(--colore-testo-tenue);
+    background: var(--colore-superficie);
+    border-radius: var(--raggio-lg);
+  }
+</style>

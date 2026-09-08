@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet data-dc-atomics>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600;6..72,700;6..72,800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#faf7f0;font-family:Archivo,sans-serif;color:#211d18}
+a{color:#211d18;text-decoration:none}
+a:hover{color:#b3261e}
+</style>
+</helmet>
+
+<!-- ================= HOME ITALIA ================= -->
+<sc-if value="{{ isHomeIt }}" hint-placeholder-val="{{ true }}">
+<div style="min-height:100vh;background:#faf7f0">
+  <div style="max-width:1280px;margin:0 auto">
+    <div style="display:flex;align-items:center;gap:14px;padding:18px 32px;border-bottom:1px solid #e6dfd1;white-space:nowrap">
+      <div onClick="{{ goHomeIt }}" style="font-family:'Newsreader',serif;font-size:26px;font-weight:800;letter-spacing:-0.5px;cursor:pointer">Esperia</div>
+      <div style="display:flex;gap:16px;font-size:13px;font-weight:600;color:#5c554a;flex:1">
+        <span onClick="{{ goHomeIt }}" style="color:#b3261e;cursor:pointer">In primo piano</span>
+        <span style="cursor:pointer" style-hover="color:#b3261e">Politica</span>
+        <span style="cursor:pointer" style-hover="color:#b3261e">Mondo</span>
+        <span style="cursor:pointer" style-hover="color:#b3261e">Economia</span>
+        <span style="cursor:pointer" style-hover="color:#b3261e">Opinioni</span>
+        <span style="cursor:pointer" style-hover="color:#b3261e">Video</span>
+        <span onClick="{{ goCommunity }}" style="cursor:pointer" style-hover="color:#b3261e">Community</span>
+      </div>
+      <div style="display:flex;gap:2px;background:#f1ebdd;border-radius:999px;padding:3px">
+        <div style="font-size:11px;font-weight:700;background:#211d18;color:#faf7f0;border-radius:999px;padding:5px 12px;cursor:pointer">IT</div>
+        <div onClick="{{ goHomeUs }}" style="font-size:11px;font-weight:700;color:#8a8378;border-radius:999px;padding:5px 12px;cursor:pointer" style-hover="color:#211d18">EN</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;background:#f1ebdd;border-radius:999px;padding:8px 16px;font-size:12px;color:#8a8378;flex:1;min-width:40px;max-width:150px;cursor:text;overflow:hidden">⌕ Cerca</div>
+      <div style="font-size:12px;font-weight:700;background:#b3261e;color:#faf7f0;border-radius:999px;padding:8px 18px;cursor:pointer" style-hover="background:#8f1e17">Abbonati</div>
+    </div>
+    <sc-if value="{{ showLive }}" hint-placeholder-val="{{ true }}">
+    <div style="display:flex;gap:10px;align-items:center;padding:11px 40px;border-bottom:1px solid #e6dfd1;font-size:12px;color:#8a8378">
+      <span style="font-size:10px;font-weight:700;letter-spacing:1px;background:#b3261e;color:#faf7f0;border-radius:4px;padding:3px 8px">LIVE</span>
+      <span style="color:#211d18;font-weight:600">Trump-Meloni, le reazioni in diretta</span>
+      <span>· aggiornamenti da maggioranza e opposizione · aggiornato 3 min fa</span>
+    </div>
+    </sc-if>
+    <div style="display:grid;grid-template-columns:1.5fr 1fr;gap:40px;padding:36px 40px 8px">
+      <div onClick="{{ goArticleIt }}" style="display:flex;flex-direction:column;gap:16px;cursor:pointer" style-hover="opacity:.88">
+        <div style="height:340px"><x-import component-from-global-scope="image-slot" from="./image-slot.js" id="it-hero" shape="rounded" radius="14" placeholder="foto: Meloni / Palazzo Chigi" hint-size="100%,340px"></x-import></div>
+        <div style="font-size:10.5px;font-weight:700;letter-spacing:2px;color:#b3261e">POLITICA</div>
+        <div style="font-family:'Newsreader',serif;font-size:40px;line-height:1.12;font-weight:700;letter-spacing:-0.5px;text-wrap:pretty">Nuovo attacco di Trump a Meloni, la politica italiana reagisce</div>
+        <div style="font-size:15px;line-height:1.55;color:#5c554a;max-width:600px">Dal governo all'opposizione, le risposte alle parole del presidente americano. Tajani frena, Crosetto difende il rapporto con Washington. La premier attesa al vertice di Ankara.</div>
+        <div style="display:flex;align-items:center;gap:10px;font-size:12px;color:#8a8378">
+          <div style="width:28px;height:28px;border-radius:50%;background:repeating-linear-gradient(45deg,#e0d8c8 0 4px,#efe9dc 4px 8px)"></div>
+          <span style="color:#211d18;font-weight:700">Marta Renzi</span><span>· 2 ore fa · 8 min</span>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column">
+        <div style="font-size:10.5px;font-weight:700;letter-spacing:2px;color:#8a8378;padding-bottom:14px">LE PIÙ LETTE</div>
+        <div style="display:flex;flex-direction:column">
+          <div onClick="{{ goArticleIt }}" style="display:flex;gap:14px;align-items:baseline;padding:16px 0;border-top:1px solid #e6dfd1;cursor:pointer" style-hover="opacity:.75">
+            <div style="font-size:13px;font-weight:800;color:#b3261e">01</div>
+            <div style="display:flex;flex-direction:column;gap:5px">
+              <div style="font-family:'Newsreader',serif;font-size:19px;line-height:1.25;font-weight:600">Meloni verso il vertice di Ankara: i dossier sul tavolo</div>
+              <div style="font-size:11px;color:#8a8378">Mondo · 3 ore fa</div>
+            </div>
+          </div>
+          <div onClick="{{ goArticleIt }}" style="display:flex;gap:14px;align-items:baseline;padding:16px 0;border-top:1px solid #e6dfd1;cursor:pointer" style-hover="opacity:.75">
+            <div style="font-size:13px;font-weight:800;color:#b3261e">02</div>
+            <div style="display:flex;flex-direction:column;gap:5px">
+              <div style="font-family:'Newsreader',serif;font-size:19px;line-height:1.25;font-weight:600">Spese militari, La Russa rivendica l'autonomia delle scelte italiane</div>
+              <div style="font-size:11px;color:#8a8378">Politica · 5 ore fa</div>
+            </div>
+          </div>
+          <div onClick="{{ goArticleIt }}" style="display:flex;gap:14px;align-items:baseline;padding:16px 0;border-top:1px solid #e6dfd1;cursor:pointer" style-hover="opacity:.75">
+            <div style="font-size:13px;font-weight:800;color:#b3261e">03</div>
+            <div style="display:flex;flex-direction:column;gap:5px">
+              <div style="font-family:'Newsreader',serif;font-size:19px;line-height:1.25;font-weight:600">Di Battista prepara il ritorno in politica, «fuori dai poli»</div>
+              <div style="font-size:11px;color:#8a8378">Politica · ieri</div>
+            </div>
+          </div>
+        </div>
+        </div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:28px;padding:28px 40px 36px">
+      <div onClick="{{ goArticleIt }}" style="display:flex;flex-direction:column;gap:10px;cursor:pointer" style-hover="opacity:.85">
+        <div style="height:150px"><x-import component-from-global-scope="image-slot" from="./image-slot.js" id="it-world" shape="rounded" radius="12" placeholder="foto: Damasco" src="uploads/emmanuel-macron-a-destra-l-auto-esplosa-vicino-al-suo-hotel-a-damasco.webp" hint-size="100%,150px"></x-import></div>
+        <div style="font-size:10.5px;font-weight:700;letter-spacing:2px;color:#b3261e">MONDO</div>
+        <div style="font-family:'Newsreader',serif;font-size:21px;line-height:1.25;font-weight:600">Esplosioni fuori dall'hotel di Macron a Damasco: il presidente è illeso</div>
+        <div style="font-size:11px;color:#8a8378">Luca Ferraro · 2 ore fa</div>
+      </div>
+      <div onClick="{{ goArticleIt }}" style="display:flex;flex-direction:column;gap:10px;cursor:pointer" style-hover="opacity:.85">
+        <div style="height:150px"><x-import component-from-global-scope="image-slot" from="./image-slot.js" id="it-econ" shape="rounded" radius="12" placeholder="foto: distributore di carburante" hint-size="100%,150px"></x-import></div>
+        <div style="font-size:10.5px;font-weight:700;letter-spacing:2px;color:#b3261e">ECONOMIA</div>
+        <div style="font-family:'Newsreader',serif;font-size:21px;line-height:1.25;font-weight:600">Carburanti, un pieno costa 3 euro in più: l'allarme dei gestori</div>
+        <div style="font-size:11px;color:#8a8378">Elena Costa · 5 ore fa</div>
+      </div>
+      <div onClick="{{ goArticleIt }}" style="display:flex;flex-direction:column;gap:10px;background:#f1ebdd;border-radius:12px;padding:22px;cursor:pointer" style-hover="background:#ece4d1">
+        <div style="font-size:10.5px;font-weight:700;letter-spacing:2px;color:#8a8378">OPINIONI</div>
+        <div style="font-family:'Newsreader',serif;font-size:23px;line-height:1.3;font-weight:600;font-style:italic;text-wrap:pretty">«Parità di genere, il PNRR ha funzionato solo a metà»</div>
+        <div style="display:flex;align-items:center;gap:10px;margin-top:auto;font-size:11px;color:#8a8378">
+          <div style="width:26px;height:26px;border-radius:50%;background:repeating-linear-gradient(45deg,#e0d8c8 0 4px,#efe9dc 4px 8px)"></div>
+          <span style="color:#211d18;font-weight:700">Giulia Sanna</span><span>· oggi</span>
+        </div>
+      </div>
+    </div>
+    <div style="margin:0 40px 48px;background:#211d18;color:#faf7f0;border-radius:14px;padding:30px 36px;display:flex;align-items:center;gap:32px;flex-wrap:wrap">
+      <div style="display:flex;flex-direction:column;gap:8px;flex:1;min-width:280px">
+        <div style="font-size:10px;font-weight:700;letter-spacing:2px;color:#e8b04b">NEWSLETTER · IL PUNTO DELLE 7</div>
+        <div style="font-family:'Newsreader',serif;font-size:26px;line-height:1.25;font-weight:600;text-wrap:pretty">La politica in cinque minuti, ogni mattina alle 7</div>
+      </div>
+      <div style="display:flex;gap:10px;align-items:center">
+        <input placeholder="la tua email" style="background:#332e26;border:none;outline:none;border-radius:999px;padding:11px 18px;font-size:12px;color:#faf7f0;width:220px;font-family:Archivo,sans-serif">
+        <div onClick="{{ subscribe }}" style="background:#faf7f0;color:#211d18;border-radius:999px;padding:11px 20px;font-size:12px;font-weight:700;cursor:pointer" style-hover="background:#e8b04b">{{ subLabelIt }}</div>
+      </div>
+    </div>
+  </div>
+</div>
+</sc-if>
+
+<!-- ================= ARTICOLO ITALIA ================= -->
+<sc-if value="{{ isArticleIt }}" hint-placeholder-val="{{ false }}">
+<div style="min-height:100vh;background:#faf7f0">
+  <div style="max-width:1280px;margin:0 auto">
+    <div style="display:flex;align-items:center;gap:14px;padding:16px 32px;border-bottom:1px solid #e6dfd1;white-space:nowrap">
+      <div onClick="{{ goHomeIt }}" style="font-family:'Newsreader',serif;font-size:24px;font-weight:800;letter-spacing:-0.5px;cursor:pointer">Esperia</div>
+      <div style="display:flex;gap:16px;font-size:12.5px;font-weight:600;color:#5c554a;flex:1">
+        <span onClick="{{ goHomeIt }}" style="cursor:pointer" style-hover="color:#b3261e">In primo piano</span>
+        <span style="color:#b3261e;cursor:pointer">Politica</span>
+        <span style="cursor:pointer" style-hover="color:#b3261e">Mondo</span>
+        <span style="cursor:pointer" style-hover="color:#b3261e">Economia</span>
+        <span style="cursor:pointer" style-hover="color:#b3261e">Opinioni</span>
+        <span style="cursor:pointer" style-hover="color:#b3261e">Video</span>
+        <span onClick="{{ goCommunity }}" style="cursor:pointer" style-hover="color:#b3261e">Community</span>
+      </div>
+      <div style="display:flex;gap:2px;background:#f1ebdd;border-radius:999px;padding:3px">
+        <div style="font-size:11px;font-weight:700;background:#211d18;color:#faf7f0;border-radius:999px;padding:5px 12px;cursor:pointer">IT</div>
+        <div onClick="{{ goArticleUs }}" style="font-size:11px;font-weight:700;color:#8a8378;border-radius:999px;padding:5px 12px;cursor:pointer" style-hover="color:#211d18">EN</div>
+      </div>
+      <div style="font-size:12px;font-weight:700;background:#b3261e;color:#faf7f0;border-radius:999px;padding:7px 16px;cursor:pointer" style-hover="background:#8f1e17">Abbonati</div>
+    </div>
+
+    <div style="max-width:720px;margin:0 auto;padding:44px 0 0;display:flex;flex-direction:column;gap:18px">
+      <div style="display:flex;align-items:center;gap:10px;font-size:10.5px;font-weight:700;letter-spacing:2px;color:#b3261e">
+        <span>POLITICA</span><span style="color:#d9d2c4">/</span><span style="color:#8a8378;letter-spacing:1px;font-weight:600">ESTERI</span>
+      </div>
+      <div style="font-family:'Newsreader',serif;font-size:44px;line-height:1.1;font-weight:700;letter-spacing:-0.5px;text-wrap:pretty">Nuovo attacco di Trump a Meloni, la politica italiana reagisce</div>
+      <div style="font-size:17px;line-height:1.55;color:#5c554a">Dal governo all'opposizione, le risposte alle parole del presidente americano. La Farnesina frena, l'opposizione attacca. La premier è attesa al vertice di Ankara.</div>
+      <div style="display:flex;align-items:center;gap:12px;padding:16px 0;border-top:1px solid #e6dfd1;border-bottom:1px solid #e6dfd1">
+        <div style="width:38px;height:38px;border-radius:50%;background:repeating-linear-gradient(45deg,#e0d8c8 0 4px,#efe9dc 4px 8px)"></div>
+        <div style="display:flex;flex-direction:column;gap:2px;flex:1">
+          <div style="font-size:13px;font-weight:700">Marta Renzi</div>
+          <div style="font-size:11px;color:#8a8378">Inviata politica · 7 luglio 2026, 09:40 · 8 min di lettura</div>
+        </div>
+        <div style="font-size:11.5px;font-weight:600;border:1px solid #d9d2c4;border-radius:999px;padding:7px 14px;cursor:pointer" style-hover="border-color:#211d18">↗ Condividi</div>
+        <div onClick="{{ toggleSave }}" style="font-size:11.5px;font-weight:700;background:#211d18;color:#faf7f0;border-radius:999px;padding:7px 16px;cursor:pointer" style-hover="background:#3a352c">{{ saveLabelIt }}</div>
+      </div>
+    </div>
+
+    <div style="max-width:880px;margin:0 auto;padding:28px 0 0">
+      <div style="height:380px"><x-import component-from-global-scope="image-slot" from="./image-slot.js" id="it-article-hero" shape="rounded" radius="14" placeholder="foto: vertice di Ankara" src="uploads/ankara-Nato.jpg" hint-size="100%,380px"></x-import></div>
+      <div style="font-size:11px;color:#8a8378;padding:10px 4px 0;max-width:720px;margin:0 auto">L'arrivo di Trump ad Ankara, accolto da Erdogan — Ansa</div>
+    </div>
+
+    <div style="max-width:720px;margin:0 auto;padding:32px 0 8px;display:flex;flex-direction:column;gap:20px;font-size:16.5px;line-height:1.75;color:#3a352c">
+      <p style="margin:0"><span style="font-family:'Newsreader',serif;font-weight:800;font-size:28px;color:#b3261e">R</span>oma — Le nuove parole di Donald Trump rivolte a Giorgia Meloni riaccendono il dibattito politico italiano. Nel giro di poche ore sono arrivate le reazioni di quasi tutti i leader, con toni molto diversi tra maggioranza e opposizione.</p>
+      <p style="margin:0">La linea del governo è quella della prudenza: il ministro degli Esteri invita a non alimentare polemiche e ribadisce che la collaborazione con Washington non è in discussione. Sulla stessa lunghezza d'onda il ministro della Difesa Crosetto, per cui i rapporti tra i due Paesi devono restare saldi al di là delle persone.</p>
+      <div style="border-left:3px solid #b3261e;padding:6px 0 6px 24px;margin:10px 0;font-family:'Newsreader',serif;font-size:25px;line-height:1.35;font-weight:600;font-style:italic;color:#211d18;text-wrap:pretty">«Parole che si commentano da sole»<div style="font-family:Archivo,sans-serif;font-style:normal;font-size:11px;font-weight:600;color:#8a8378;margin-top:10px">IL MINISTRO DEGLI ESTERI ANTONIO TAJANI</div></div>
+      <p style="margin:0">Molto più duri i toni dell'opposizione, con Calenda che attacca frontalmente il presidente americano, mentre Salvini sceglie di non commentare. Sullo sfondo, il nodo delle spese militari, su cui La Russa rivendica l'autonomia delle decisioni italiane.</p>
+      <p style="margin:0">Il caso arriva alla vigilia del vertice di Ankara, dove la premier è attesa nelle prossime ore: sul tavolo i dossier sui rapporti transatlantici, la difesa europea e il Mediterraneo.</p>
+    </div>
+
+    <div style="max-width:720px;margin:24px auto 0;padding:20px 0 0;display:flex;align-items:center;gap:10px;border-top:1px solid #e6dfd1">
+      <div style="font-size:11px;font-weight:600;background:#f1ebdd;border-radius:999px;padding:6px 14px;color:#5c554a;cursor:pointer" style-hover="background:#ece4d1">trump</div>
+      <div style="font-size:11px;font-weight:600;background:#f1ebdd;border-radius:999px;padding:6px 14px;color:#5c554a;cursor:pointer" style-hover="background:#ece4d1">meloni</div>
+      <div style="font-size:11px;font-weight:600;background:#f1ebdd;border-radius:999px;padding:6px 14px;color:#5c554a;cursor:pointer" style-hover="background:#ece4d1">usa-italia</div>
+    </div>
+
+    <div style="max-width:720px;margin:0 auto;padding:32px 0 48px;display:flex;flex-direction:column;gap:16px">
+      <div style="font-size:10.5px;font-weight:700;letter-spacing:2px;color:#8a8378">CORRELATI</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
+        <div onClick="{{ goArticleIt }}" style="display:flex;flex-direction:column;gap:9px;border-top:1px solid #e6dfd1;padding-top:14px;cursor:pointer" style-hover="opacity:.75">
+          <div style="font-size:10.5px;font-weight:700;letter-spacing:2px;color:#b3261e">MONDO</div>
+          <div style="font-family:'Newsreader',serif;font-size:20px;line-height:1.25;font-weight:600">Meloni verso il vertice di Ankara: i dossier sul tavolo</div>
+          <div style="font-size:11px;color:#8a8378">Elena Costa · 3 ore fa</div>
+        </div>
+        <div onClick="{{ goArticleIt }}" style="display:flex;flex-direction:column;gap:9px;border-top:1px solid #e6dfd1;padding-top:14px;cursor:pointer" style-hover="opacity:.75">
+          <div style="font-size:10.5px;font-weight:700;letter-spacing:2px;color:#b3261e">POLITICA</div>
+          <div style="font-family:'Newsreader',serif;font-size:20px;line-height:1.25;font-weight:600">Spese militari, il nodo delle scelte italiane</div>
+          <div style="font-size:11px;color:#8a8378">Luca Ferraro · 5 ore fa</div>
+        </div>
+      </div>
+      <div style="background:#211d18;color:#faf7f0;padding:22px 26px;border-radius:14px;display:flex;align-items:center;gap:20px;margin-top:8px">
+        <div style="display:flex;flex-direction:column;gap:5px;flex:1">
+          <div style="font-size:10px;font-weight:700;letter-spacing:2px;color:#e8b04b">NEWSLETTER</div>
+          <div style="font-family:'Newsreader',serif;font-size:19px;font-weight:600">Il punto delle 7 — la politica in cinque minuti</div>
+        </div>
+        <input placeholder="la tua email" style="background:#332e26;border:none;outline:none;border-radius:999px;padding:9px 16px;font-size:11.5px;color:#faf7f0;width:180px;font-family:Archivo,sans-serif">
+        <div onClick="{{ subscribe }}" style="background:#faf7f0;color:#211d18;border-radius:999px;padding:9px 18px;font-size:11.5px;font-weight:700;cursor:pointer" style-hover="background:#e8b04b">{{ subLabelIt }}</div>
+      </div>
+    </div>
+  </div>
+</div>
+</sc-if>
+
+<!-- ================= HOME US ================= -->
+<sc-if value="{{ isHomeUs }}" hint-placeholder-val="{{ false }}">
+<div style="min-height:100vh;background:#faf7f0">
+  <div style="max-width:1280px;margin:0 auto">
+    <div style="display:flex;align-items:center;gap:14px;padding:18px 32px;border-bottom:1px solid #e6dfd1;white-space:nowrap">
+      <div style="display:flex;align-items:baseline;gap:10px">
+        <div onClick="{{ goHomeUs }}" style="font-family:'Newsreader',serif;font-size:26px;font-weight:800;letter-spacing:-0.5px;cursor:pointer">Esperia</div>
+        <div style="font-size:9px;font-weight:700;letter-spacing:1.5px;color:#b3261e;border:1px solid #e6c4c1;border-radius:4px;padding:3px 7px">US EDITION</div>
+      </div>
+      <div style="display:flex;gap:16px;font-size:13px;font-weight:600;color:#5c554a;flex:1">
+        <span onClick="{{ goHomeUs }}" style="color:#b3261e;cursor:pointer">Top stories</span>
+        <span style="cursor:pointer" style-hover="color:#b3261e">Politics</span>
+        <span style="cursor:pointer" style-hover="color:#b3261e">World</span>
+        <span style="cursor:pointer" style-hover="color:#b3261e">Economy</span>
+        <span style="cursor:pointer" style-hover="color:#b3261e">Opinion</span>
+        <span style="cursor:pointer" style-hover="color:#b3261e">Video</span>
+        <span onClick="{{ goCommunity }}" style="cursor:pointer" style-hover="color:#b3261e">Community</span>
+      </div>
+      <div style="display:flex;gap:2px;background:#f1ebdd;border-radius:999px;padding:3px">
+        <div onClick="{{ goHomeIt }}" style="font-size:11px;font-weight:700;color:#8a8378;border-radius:999px;padding:5px 12px;cursor:pointer" style-hover="color:#211d18">IT</div>
+        <div style="font-size:11px;font-weight:700;background:#211d18;color:#faf7f0;border-radius:999px;padding:5px 12px;cursor:pointer">EN</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;background:#f1ebdd;border-radius:999px;padding:8px 16px;font-size:12px;color:#8a8378;flex:1;min-width:40px;max-width:150px;cursor:text;overflow:hidden">⌕ Search</div>
+      <div style="font-size:12px;font-weight:700;background:#b3261e;color:#faf7f0;border-radius:999px;padding:8px 18px;cursor:pointer" style-hover="background:#8f1e17">Subscribe</div>
+    </div>
+    <sc-if value="{{ showLive }}" hint-placeholder-val="{{ true }}">
+    <div style="display:flex;gap:10px;align-items:center;padding:11px 40px;border-bottom:1px solid #e6dfd1;font-size:12px;color:#8a8378">
+      <span style="font-size:10px;font-weight:700;letter-spacing:1px;background:#b3261e;color:#faf7f0;border-radius:4px;padding:3px 8px">LIVE</span>
+      <span style="color:#211d18;font-weight:600">House GOP meets on voter ID bill</span>
+      <span>· Speaker Johnson vows a floor vote despite the revolt · updated 3 min ago</span>
+    </div>
+    </sc-if>
+    <div style="display:grid;grid-template-columns:1.5fr 1fr;gap:40px;padding:36px 40px 8px">
+      <div onClick="{{ goArticleUs }}" style="display:flex;flex-direction:column;gap:16px;cursor:pointer" style-hover="opacity:.88">
+        <div style="height:340px"><x-import component-from-global-scope="image-slot" from="./image-slot.js" id="us-hero" shape="rounded" radius="14" placeholder="photo: Speaker Johnson" hint-size="100%,340px"></x-import></div>
+        <div style="font-size:10.5px;font-weight:700;letter-spacing:2px;color:#b3261e">POLITICS</div>
+        <div style="font-family:'Newsreader',serif;font-size:40px;line-height:1.12;font-weight:700;letter-spacing:-0.5px;text-wrap:pretty">Johnson says the House will pass Trump's voter ID bill after GOP revolt</div>
+        <div style="font-size:15px;line-height:1.55;color:#5c554a;max-width:600px">The Speaker plans to move the measure through a lengthy floor process after a rebellion inside his own conference stalled the first attempt.</div>
+        <div style="display:flex;align-items:center;gap:10px;font-size:12px;color:#8a8378">
+          <div style="width:28px;height:28px;border-radius:50%;background:repeating-linear-gradient(45deg,#e0d8c8 0 4px,#efe9dc 4px 8px)"></div>
+          <span style="color:#211d18;font-weight:700">Sarah Whitman</span><span>· 2 hours ago · 8 min read</span>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column">
+        <div style="font-size:10.5px;font-weight:700;letter-spacing:2px;color:#8a8378;padding-bottom:14px">MOST READ</div>
+        <div style="display:flex;flex-direction:column">
+          <div onClick="{{ goArticleUs }}" style="display:flex;gap:14px;align-items:baseline;padding:16px 0;border-top:1px solid #e6dfd1;cursor:pointer" style-hover="opacity:.75">
+            <div style="font-size:13px;font-weight:800;color:#b3261e">01</div>
+            <div style="display:flex;flex-direction:column;gap:5px">
+              <div style="font-family:'Newsreader',serif;font-size:19px;line-height:1.25;font-weight:600">McMorrow suspends Senate run, narrowing the Democratic field</div>
+              <div style="font-size:11px;color:#8a8378">Politics · yesterday</div>
+            </div>
+          </div>
+          <div onClick="{{ goArticleUs }}" style="display:flex;gap:14px;align-items:baseline;padding:16px 0;border-top:1px solid #e6dfd1;cursor:pointer" style-hover="opacity:.75">
+            <div style="font-size:13px;font-weight:800;color:#b3261e">02</div>
+            <div style="display:flex;flex-direction:column;gap:5px">
+              <div style="font-family:'Newsreader',serif;font-size:19px;line-height:1.25;font-weight:600">McConnell remains hospitalized as his recovery continues</div>
+              <div style="font-size:11px;color:#8a8378">Politics · today</div>
+            </div>
+          </div>
+          <div onClick="{{ goArticleUs }}" style="display:flex;gap:14px;align-items:baseline;padding:16px 0;border-top:1px solid #e6dfd1;cursor:pointer" style-hover="opacity:.75">
+            <div style="font-size:13px;font-weight:800;color:#b3261e">03</div>
+            <div style="display:flex;flex-direction:column;gap:5px">
+              <div style="font-family:'Newsreader',serif;font-size:19px;line-height:1.25;font-weight:600">Primary turnout so far points to a Democratic enthusiasm edge</div>
+              <div style="font-size:11px;color:#8a8378">Analysis · today</div>
+            </div>
+          </div>
+        </div>
+        </div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:28px;padding:28px 40px 36px">
+      <div onClick="{{ goArticleUs }}" style="display:flex;flex-direction:column;gap:10px;cursor:pointer" style-hover="opacity:.85">
+        <div style="height:150px"><x-import component-from-global-scope="image-slot" from="./image-slot.js" id="us-world" shape="rounded" radius="12" placeholder="photo: Damascus" src="uploads/emmanuel-macron-a-destra-l-auto-esplosa-vicino-al-suo-hotel-a-damasco.webp" hint-size="100%,150px"></x-import></div>
+        <div style="font-size:10.5px;font-weight:700;letter-spacing:2px;color:#b3261e">WORLD</div>
+        <div style="font-family:'Newsreader',serif;font-size:21px;line-height:1.25;font-weight:600">Macron unharmed after blasts outside his Damascus hotel; visit continues</div>
+        <div style="font-size:11px;color:#8a8378">James Okafor · 2 hours ago</div>
+      </div>
+      <div onClick="{{ goArticleUs }}" style="display:flex;flex-direction:column;gap:10px;cursor:pointer" style-hover="opacity:.85">
+        <div style="height:150px"><x-import component-from-global-scope="image-slot" from="./image-slot.js" id="us-econ" shape="rounded" radius="12" placeholder="photo: Toyota assembly line" hint-size="100%,150px"></x-import></div>
+        <div style="font-size:10.5px;font-weight:700;letter-spacing:2px;color:#b3261e">ECONOMY</div>
+        <div style="font-family:'Newsreader',serif;font-size:21px;line-height:1.25;font-weight:600">Toyota to shift most Tacoma production from Mexico to the U.S.</div>
+        <div style="font-size:11px;color:#8a8378">Dana Liu · 5 hours ago</div>
+      </div>
+      <div onClick="{{ goArticleUs }}" style="display:flex;flex-direction:column;gap:10px;background:#f1ebdd;border-radius:12px;padding:22px;cursor:pointer" style-hover="background:#ece4d1">
+        <div style="font-size:10.5px;font-weight:700;letter-spacing:2px;color:#8a8378">OPINION</div>
+        <div style="font-family:'Newsreader',serif;font-size:23px;line-height:1.3;font-weight:600;font-style:italic;text-wrap:pretty">"Voter ID and the politics of who gets counted"</div>
+        <div style="display:flex;align-items:center;gap:10px;margin-top:auto;font-size:11px;color:#8a8378">
+          <div style="width:26px;height:26px;border-radius:50%;background:repeating-linear-gradient(45deg,#e0d8c8 0 4px,#efe9dc 4px 8px)"></div>
+          <span style="color:#211d18;font-weight:700">Grace Miller</span><span>· today</span>
+        </div>
+      </div>
+    </div>
+    <div style="margin:0 40px 48px;background:#211d18;color:#faf7f0;border-radius:14px;padding:30px 36px;display:flex;align-items:center;gap:32px;flex-wrap:wrap">
+      <div style="display:flex;flex-direction:column;gap:8px;flex:1;min-width:280px">
+        <div style="font-size:10px;font-weight:700;letter-spacing:2px;color:#e8b04b">NEWSLETTER · THE 7AM BRIEF</div>
+        <div style="font-family:'Newsreader',serif;font-size:26px;line-height:1.25;font-weight:600;text-wrap:pretty">Politics in five minutes, every morning at 7</div>
+      </div>
+      <div style="display:flex;gap:10px;align-items:center">
+        <input placeholder="your email" style="background:#332e26;border:none;outline:none;border-radius:999px;padding:11px 18px;font-size:12px;color:#faf7f0;width:220px;font-family:Archivo,sans-serif">
+        <div onClick="{{ subscribe }}" style="background:#faf7f0;color:#211d18;border-radius:999px;padding:11px 20px;font-size:12px;font-weight:700;cursor:pointer" style-hover="background:#e8b04b">{{ subLabelUs }}</div>
+      </div>
+    </div>
+  </div>
+</div>
+</sc-if>
+
+<!-- ================= ARTICLE US ================= -->
+<sc-if value="{{ isArticleUs }}" hint-placeholder-val="{{ false }}">
+<div style="min-height:100vh;background:#faf7f0">
+  <div style="max-width:1280px;margin:0 auto">
+    <div style="display:flex;align-items:center;gap:14px;padding:16px 32px;border-bottom:1px solid #e6dfd1;white-space:nowrap">
+      <div style="display:flex;align-items:baseline;gap:10px">
+        <div onClick="{{ goHomeUs }}" style="font-family:'Newsreader',serif;font-size:24px;font-weight:800;letter-spacing:-0.5px;cursor:pointer">Esperia</div>
+        <div style="font-size:9px;font-weight:700;letter-spacing:1.5px;color:#b3261e;border:1px solid #e6c4c1;border-radius:4px;padding:3px 7px">US EDITION</div>
+      </div>
+      <div style="display:flex;gap:16px;font-size:12.5px;font-weight:600;color:#5c554a;flex:1">
+        <span onClick="{{ goHomeUs }}" style="cursor:pointer" style-hover="color:#b3261e">Top stories</span>
+        <span style="color:#b3261e;cursor:pointer">Politics</span>
+        <span style="cursor:pointer" style-hover="color:#b3261e">World</span>
+        <span style="cursor:pointer" style-hover="color:#b3261e">Economy</span>
+        <span style="cursor:pointer" style-hover="color:#b3261e">Opinion</span>
+        <span style="cursor:pointer" style-hover="color:#b3261e">Video</span>
+        <span onClick="{{ goCommunity }}" style="cursor:pointer" style-hover="color:#b3261e">Community</span>
+      </div>
+      <div style="display:flex;gap:2px;background:#f1ebdd;border-radius:999px;padding:3px">
+        <div onClick="{{ goArticleIt }}" style="font-size:11px;font-weight:700;color:#8a8378;border-radius:999px;padding:5px 12px;cursor:pointer" style-hover="color:#211d18">IT</div>
+        <div style="font-size:11px;font-weight:700;background:#211d18;color:#faf7f0;border-radius:999px;padding:5px 12px;cursor:pointer">EN</div>
+      </div>
+      <div style="font-size:12px;font-weight:700;background:#b3261e;color:#faf7f0;border-radius:999px;padding:7px 16px;cursor:pointer" style-hover="background:#8f1e17">Subscribe</div>
+    </div>
+
+    <div style="max-width:720px;margin:0 auto;padding:44px 0 0;display:flex;flex-direction:column;gap:18px">
+      <div style="display:flex;align-items:center;gap:10px;font-size:10.5px;font-weight:700;letter-spacing:2px;color:#b3261e">
+        <span>POLITICS</span><span style="color:#d9d2c4">/</span><span style="color:#8a8378;letter-spacing:1px;font-weight:600">ELECTIONS</span>
+      </div>
+      <div style="font-family:'Newsreader',serif;font-size:44px;line-height:1.1;font-weight:700;letter-spacing:-0.5px;text-wrap:pretty">Johnson says the House will pass Trump's voter ID bill after GOP revolt</div>
+      <div style="font-size:17px;line-height:1.55;color:#5c554a">The Speaker plans to move the measure through a lengthy floor process after a rebellion inside his own conference stalled the first attempt.</div>
+      <div style="display:flex;align-items:center;gap:12px;padding:16px 0;border-top:1px solid #e6dfd1;border-bottom:1px solid #e6dfd1">
+        <div style="width:38px;height:38px;border-radius:50%;background:repeating-linear-gradient(45deg,#e0d8c8 0 4px,#efe9dc 4px 8px)"></div>
+        <div style="display:flex;flex-direction:column;gap:2px;flex:1">
+          <div style="font-size:13px;font-weight:700">Sarah Whitman</div>
+          <div style="font-size:11px;color:#8a8378">Politics correspondent · July 7, 2026, 9:40 AM · 8 min read</div>
+        </div>
+        <div style="font-size:11.5px;font-weight:600;border:1px solid #d9d2c4;border-radius:999px;padding:7px 14px;cursor:pointer" style-hover="border-color:#211d18">↗ Share</div>
+        <div onClick="{{ toggleSave }}" style="font-size:11.5px;font-weight:700;background:#211d18;color:#faf7f0;border-radius:999px;padding:7px 16px;cursor:pointer" style-hover="background:#3a352c">{{ saveLabelUs }}</div>
+      </div>
+    </div>
+
+    <div style="max-width:880px;margin:0 auto;padding:28px 0 0">
+      <div style="height:380px"><x-import component-from-global-scope="image-slot" from="./image-slot.js" id="us-article-hero" shape="rounded" radius="14" placeholder="photo: U.S. Capitol" hint-size="100%,380px"></x-import></div>
+      <div style="font-size:11px;color:#8a8378;padding:10px 4px 0;max-width:720px;margin:0 auto">The U.S. Capitol ahead of this week's floor votes — AP</div>
+    </div>
+
+    <div style="max-width:720px;margin:0 auto;padding:32px 0 8px;display:flex;flex-direction:column;gap:20px;font-size:16.5px;line-height:1.75;color:#3a352c">
+      <p style="margin:0"><span style="font-family:'Newsreader',serif;font-weight:800;font-size:28px;color:#b3261e">W</span>ashington — Speaker Mike Johnson said the House will pass President Trump's voter ID bill, days after a revolt inside the Republican conference stalled the measure on its first attempt. The path forward runs through a longer, more arduous floor process.</p>
+      <p style="margin:0">The renewed push lands in a charged environment for election policy. A recent Supreme Court decision is expected to reduce the number of nonwhite members of Congress, and a civil-rights coalition has responded with a $20 million campaign to mobilize Black voters ahead of the midterms.</p>
+      <div style="border-left:3px solid #b3261e;padding:6px 0 6px 24px;margin:10px 0;font-family:'Newsreader',serif;font-size:25px;line-height:1.35;font-weight:600;font-style:italic;color:#211d18;text-wrap:pretty">The rules of voting are shaping up as the defining fight of the 2026 midterms<div style="font-family:Archivo,sans-serif;font-style:normal;font-size:11px;font-weight:600;color:#8a8378;margin-top:10px">FROM OUR POLITICS DESK</div></div>
+      <p style="margin:0">Turnout numbers add to the stakes: analysis of this year's primaries so far shows an enthusiasm edge for Democrats, putting pressure on Republican leadership to deliver on election-security promises before November.</p>
+      <p style="margin:0">The timing of the floor vote remains open, and leadership aides caution the process could stretch across several legislative days.</p>
+    </div>
+
+    <div style="max-width:720px;margin:24px auto 0;padding:20px 0 0;display:flex;align-items:center;gap:10px;border-top:1px solid #e6dfd1">
+      <div style="font-size:11px;font-weight:600;background:#f1ebdd;border-radius:999px;padding:6px 14px;color:#5c554a;cursor:pointer" style-hover="background:#ece4d1">voter id</div>
+      <div style="font-size:11px;font-weight:600;background:#f1ebdd;border-radius:999px;padding:6px 14px;color:#5c554a;cursor:pointer" style-hover="background:#ece4d1">house</div>
+      <div style="font-size:11px;font-weight:600;background:#f1ebdd;border-radius:999px;padding:6px 14px;color:#5c554a;cursor:pointer" style-hover="background:#ece4d1">midterms</div>
+    </div>
+
+    <div style="max-width:720px;margin:0 auto;padding:32px 0 48px;display:flex;flex-direction:column;gap:16px">
+      <div style="font-size:10.5px;font-weight:700;letter-spacing:2px;color:#8a8378">RELATED</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
+        <div onClick="{{ goArticleUs }}" style="display:flex;flex-direction:column;gap:9px;border-top:1px solid #e6dfd1;padding-top:14px;cursor:pointer" style-hover="opacity:.75">
+          <div style="font-size:10.5px;font-weight:700;letter-spacing:2px;color:#b3261e">ANALYSIS</div>
+          <div style="font-family:'Newsreader',serif;font-size:20px;line-height:1.25;font-weight:600">Primary turnout so far points to a Democratic enthusiasm edge</div>
+          <div style="font-size:11px;color:#8a8378">Dana Liu · today</div>
+        </div>
+        <div onClick="{{ goArticleUs }}" style="display:flex;flex-direction:column;gap:9px;border-top:1px solid #e6dfd1;padding-top:14px;cursor:pointer" style-hover="opacity:.75">
+          <div style="font-size:10.5px;font-weight:700;letter-spacing:2px;color:#b3261e">POLITICS</div>
+          <div style="font-family:'Newsreader',serif;font-size:20px;line-height:1.25;font-weight:600">A $20 million push to mobilize Black voters ahead of the midterms</div>
+          <div style="font-size:11px;color:#8a8378">James Okafor · today</div>
+        </div>
+      </div>
+      <div style="background:#211d18;color:#faf7f0;padding:22px 26px;border-radius:14px;display:flex;align-items:center;gap:20px;margin-top:8px">
+        <div style="display:flex;flex-direction:column;gap:5px;flex:1">
+          <div style="font-size:10px;font-weight:700;letter-spacing:2px;color:#e8b04b">NEWSLETTER</div>
+          <div style="font-family:'Newsreader',serif;font-size:19px;font-weight:600">The 7AM Brief — politics in five minutes</div>
+        </div>
+        <input placeholder="your email" style="background:#332e26;border:none;outline:none;border-radius:999px;padding:9px 16px;font-size:11.5px;color:#faf7f0;width:180px;font-family:Archivo,sans-serif">
+        <div onClick="{{ subscribe }}" style="background:#faf7f0;color:#211d18;border-radius:999px;padding:9px 18px;font-size:11.5px;font-weight:700;cursor:pointer" style-hover="background:#e8b04b">{{ subLabelUs }}</div>
+      </div>
+    </div>
+  </div>
+</div>
+</sc-if>
+
+
+
+<!-- ================= COMMUNITY ITALIA ================= -->
+<sc-if value="{{ isCommunityIt }}" hint-placeholder-val="{{ false }}">
+<div style="min-height:100vh;background:#faf7f0">
+  <div style="max-width:1280px;margin:0 auto">
+    <div style="display:flex;align-items:center;gap:14px;padding:18px 32px;border-bottom:1px solid #e6dfd1;white-space:nowrap">
+      <div onClick="{{ goHomeIt }}" style="font-family:'Newsreader',serif;font-size:26px;font-weight:800;letter-spacing:-0.5px;cursor:pointer">Esperia</div>
+      <div style="display:flex;gap:16px;font-size:13px;font-weight:600;color:#5c554a;flex:1">
+        <span onClick="{{ goHomeIt }}" style="cursor:pointer" style-hover="color:#b3261e">In primo piano</span>
+        <span style="cursor:pointer" style-hover="color:#b3261e">Politica</span>
+        <span style="cursor:pointer" style-hover="color:#b3261e">Mondo</span>
+        <span style="cursor:pointer" style-hover="color:#b3261e">Economia</span>
+        <span style="cursor:pointer" style-hover="color:#b3261e">Opinioni</span>
+        <span style="cursor:pointer" style-hover="color:#b3261e">Video</span>
+        <span style="color:#b3261e;cursor:pointer">Community</span>
+      </div>
+      <div style="display:flex;gap:2px;background:#f1ebdd;border-radius:999px;padding:3px">
+        <div style="font-size:11px;font-weight:700;background:#211d18;color:#faf7f0;border-radius:999px;padding:5px 12px;cursor:pointer">IT</div>
+        <div onClick="{{ goCommunityUs }}" style="font-size:11px;font-weight:700;color:#8a8378;border-radius:999px;padding:5px 12px;cursor:pointer" style-hover="color:#211d18">EN</div>
+      </div>
+      <div style="font-size:12px;font-weight:700;background:#b3261e;color:#faf7f0;border-radius:999px;padding:8px 18px;cursor:pointer" style-hover="background:#8f1e17">Abbonati</div>
+    </div>
+
+    <div style="display:flex;align-items:flex-end;gap:20px;padding:36px 40px 22px;border-bottom:1px solid #e6dfd1">
+      <div style="display:flex;flex-direction:column;gap:8px;flex:1">
+        <div style="font-size:10.5px;font-weight:700;letter-spacing:2px;color:#b3261e">COMMUNITY</div>
+        <div style="font-family:'Newsreader',serif;font-size:36px;font-weight:700;letter-spacing:-0.5px">Le discussioni dei lettori</div>
+        <div style="font-size:14px;color:#5c554a">Confronti moderati dalla redazione sui temi del giorno.</div>
+      </div>
+      <div style="font-size:12px;font-weight:700;background:#211d18;color:#faf7f0;border-radius:999px;padding:10px 20px;cursor:pointer" style-hover="background:#3a352c">+ Nuova discussione</div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1.6fr 1fr;gap:40px;padding:28px 40px 48px">
+      <div style="display:flex;flex-direction:column">
+        <div style="display:flex;gap:8px;padding-bottom:18px">
+          <div style="font-size:11px;font-weight:700;background:#211d18;color:#faf7f0;border-radius:999px;padding:6px 14px;cursor:pointer">In evidenza</div>
+          <div style="font-size:11px;font-weight:600;background:#f1ebdd;color:#5c554a;border-radius:999px;padding:6px 14px;cursor:pointer" style-hover="background:#ece4d1">Più recenti</div>
+          <div style="font-size:11px;font-weight:600;background:#f1ebdd;color:#5c554a;border-radius:999px;padding:6px 14px;cursor:pointer" style-hover="background:#ece4d1">Più commentate</div>
+        </div>
+        <sc-for list="{{ threadsIt }}" as="t" hint-placeholder-count="4">
+          <div style="display:flex;gap:18px;padding:20px 0;border-top:1px solid #e6dfd1">
+            <div onClick="{{ t.upvote }}" style="align-self:flex-start;font-size:11.5px;font-weight:700;border-radius:10px;padding:9px 12px;cursor:pointer;background:{{ t.upBg }};color:{{ t.upFg }};min-width:44px;text-align:center">{{ t.votesLabel }}</div>
+            <div style="display:flex;flex-direction:column;gap:6px;flex:1">
+              <div style="font-size:10px;font-weight:700;letter-spacing:2px;color:#b3261e">{{ t.cat }}</div>
+              <div style="font-family:'Newsreader',serif;font-size:21px;line-height:1.25;font-weight:600;cursor:pointer" style-hover="color:#b3261e">{{ t.title }}</div>
+              <div style="font-size:13px;line-height:1.5;color:#5c554a">{{ t.excerpt }}</div>
+              <div style="display:flex;align-items:center;gap:8px;font-size:11px;color:#8a8378;padding-top:2px">
+                <div style="width:20px;height:20px;border-radius:50%;background:repeating-linear-gradient(45deg,#e0d8c8 0 4px,#efe9dc 4px 8px)"></div>
+                <span style="color:#211d18;font-weight:700">{{ t.author }}</span>
+                <span>· {{ t.replies }} risposte · {{ t.time }}</span>
+              </div>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:24px">
+        <div style="background:#211d18;color:#faf7f0;border-radius:14px;padding:24px;display:flex;flex-direction:column;gap:14px">
+          <div style="font-size:10px;font-weight:700;letter-spacing:2px;color:#e8b04b">SONDAGGIO DEL GIORNO</div>
+          <div style="font-family:'Newsreader',serif;font-size:20px;line-height:1.3;font-weight:600;text-wrap:pretty">Le parole di Trump peseranno sui rapporti Italia-USA?</div>
+          <div style="display:flex;flex-direction:column;gap:8px">
+            <sc-for list="{{ pollIt }}" as="opt" hint-placeholder-count="3">
+              <div onClick="{{ opt.vote }}" style="position:relative;overflow:hidden;border:1px solid #4a443a;border-radius:10px;padding:10px 14px;font-size:12.5px;font-weight:600;cursor:pointer;display:flex;justify-content:space-between;gap:10px" style-hover="border-color:#e8b04b">
+                <div style="position:absolute;inset:0;background:#3a352c;width:{{ opt.bar }};transition:width .4s"></div>
+                <span style="position:relative">{{ opt.mark }}{{ opt.label }}</span>
+                <span style="position:relative;color:#e8b04b;font-weight:700">{{ opt.pct }}</span>
+              </div>
+            </sc-for>
+          </div>
+          <sc-if value="{{ pollVotedNote }}" hint-placeholder-val="{{ false }}">
+            <div style="font-size:11px;color:#8a8378">Grazie del voto · 838 partecipanti</div>
+          </sc-if>
+        </div>
+
+        <div style="background:#f1ebdd;border-radius:14px;padding:24px;display:flex;flex-direction:column;gap:10px">
+          <div style="font-size:10px;font-weight:700;letter-spacing:2px;color:#8a8378">LETTERE ALLA REDAZIONE</div>
+          <div style="font-family:'Newsreader',serif;font-size:19px;line-height:1.3;font-weight:600;font-style:italic;text-wrap:pretty">«Vorrei leggere più inchieste locali, non solo palazzo»</div>
+          <div style="font-size:11px;color:#8a8378">Lettera della settimana · <span style="color:#211d18;font-weight:700">Anna T., Bergamo</span></div>
+          <div style="font-size:12px;font-weight:700;color:#b3261e;cursor:pointer;padding-top:4px" style-hover="color:#8f1e17">Scrivi alla redazione →</div>
+        </div>
+
+        <div style="border:1px solid #e6dfd1;border-radius:14px;padding:20px 24px;display:flex;flex-direction:column;gap:8px">
+          <div style="font-size:10px;font-weight:700;letter-spacing:2px;color:#8a8378">REGOLE DELLA COMMUNITY</div>
+          <div style="font-size:12.5px;line-height:1.6;color:#5c554a">Discussioni moderate dalla redazione. Niente insulti, niente disinformazione: le fonti si citano, le persone si rispettano.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</sc-if>
+
+<!-- ================= COMMUNITY US ================= -->
+<sc-if value="{{ isCommunityUs }}" hint-placeholder-val="{{ false }}">
+<div style="min-height:100vh;background:#faf7f0">
+  <div style="max-width:1280px;margin:0 auto">
+    <div style="display:flex;align-items:center;gap:14px;padding:18px 32px;border-bottom:1px solid #e6dfd1;white-space:nowrap">
+      <div style="display:flex;align-items:baseline;gap:10px">
+        <div onClick="{{ goHomeUs }}" style="font-family:'Newsreader',serif;font-size:26px;font-weight:800;letter-spacing:-0.5px;cursor:pointer">Esperia</div>
+        <div style="font-size:9px;font-weight:700;letter-spacing:1.5px;color:#b3261e;border:1px solid #e6c4c1;border-radius:4px;padding:3px 7px">US EDITION</div>
+      </div>
+      <div style="display:flex;gap:16px;font-size:13px;font-weight:600;color:#5c554a;flex:1">
+        <span onClick="{{ goHomeUs }}" style="cursor:pointer" style-hover="color:#b3261e">Top stories</span>
+        <span style="cursor:pointer" style-hover="color:#b3261e">Politics</span>
+        <span style="cursor:pointer" style-hover="color:#b3261e">World</span>
+        <span style="cursor:pointer" style-hover="color:#b3261e">Economy</span>
+        <span style="cursor:pointer" style-hover="color:#b3261e">Opinion</span>
+        <span style="cursor:pointer" style-hover="color:#b3261e">Video</span>
+        <span style="color:#b3261e;cursor:pointer">Community</span>
+      </div>
+      <div style="display:flex;gap:2px;background:#f1ebdd;border-radius:999px;padding:3px">
+        <div onClick="{{ goCommunityIt }}" style="font-size:11px;font-weight:700;color:#8a8378;border-radius:999px;padding:5px 12px;cursor:pointer" style-hover="color:#211d18">IT</div>
+        <div style="font-size:11px;font-weight:700;background:#211d18;color:#faf7f0;border-radius:999px;padding:5px 12px;cursor:pointer">EN</div>
+      </div>
+      <div style="font-size:12px;font-weight:700;background:#b3261e;color:#faf7f0;border-radius:999px;padding:8px 18px;cursor:pointer" style-hover="background:#8f1e17">Subscribe</div>
+    </div>
+
+    <div style="display:flex;align-items:flex-end;gap:20px;padding:36px 40px 22px;border-bottom:1px solid #e6dfd1">
+      <div style="display:flex;flex-direction:column;gap:8px;flex:1">
+        <div style="font-size:10.5px;font-weight:700;letter-spacing:2px;color:#b3261e">COMMUNITY</div>
+        <div style="font-family:'Newsreader',serif;font-size:36px;font-weight:700;letter-spacing:-0.5px">Reader discussions</div>
+        <div style="font-size:14px;color:#5c554a">Editor-moderated conversations on the stories of the day.</div>
+      </div>
+      <div style="font-size:12px;font-weight:700;background:#211d18;color:#faf7f0;border-radius:999px;padding:10px 20px;cursor:pointer" style-hover="background:#3a352c">+ New discussion</div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1.6fr 1fr;gap:40px;padding:28px 40px 48px">
+      <div style="display:flex;flex-direction:column">
+        <div style="display:flex;gap:8px;padding-bottom:18px">
+          <div style="font-size:11px;font-weight:700;background:#211d18;color:#faf7f0;border-radius:999px;padding:6px 14px;cursor:pointer">Featured</div>
+          <div style="font-size:11px;font-weight:600;background:#f1ebdd;color:#5c554a;border-radius:999px;padding:6px 14px;cursor:pointer" style-hover="background:#ece4d1">Newest</div>
+          <div style="font-size:11px;font-weight:600;background:#f1ebdd;color:#5c554a;border-radius:999px;padding:6px 14px;cursor:pointer" style-hover="background:#ece4d1">Most discussed</div>
+        </div>
+        <sc-for list="{{ threadsUs }}" as="t" hint-placeholder-count="4">
+          <div style="display:flex;gap:18px;padding:20px 0;border-top:1px solid #e6dfd1">
+            <div onClick="{{ t.upvote }}" style="align-self:flex-start;font-size:11.5px;font-weight:700;border-radius:10px;padding:9px 12px;cursor:pointer;background:{{ t.upBg }};color:{{ t.upFg }};min-width:44px;text-align:center">{{ t.votesLabel }}</div>
+            <div style="display:flex;flex-direction:column;gap:6px;flex:1">
+              <div style="font-size:10px;font-weight:700;letter-spacing:2px;color:#b3261e">{{ t.cat }}</div>
+              <div style="font-family:'Newsreader',serif;font-size:21px;line-height:1.25;font-weight:600;cursor:pointer" style-hover="color:#b3261e">{{ t.title }}</div>
+              <div style="font-size:13px;line-height:1.5;color:#5c554a">{{ t.excerpt }}</div>
+              <div style="display:flex;align-items:center;gap:8px;font-size:11px;color:#8a8378;padding-top:2px">
+                <div style="width:20px;height:20px;border-radius:50%;background:repeating-linear-gradient(45deg,#e0d8c8 0 4px,#efe9dc 4px 8px)"></div>
+                <span style="color:#211d18;font-weight:700">{{ t.author }}</span>
+                <span>· {{ t.replies }} replies · {{ t.time }}</span>
+              </div>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:24px">
+        <div style="background:#211d18;color:#faf7f0;border-radius:14px;padding:24px;display:flex;flex-direction:column;gap:14px">
+          <div style="font-size:10px;font-weight:700;letter-spacing:2px;color:#e8b04b">POLL OF THE DAY</div>
+          <div style="font-family:'Newsreader',serif;font-size:20px;line-height:1.3;font-weight:600;text-wrap:pretty">Will the voter ID bill pass the House this month?</div>
+          <div style="display:flex;flex-direction:column;gap:8px">
+            <sc-for list="{{ pollUs }}" as="opt" hint-placeholder-count="3">
+              <div onClick="{{ opt.vote }}" style="position:relative;overflow:hidden;border:1px solid #4a443a;border-radius:10px;padding:10px 14px;font-size:12.5px;font-weight:600;cursor:pointer;display:flex;justify-content:space-between;gap:10px" style-hover="border-color:#e8b04b">
+                <div style="position:absolute;inset:0;background:#3a352c;width:{{ opt.bar }};transition:width .4s"></div>
+                <span style="position:relative">{{ opt.mark }}{{ opt.label }}</span>
+                <span style="position:relative;color:#e8b04b;font-weight:700">{{ opt.pct }}</span>
+              </div>
+            </sc-for>
+          </div>
+          <sc-if value="{{ pollVotedNote }}" hint-placeholder-val="{{ false }}">
+            <div style="font-size:11px;color:#8a8378">Thanks for voting · 838 votes</div>
+          </sc-if>
+        </div>
+
+        <div style="background:#f1ebdd;border-radius:14px;padding:24px;display:flex;flex-direction:column;gap:10px">
+          <div style="font-size:10px;font-weight:700;letter-spacing:2px;color:#8a8378">LETTERS TO THE EDITOR</div>
+          <div style="font-family:'Newsreader',serif;font-size:19px;line-height:1.3;font-weight:600;font-style:italic;text-wrap:pretty">"I'd love more local investigations, not just the Beltway"</div>
+          <div style="font-size:11px;color:#8a8378">Letter of the week · <span style="color:#211d18;font-weight:700">Anna T., Chicago</span></div>
+          <div style="font-size:12px;font-weight:700;color:#b3261e;cursor:pointer;padding-top:4px" style-hover="color:#8f1e17">Write to the editor →</div>
+        </div>
+
+        <div style="border:1px solid #e6dfd1;border-radius:14px;padding:20px 24px;display:flex;flex-direction:column;gap:8px">
+          <div style="font-size:10px;font-weight:700;letter-spacing:2px;color:#8a8378">COMMUNITY GUIDELINES</div>
+          <div style="font-size:12.5px;line-height:1.6;color:#5c554a">Editor-moderated conversations. No insults, no misinformation: cite your sources, respect the people.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</sc-if></x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;edition&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;it&quot;,&quot;us&quot;],&quot;default&quot;:&quot;it&quot;,&quot;tsType&quot;:&quot;'it' | 'us'&quot;,&quot;section&quot;:&quot;Prototipo&quot;},&quot;showLive&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Prototipo&quot;}}">
+class Component extends DCLogic {
+  state = { screen: 'home', edition: null, saved: false, subscribed: false, pollVote: null, upvoted: {} };
+
+  pollBase = [412, 258, 167];
+
+  makePoll(labels) {
+    const voted = this.state.pollVote !== null;
+    const counts = this.pollBase.map((n, i) => n + (this.state.pollVote === i ? 1 : 0));
+    const tot = counts.reduce((a, b) => a + b, 0);
+    return labels.map((label, i) => ({
+      label,
+      pct: voted ? Math.round(counts[i] / tot * 100) + '%' : '',
+      bar: voted ? Math.round(counts[i] / tot * 100) + '%' : '0%',
+      mark: this.state.pollVote === i ? '✓ ' : '',
+      vote: () => this.setState({ pollVote: i }),
+    }));
+  }
+
+  makeThreads(list) {
+    return list.map((t, i) => {
+      const on = !!this.state.upvoted[t.id];
+      return Object.assign({}, t, {
+        votesLabel: '▲ ' + (t.votes + (on ? 1 : 0)),
+        upBg: on ? '#211d18' : '#f1ebdd',
+        upFg: on ? '#faf7f0' : '#5c554a',
+        upvote: () => this.setState(s => ({ upvoted: Object.assign({}, s.upvoted, { [t.id]: !s.upvoted[t.id] }) })),
+      });
+    });
+  }
+
+  go(screen, edition) {
+    this.setState({ screen, edition });
+    window.scrollTo(0, 0);
+  }
+
+  renderVals() {
+    const edition = this.state.edition ?? (this.props.edition ?? 'it');
+    const screen = this.state.screen;
+    return {
+      isHomeIt: screen === 'home' && edition === 'it',
+      isArticleIt: screen === 'article' && edition === 'it',
+      isHomeUs: screen === 'home' && edition === 'us',
+      isArticleUs: screen === 'article' && edition === 'us',
+      goHomeIt: () => this.go('home', 'it'),
+      goHomeUs: () => this.go('home', 'us'),
+      goArticleIt: () => this.go('article', 'it'),
+      goArticleUs: () => this.go('article', 'us'),
+      toggleSave: () => this.setState(s => ({ saved: !s.saved })),
+      saveLabelIt: this.state.saved ? 'Salvato ✓' : 'Salva',
+      saveLabelUs: this.state.saved ? 'Saved ✓' : 'Save',
+      subscribe: () => this.setState({ subscribed: true }),
+      subLabelIt: this.state.subscribed ? 'Iscritto ✓' : 'Iscriviti',
+      subLabelUs: this.state.subscribed ? 'Signed up ✓' : 'Sign up',
+      showLive: this.props.showLive ?? true,
+      isCommunityIt: screen === 'community' && edition === 'it',
+      isCommunityUs: screen === 'community' && edition === 'us',
+      goCommunity: () => this.go('community', edition),
+      goCommunityIt: () => this.go('community', 'it'),
+      goCommunityUs: () => this.go('community', 'us'),
+      pollIt: this.makePoll(['Sì, il rapporto si incrinerà', 'No, è solo retorica', 'Troppo presto per dirlo']),
+      pollUs: this.makePoll(['Yes, it will pass', 'No, the revolt will hold', 'Too early to tell']),
+      pollVotedNote: this.state.pollVote !== null,
+      threadsIt: this.makeThreads([
+        { id: 'it1', cat: 'POLITICA', title: 'Trump-Meloni: fermezza o prudenza? Come dovrebbe rispondere il governo', excerpt: 'Tajani invita alla calma, l\u2019opposizione chiede una presa di posizione netta. Voi da che parte state?', author: 'paolo_71', replies: 148, time: '2 ore fa', votes: 326 },
+        { id: 'it2', cat: 'ECONOMIA', title: 'Carburanti a 3 euro in più a pieno: quanto sta pesando sui vostri conti?', excerpt: 'Raccontiamo l\u2019impatto reale dei rincari: pendolari, partite IVA, famiglie.', author: 'chiara.mob', replies: 89, time: '5 ore fa', votes: 214 },
+        { id: 'it3', cat: 'POLITICA', title: 'Di Battista "fuori dai poli": c\u2019è spazio per una nuova forza?', excerpt: 'Il ritorno annunciato riapre il dibattito sullo spazio politico oltre le coalizioni.', author: 'marcov', replies: 205, time: 'ieri', votes: 189 },
+        { id: 'it4', cat: 'OPINIONI', title: 'PNRR e parità di genere: obiettivo mancato o bicchiere mezzo pieno?', excerpt: 'I dati dicono "a metà". Le vostre esperienze dirette nei settori coinvolti.', author: 'g.sanna', replies: 64, time: 'ieri', votes: 132 },
+      ]),
+      threadsUs: this.makeThreads([
+        { id: 'us1', cat: 'POLITICS', title: 'Voter ID: security measure or suppression tool? Make your case', excerpt: 'Johnson vows a floor vote despite the GOP revolt. Where do you stand?', author: 'dc_watcher', replies: 231, time: '2 hours ago', votes: 402 },
+        { id: 'us2', cat: 'ANALYSIS', title: 'Does primary turnout actually predict the midterms?', excerpt: 'The enthusiasm gap is real — but does it translate in November?', author: 'polisci_kate', replies: 117, time: '6 hours ago', votes: 268 },
+        { id: 'us3', cat: 'ECONOMY', title: 'Toyota moving Tacoma production to the U.S.: who really wins?', excerpt: 'Jobs, prices, supply chains — the trade-offs behind the headline.', author: 'rustbelt_sam', replies: 76, time: 'yesterday', votes: 154 },
+        { id: 'us4', cat: 'WORLD', title: 'After the Damascus blasts: should Western leaders keep visiting?', excerpt: 'Macron\u2019s close call reopens the debate on high-risk diplomacy.', author: 'j.okafor', replies: 93, time: 'yesterday', votes: 141 },
+      ]),
+    };
+  }
+}
+</script>
+</body>
+</html>

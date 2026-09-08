@@ -1,0 +1,128 @@
+---
+interface Props {
+  paginaCorrente: number
+  paginaTotali: number
+  /** Percorso base senza query string, es. /categoria/politica */
+  base: string
+  /** Parametri da conservare nei link (es. la query di ricerca). */
+  extra?: Record<string, string>
+}
+
+const { paginaCorrente, paginaTotali, base, extra = {} } = Astro.props
+
+function href(pagina: number): string {
+  const params = new URLSearchParams(extra)
+  if (pagina > 1) params.set('pagina', String(pagina))
+  const qs = params.toString()
+  return qs ? `${base}?${qs}` : base
+}
+
+/*
+ * Finestra di pagine attorno alla corrente, più la prima e l'ultima.
+ * Su archivi lunghi elencare tutte le pagine genera centinaia di link interni
+ * di scarso valore, che diluiscono il crawl budget (RF-P-07).
+ */
+const finestra = new Set<number>([1, paginaTotali])
+for (let i = paginaCorrente - 1; i <= paginaCorrente + 1; i++) {
+  if (i >= 1 && i <= paginaTotali) finestra.add(i)
+}
+const pagine = [...finestra].sort((a, b) => a - b)
+---
+
+{paginaTotali > 1 && (
+  <nav class="paginazione" aria-label="Paginazione">
+    {paginaCorrente > 1 ? (
+      <a class="paginazione__salto" href={href(paginaCorrente - 1)} rel="prev">← Precedente</a>
+    ) : (
+      <span class="paginazione__salto paginazione__salto--spento" aria-hidden="true">← Precedente</span>
+    )}
+
+    <ul class="paginazione__lista">
+      {pagine.map((p, i) => (
+        <>
+          {i > 0 && pagine[i - 1]! < p - 1 && (
+            <li class="paginazione__ellissi" aria-hidden="true">…</li>
+          )}
+          <li>
+            {p === paginaCorrente ? (
+              <span class="paginazione__numero paginazione__numero--corrente" aria-current="page">
+                {p}
+              </span>
+            ) : (
+              <a class="paginazione__numero" href={href(p)}>
+                <span class="solo-lettori-schermo">Pagina </span>{p}
+              </a>
+            )}
+          </li>
+        </>
+      ))}
+    </ul>
+
+    {paginaCorrente < paginaTotali ? (
+      <a class="paginazione__salto" href={href(paginaCorrente + 1)} rel="next">Successiva →</a>
+    ) : (
+      <span class="paginazione__salto paginazione__salto--spento" aria-hidden="true">Successiva →</span>
+    )}
+  </nav>
+)}
+
+<style>
+  .paginazione {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+    padding: clamp(32px, 4vw, 50px) var(--padding-laterale) 0;
+  }
+
+  .paginazione__lista {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .paginazione__salto {
+    font-size: var(--testo-sm);
+    font-weight: var(--peso-medio);
+    color: var(--colore-testo-tenue);
+    padding: 9px 14px;
+  }
+
+  .paginazione__salto:hover {
+    color: var(--colore-testo);
+  }
+
+  .paginazione__salto--spento {
+    color: var(--colore-bordo-forte);
+  }
+
+  .paginazione__numero {
+    display: block;
+    font-size: var(--testo-sm);
+    font-weight: var(--peso-forte);
+    min-width: 34px;
+    text-align: center;
+    padding: 9px 0;
+    border-radius: var(--raggio-pill);
+  }
+
+  .paginazione__numero:hover {
+    background: var(--colore-superficie);
+    color: var(--colore-testo);
+  }
+
+  .paginazione__numero--corrente {
+    background: var(--colore-inverso);
+    color: var(--colore-testo-inverso);
+  }
+
+  .paginazione__ellissi {
+    font-size: var(--testo-sm);
+    color: var(--colore-testo-debole);
+    padding: 9px 4px;
+  }
+</style>

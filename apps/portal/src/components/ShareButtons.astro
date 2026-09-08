@@ -1,0 +1,114 @@
+---
+interface Props {
+  url: string
+  title: string
+  twitterHandle?: string | null
+}
+
+const { url, title, twitterHandle } = Astro.props
+
+/*
+ * Condivisione — RF-P-06. Pastiglie circolari dai design (Articolo v1).
+ *
+ * Sono normali link, non i widget ufficiali delle piattaforme: quelli
+ * caricherebbero script di terze parti su ogni articolo, tracciando il lettore
+ * prima di qualunque consenso (RNF-04) e peggiorando i Core Web Vitals (RNF-01).
+ *
+ * Ogni pastiglia ha un'etichetta accessibile: un glifo da solo non dice nulla
+ * a chi usa uno screen reader (RNF-07).
+ */
+const u = encodeURIComponent(url)
+const t = encodeURIComponent(title)
+
+const canali = [
+  { glifo: 'f', etichetta: 'Condividi su Facebook', href: `https://www.facebook.com/sharer/sharer.php?u=${u}` },
+  {
+    glifo: '𝕏',
+    etichetta: 'Condividi su X',
+    href: `https://x.com/intent/tweet?url=${u}&text=${t}${twitterHandle ? `&via=${encodeURIComponent(twitterHandle)}` : ''}`,
+  },
+  { glifo: 'in', etichetta: 'Condividi su LinkedIn', href: `https://www.linkedin.com/sharing/share-offsite/?url=${u}` },
+  { glifo: '✉', etichetta: 'Condividi via email', href: `mailto:?subject=${t}&body=${u}` },
+]
+---
+
+<div class="condivisione">
+  <h2 class="solo-lettori-schermo">Condividi questo articolo</h2>
+  {canali.map((c) => (
+    <a
+      class="condivisione__pastiglia"
+      href={c.href}
+      target="_blank"
+      rel="noopener noreferrer nofollow"
+      aria-label={c.etichetta}
+      title={c.etichetta}
+    >
+      <span aria-hidden="true">{c.glifo}</span>
+    </a>
+  ))}
+  <button
+    type="button"
+    class="condivisione__pastiglia condivisione__copia"
+    data-url={url}
+    aria-label="Copia il link dell’articolo"
+    title="Copia il link"
+  >
+    <span aria-hidden="true">⧉</span>
+  </button>
+  <span class="condivisione__esito" role="status" aria-live="polite"></span>
+</div>
+
+<script>
+  document.querySelectorAll<HTMLButtonElement>('.condivisione__copia').forEach((b) => {
+    b.addEventListener('click', async () => {
+      const esito = b.parentElement?.querySelector('.condivisione__esito')
+      try {
+        await navigator.clipboard.writeText(b.dataset.url ?? '')
+        if (esito) {
+          esito.textContent = 'Link copiato'
+          setTimeout(() => { esito.textContent = '' }, 2500)
+        }
+      } catch {
+        // Clipboard negata (contesto non sicuro o permesso rifiutato):
+        // i link di condivisione restano comunque disponibili.
+        if (esito) esito.textContent = 'Copia non riuscita'
+      }
+    })
+  })
+</script>
+
+<style>
+  .condivisione {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .condivisione__pastiglia {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    border: 1px solid var(--colore-bordo-medio);
+    background: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-testo);
+    font-size: 13px;
+    font-weight: var(--peso-medio);
+    color: var(--colore-testo-tenue);
+    cursor: pointer;
+    padding: 0;
+  }
+
+  .condivisione__pastiglia:hover {
+    border-color: var(--colore-testo);
+    color: var(--colore-testo);
+  }
+
+  .condivisione__esito {
+    font-size: var(--testo-xs);
+    color: var(--colore-testo-meta);
+  }
+</style>

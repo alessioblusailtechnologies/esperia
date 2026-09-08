@@ -1,0 +1,267 @@
+@import url('https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600;6..72,700;6..72,800&family=IBM+Plex+Mono:wght@400;500&display=swap');
+
+/* =============================================================================
+   Tema del backoffice Esperia
+   -----------------------------------------------------------------------------
+   Valori dai design consegnati (Design portale Esperia / Pagine backoffice).
+
+   COME FUNZIONA. L'admin di Payload deriva tutti i propri colori da una scala
+   `--color-base-0 … 1000` e dalle `--theme-elevation-*` che la ricalcano. Ci
+   basta quindi ridefinire la scala con i toni caldi della testata perche'
+   elenchi, editor, campi, modali e messaggi seguano — senza riscrivere le
+   viste di Payload, che sono esattamente cio' per cui l'abbiamo scelto.
+
+   Payload racchiude i propri stili nel layer `payload-default`; questo foglio
+   e' fuori da qualsiasi layer, quindi vince senza bisogno di !important.
+
+   ACCENTO. Il backoffice usa il verde-petrolio #1d5c63, non il rosso del
+   portale: e' una scelta dei design e ha senso, perche' separa a colpo d'occhio
+   lo strumento di lavoro dal sito pubblico.
+   ============================================================================= */
+
+:root {
+  /* --- Scala calda, dal color carta al quasi nero ------------------------ */
+  --color-base-0: #faf7f0;
+  --color-base-50: #f5f1e8;
+  --color-base-100: #f1ebdd;
+  --color-base-150: #eee7d9;
+  --color-base-200: #e6dfd1;
+  --color-base-250: #e0d9c8;
+  --color-base-300: #d9d2c4;
+  --color-base-350: #cdc4b2;
+  --color-base-400: #c6bda9;
+  --color-base-450: #b3ab98;
+  --color-base-500: #a49b8b;
+  --color-base-550: #968d7d;
+  --color-base-600: #8a8378;
+  --color-base-650: #7a7368;
+  --color-base-700: #6b6459;
+  --color-base-750: #5c554a;
+  --color-base-800: #4a443a;
+  --color-base-850: #3a352c;
+  --color-base-900: #2b261f;
+  --color-base-950: #211d18;
+  --color-base-1000: #16130f;
+
+  /* --- Superfici ---------------------------------------------------------- */
+  /* La pagina e' leggermente piu' scura dei pannelli: e' cio' che nei design
+     stacca le schede dal fondo senza bisogno di ombre. */
+  --theme-bg: #f5f1e8;
+  --theme-input-bg: #fffdf8;
+  --theme-text: #211d18;
+  --theme-border-color: #e0d9c8;
+
+  /* --- Tipografia --------------------------------------------------------- */
+  --font-body: Archivo, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-serif: Newsreader, Georgia, 'Times New Roman', serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  /* --- Forma -------------------------------------------------------------- */
+  --style-radius-s: 6px;
+  --style-radius-m: 8px;
+  --style-radius-l: 12px;
+
+  --nav-width: 230px;
+
+  /* --- Token propri di Esperia -------------------------------------------- */
+  --esperia-accento: #1d5c63;
+  --esperia-accento-scuro: #164a50;
+  --esperia-accento-chiaro: #6fb5bd;
+  --esperia-accento-tenue: #bfe3e6;
+  --esperia-oro: #e8b04b;
+  --esperia-rosso: #b3261e;
+  --esperia-superficie: #f1ebdd;
+  --esperia-pannello: #faf7f0;
+  --esperia-filo: #eee7d9;
+  --esperia-scuro: #211d18;
+  --esperia-scuro-filo: #3a352c;
+  --esperia-scuro-tenue: #a49b8b;
+
+  /* Stati editoriali — usati dalla pastiglia e dai riquadri di riepilogo. */
+  --stato-bozza-bg: #f3e6c9;
+  --stato-bozza-fg: #8a6413;
+  --stato-revisione-bg: #f6dccf;
+  --stato-revisione-fg: #9c4a1e;
+  --stato-approvato-bg: #dfe6f5;
+  --stato-approvato-fg: #2c4c86;
+  --stato-programmato-bg: #e6e1f2;
+  --stato-programmato-fg: #57488c;
+  --stato-pubblicato-bg: #dcebe4;
+  --stato-pubblicato-fg: #1e6b47;
+}
+
+/* -----------------------------------------------------------------------------
+   Titoli in Newsreader, come nel resto della testata.
+   -------------------------------------------------------------------------- */
+.payload__nav-group__toggle {
+  text-transform: none;
+}
+
+h1,
+h2,
+h3,
+.doc-header__title,
+.collection-list__header h1,
+.step-nav__last {
+  font-family: var(--font-serif);
+  letter-spacing: -0.3px;
+}
+
+/* -----------------------------------------------------------------------------
+   Bottone primario nel verde-petrolio dei design (Payload usa il nero di scala).
+   -------------------------------------------------------------------------- */
+.btn--style-primary {
+  --color: #faf7f0;
+
+  background-color: var(--esperia-accento);
+  border-color: var(--esperia-accento);
+  color: var(--color);
+}
+
+.btn--style-primary:hover,
+.btn--style-primary:focus-visible {
+  background-color: var(--esperia-accento-scuro);
+  border-color: var(--esperia-accento-scuro);
+  color: var(--color);
+}
+
+/* Il pulsante di pubblicazione resta distinto da "salva bozza": è l'azione
+   che porta un contenuto davanti ai lettori e deve pesare visivamente. */
+.doc-controls__controls .btn--style-primary {
+  font-weight: 700;
+}
+
+/* -----------------------------------------------------------------------------
+   Campi: fondo appena più chiaro del pannello, bordo caldo, focus in accento.
+   -------------------------------------------------------------------------- */
+.field-type input:not([type='checkbox']):not([type='radio']),
+.field-type textarea,
+.field-type .rs__control {
+  background-color: var(--theme-input-bg);
+  border-color: var(--theme-border-color);
+  border-radius: var(--style-radius-m);
+}
+
+.field-type input:focus,
+.field-type textarea:focus,
+.field-type .rs__control--is-focused {
+  border-color: var(--esperia-accento);
+  box-shadow: none;
+}
+
+/* -----------------------------------------------------------------------------
+   Editor Lexical: il testo dell'articolo si compone in Newsreader, così la
+   redazione vede in scrittura la stessa forma che avrà sul portale.
+   -------------------------------------------------------------------------- */
+.rich-text-lexical .ContentEditable__root {
+  font-family: var(--font-serif);
+  font-size: 17px;
+  line-height: 1.7;
+  color: #2b261f;
+}
+
+.rich-text-lexical .ContentEditable__root h2,
+.rich-text-lexical .ContentEditable__root h3,
+.rich-text-lexical .ContentEditable__root h4 {
+  font-family: var(--font-serif);
+  letter-spacing: -0.3px;
+}
+
+/* -----------------------------------------------------------------------------
+   Tabelle degli elenchi: righe su pannello chiaro con filo caldo, come nei design.
+   -------------------------------------------------------------------------- */
+.table table {
+  background: var(--esperia-pannello);
+}
+
+.table thead th {
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 1.4px;
+  text-transform: uppercase;
+  color: #8a8378;
+}
+
+.table tbody tr:hover {
+  background: #fffdf8;
+}
+
+/* Il titolo dell'articolo in elenco è il riferimento visivo della riga. */
+.table td:first-of-type .cell-title,
+.row-1 .cell-title {
+  font-family: var(--font-serif);
+  font-size: 15.5px;
+  font-weight: 600;
+}
+
+/* -----------------------------------------------------------------------------
+   Login: il pannello dei design, non la schermata standard.
+   -------------------------------------------------------------------------- */
+.login {
+  background: var(--theme-bg);
+}
+
+.login__form {
+  background: var(--esperia-pannello);
+  border: 1px solid var(--theme-border-color);
+  border-radius: 14px;
+  padding: clamp(20px, 3vw, 32px);
+}
+
+.login__brand {
+  margin-bottom: 8px;
+}
+
+/* -----------------------------------------------------------------------------
+   Innesti sull'ossatura dell'admin.
+
+   Payload posiziona il pulsante di chiusura della navigazione in alto a
+   sinistra, dove i design mettono il marchio: sovrapposti, il primo copriva la
+   "E" di Esperia. Lo spostiamo a destra della colonna e lo ricoloriamo per il
+   fondo scuro.
+   -------------------------------------------------------------------------- */
+
+/* Il contenitore del pulsante e statico: spostarlo con left/right non ha
+   effetto. Allarghiamo invece il suo involucro alla larghezza della colonna
+   e lo spingiamo a destra con flex. */
+.template-default__nav-toggler-wrapper {
+  width: var(--nav-width);
+  display: flex;
+  justify-content: flex-end;
+  padding-right: 14px;
+  box-sizing: border-box;
+}
+
+.template-default__nav-toggler-container {
+  left: auto;
+}
+
+.template-default__nav-toggler .hamburger__close-icon,
+.template-default__nav-toggler .hamburger__line {
+  color: var(--esperia-scuro-tenue);
+}
+
+.template-default__nav-toggler:hover .hamburger__close-icon,
+.template-default__nav-toggler:hover .hamburger__line {
+  color: #faf7f0;
+}
+
+/* Il marchio sta gia' nella colonna di navigazione: ripeterlo come icona
+   solitaria nella barra superiore aggiunge rumore, non informazione. */
+.app-header__logo,
+.app-header .graphic-icon {
+  display: none;
+}
+
+/* La barra superiore riprende il fondo dei design. */
+.app-header {
+  background: var(--esperia-pannello);
+  border-bottom: 1px solid var(--theme-border-color);
+}
+
+/* Le briciole di navigazione sono il titolo della schermata: in Newsreader,
+   come nei design (Barra Superiore v1). */
+.step-nav {
+  font-family: var(--font-serif);
+  font-size: 17px;
+}

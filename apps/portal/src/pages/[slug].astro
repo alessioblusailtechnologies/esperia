@@ -1,0 +1,428 @@
+---
+import '@/styles/articolo.css'
+
+import Base from '@/layouts/Base.astro'
+import ArticleCard from '@/components/ArticleCard.astro'
+import ShareButtons from '@/components/ShareButtons.astro'
+import CommentsSection from '@/components/islands/CommentsSection.tsx'
+import {
+  getArticleBySlug,
+  getRelatedArticles,
+  getSiteSettings,
+  CmsUnavailableError,
+} from '@/lib/payload'
+import { applicaAttacco, renderRichText } from '@/lib/lexical-render'
+import { absoluteUrl, articleJsonLd, breadcrumbJsonLd, mediaUrl } from '@/lib/seo'
+import { populated, populatedList } from '@/lib/types'
+import type { Author, Category, Media, Tag } from '@/lib/types'
+import { formatDataOra, isoDate, tempoLettura } from '@/lib/format'
+
+/** Pagina articolo — RF-P-04, RF-P-06, RF-P-07. Impaginazione dai design (Articolo v1). */
+
+const { slug } = Astro.params
+
+let article = null
+try {
+  article = slug ? await getArticleBySlug(slug) : null
+} catch (err) {
+  if (!(err instanceof CmsUnavailableError)) throw err
+  return new Response('Servizio temporaneamente non disponibile', { status: 503 })
+}
+
+if (!article) return Astro.rewrite('/404')
+
+const settings = await getSiteSettings()
+
+const categoria = populated<Category>(article.category)
+const copertina = populated<Media>(article.heroImage)
+const tags = populatedList<Tag>(article.tags)
+const autori = populatedList<Author>(article.authors)
+const autore = autori[0] ?? null
+const avatar = autore ? mediaUrl(autore.avatar, 'thumbnail') : null
+
+const corpo = applicaAttacco(renderRichText(article.content))
+const correlati = await getRelatedArticles(article, 3)
+
+const url = absoluteUrl(`/${article.slug}`)
+const immagineSocial = mediaUrl(article.seo?.ogImage, 'og') ?? mediaUrl(article.heroImage, 'hero')
+
+const percorso = [
+  { name: 'Home', url: '/' },
+  ...(categoria ? [{ name: categoria.name, url: `/categoria/${categoria.slug}` }] : []),
+  { name: article.title, url: `/${article.slug}` },
+]
+
+const modificato =
+  article.publishedAt && article.updatedAt && article.updatedAt > article.publishedAt
+---
+
+<Base
+  title={article.seo?.metaTitle || article.title}
+  description={article.seo?.metaDescription || article.excerpt}
+  canonical={article.seo?.canonicalUrl || url}
+  image={immagineSocial}
+  imageAlt={copertina?.alt}
+  noIndex={article.seo?.noIndex ?? false}
+  type="article"
+  publishedTime={article.publishedAt}
+  modifiedTime={article.updatedAt}
+  authors={autori.map((a) => a.name)}
+  section={categoria?.name}
+  tags={tags.map((t) => t.name)}
+  jsonLd={[articleJsonLd(article, settings), breadcrumbJsonLd(percorso)]}
+>
+  <article class="articolo">
+    {/* ---------- Testata ---------- */}
+    <header class="colonna-testata articolo__testata">
+      {/*
+        Categoria e occhiello formano un'unica riga di contesto, come nei
+        design: l'occhiello NON si ripete sotto. Se manca, ripieghiamo sul
+        primo tag, che svolge la stessa funzione di collocare la notizia
+        dentro una vicenda in corso.
+      */}
+      <nav class="briciole" aria-label="Percorso">
+        <ol>
+          {categoria && (
+            <li><a href={`/categoria/${categoria.slug}`}>{categoria.name}</a></li>
+          )}
+          {article.kicker ? (
+            <li class="briciole__contesto">{article.kicker}</li>
+          ) : tags[0] ? (
+            <li class="briciole__contesto">
+              <a href={`/tag/${tags[0].slug}`}>{tags[0].name}</a>
+            </li>
+          ) : null}
+        </ol>
+      </nav>
+
+      <h1 class="articolo__titolo">{article.title}</h1>
+
+      {article.subtitle && <p class="articolo__sottotitolo">{article.subtitle}</p>}
+
+      <div class="articolo__riga-firma">
+        <div class="firma">
+          {avatar ? (
+            <img class="avatar firma__avatar" src={avatar} alt="" width="40" height="40" />
+          ) : (
+            <span class="avatar firma__avatar" aria-hidden="true"></span>
+          )}
+          <div class="firma__dati">
+            {autori.length > 0 && (
+              <p class="firma__nome">
+                {autori.map((a, i) => (
+                  <>
+                    {i > 0 && ', '}
+                    {a.name}
+                  </>
+                ))}
+              </p>
+            )}
+            <p class="firma__meta">
+              <time datetime={isoDate(article.publishedAt)}>
+                {formatDataOra(article.publishedAt)}
+              </time>
+              {article.readingMinutes ? (
+                <>
+                  <span aria-hidden="true">·</span>
+                  <span>{tempoLettura(article.readingMinutes)}</span>
+                </>
+              ) : null}
+            </p>
+            {modificato && (
+              <p class="firma__aggiornato">
+                Aggiornato il <time datetime={isoDate(article.updatedAt)}>
+                  {formatDataOra(article.updatedAt)}
+                </time>
+              </p>
+            )}
+          </div>
+        </div>
+
+        <ShareButtons url={url} title={article.title} twitterHandle={settings.twitterHandle} />
+      </div>
+    </header>
+
+    {/* ---------- Immagine di apertura, più larga del testo ---------- */}
+    {copertina && (
+      <figure class="colonna-media articolo__copertina">
+        <img
+          src={mediaUrl(copertina, 'hero') ?? ''}
+          alt={copertina.alt}
+          width={copertina.sizes?.hero?.width ?? undefined}
+          height={copertina.sizes?.hero?.height ?? undefined}
+          fetchpriority="high"
+          decoding="sync"
+        />
+        {(copertina.caption || copertina.credit) && (
+          <figcaption class="figura__didascalia">
+            {copertina.caption && <span class="figura__testo">{copertina.caption}</span>}
+            {copertina.credit && <span class="figura__crediti">{copertina.credit}</span>}
+          </figcaption>
+        )}
+      </figure>
+    )}
+
+    {/* ---------- Corpo ---------- */}
+    <div class="colonna-lettura articolo__corpo" set:html={corpo} />
+
+    {/* ---------- Tag ---------- */}
+    {tags.length > 0 && (
+      <nav class="colonna-lettura articolo__tag" aria-label="Argomenti">
+        <h2 class="eyebrow">Argomenti</h2>
+        <ul>
+          {tags.map((t) => (
+            <li><a href={`/tag/${t.slug}`} class="pastiglia">{t.name}</a></li>
+          ))}
+        </ul>
+      </nav>
+    )}
+
+    {/* ---------- Autori ---------- */}
+    {autori.some((a) => a.bio) && (
+      <section class="colonna-lettura" aria-label="Autori">
+        <div class="autori">
+          {autori
+            .filter((a) => a.bio)
+            .map((a) => (
+              <div class="autori__voce">
+                <p class="autori__nome">{a.name}</p>
+                <p class="autori__bio">{a.bio}</p>
+              </div>
+            ))}
+        </div>
+      </section>
+    )}
+
+    {/* ---------- Correlati ---------- */}
+    {correlati.length > 0 && (
+      <aside class="correlati" aria-labelledby="t-correlati">
+        <h2 id="t-correlati" class="filo-sezione eyebrow">Articoli correlati</h2>
+        <div class="correlati__griglia">
+          {correlati.map((a) => <ArticleCard article={a} livelloTitolo={3} />)}
+        </div>
+      </aside>
+    )}
+
+    {/* ---------- Commenti ---------- */}
+    <section class="colonna-testata commenti-sezione" aria-labelledby="t-commenti">
+      <h2 id="t-commenti" class="filo-sezione eyebrow">Commenti</h2>
+      {/*
+        Isola idratata solo quando entra nel viewport: la discussione sta in
+        fondo alla pagina e non deve pesare sul caricamento iniziale (RNF-01).
+      */}
+      <CommentsSection client:visible articleId={article.id} articleSlug={article.slug} />
+    </section>
+  </article>
+</Base>
+
+<script>
+  /*
+   * Embed di terze parti: l'iframe viene inserito solo su azione esplicita
+   * dell'utente o dopo il consenso ai contenuti di terze parti (RF-P-09).
+   */
+  function urlIncorporabile(raw: string): string | null {
+    try {
+      const u = new URL(raw)
+      if (u.hostname === 'youtu.be') {
+        return `https://www.youtube-nocookie.com/embed/${u.pathname.slice(1)}`
+      }
+      if (u.hostname.endsWith('youtube.com')) {
+        const id = u.searchParams.get('v')
+        return id ? `https://www.youtube-nocookie.com/embed/${id}` : null
+      }
+      if (u.hostname.endsWith('vimeo.com')) {
+        const id = u.pathname.split('/').filter(Boolean).pop()
+        return id ? `https://player.vimeo.com/video/${id}` : null
+      }
+      return null
+    } catch {
+      return null
+    }
+  }
+
+  function carica(figure: HTMLElement) {
+    if (figure.dataset.caricato === 'si') return
+    const src = urlIncorporabile(figure.dataset.embedUrl ?? '')
+    if (!src) return
+
+    const wrapper = document.createElement('div')
+    wrapper.className = 'embed__cornice'
+
+    const iframe = document.createElement('iframe')
+    iframe.src = src
+    iframe.loading = 'lazy'
+    iframe.allowFullscreen = true
+    iframe.title = `Contenuto da ${figure.dataset.embedPiattaforma ?? 'terze parti'}`
+    iframe.referrerPolicy = 'strict-origin-when-cross-origin'
+
+    wrapper.appendChild(iframe)
+    figure.querySelector('.embed__segnaposto')?.replaceWith(wrapper)
+    figure.dataset.caricato = 'si'
+  }
+
+  const embeds = () => Array.from(document.querySelectorAll<HTMLElement>('.embed'))
+
+  for (const figure of embeds()) {
+    figure.querySelector('.embed__carica')?.addEventListener('click', () => carica(figure))
+  }
+
+  window.addEventListener('esperia:consenso', (e) => {
+    const consensi = (e as CustomEvent).detail
+    if (consensi?.contenutiTerzi) embeds().forEach(carica)
+  })
+</script>
+
+<style is:global>
+  /* --- Testata ------------------------------------------------------------ */
+
+  .articolo__testata {
+    padding-top: clamp(26px, 4vw, 48px);
+  }
+
+  .briciole {
+    padding-bottom: var(--spazio-5);
+  }
+
+  .briciole ol {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    font-size: var(--testo-eyebrow);
+    font-weight: var(--peso-forte);
+    letter-spacing: var(--spaziatura-eyebrow);
+    text-transform: uppercase;
+    color: var(--colore-accento);
+  }
+
+  .briciole li + li::before {
+    content: '›';
+    margin-right: 8px;
+    color: var(--colore-bordo-forte);
+  }
+
+  .briciole__contesto {
+    color: var(--colore-testo-meta);
+  }
+
+  .briciole a:hover {
+    color: var(--colore-accento-scuro);
+  }
+
+  .articolo__titolo {
+    font-size: var(--titolo-articolo);
+    line-height: 1.07;
+    font-weight: var(--peso-forte);
+    letter-spacing: var(--spaziatura-titolo);
+  }
+
+  .articolo__sottotitolo {
+    font-family: var(--font-titoli);
+    font-size: clamp(18px, 1.8vw, 23px);
+    line-height: 1.42;
+    font-weight: var(--peso-normale);
+    color: var(--colore-testo-tenue);
+    padding-top: var(--spazio-5);
+    text-wrap: pretty;
+  }
+
+  .articolo__riga-firma {
+    display: flex;
+    align-items: flex-start;
+    gap: 20px;
+    flex-wrap: wrap;
+    padding: var(--spazio-6) 0 24px;
+    margin-top: var(--spazio-2);
+    border-bottom: 1px solid var(--colore-bordo);
+  }
+
+  .firma {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    flex: 1;
+    min-width: 250px;
+  }
+
+  .firma__avatar {
+    width: 40px;
+    height: 40px;
+  }
+
+  .firma__dati {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spazio-1);
+  }
+
+  .firma__nome {
+    font-size: var(--testo-base);
+    font-weight: var(--peso-forte);
+  }
+
+  .firma__meta {
+    display: flex;
+    gap: 7px;
+    flex-wrap: wrap;
+    font-size: var(--testo-xs);
+    color: var(--colore-testo-meta);
+  }
+
+  .firma__aggiornato {
+    font-size: 11px;
+    font-style: italic;
+    color: var(--colore-testo-debole);
+  }
+
+  /* --- Coda ---------------------------------------------------------------- */
+
+  .articolo__tag {
+    padding-top: clamp(20px, 3vw, 30px);
+  }
+
+  .articolo__tag ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 9px;
+    list-style: none;
+    margin: var(--spazio-4) 0 0;
+    padding: 0;
+  }
+
+  .autori {
+    margin-top: clamp(26px, 3vw, 36px);
+    padding: clamp(18px, 2.4vw, 24px);
+    background: var(--colore-superficie);
+    border-radius: var(--raggio-lg);
+    display: grid;
+    gap: var(--spazio-5);
+  }
+
+  .autori__nome {
+    font-size: var(--testo-base);
+    font-weight: var(--peso-forte);
+    margin-bottom: var(--spazio-1);
+  }
+
+  .autori__bio {
+    font-size: 12.5px;
+    line-height: var(--interlinea-normale);
+    color: var(--colore-testo-tenue);
+  }
+
+  .correlati {
+    padding: clamp(34px, 4vw, 52px) var(--padding-laterale) 0;
+  }
+
+  .correlati__griglia {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: clamp(20px, 2.4vw, 30px);
+  }
+
+  .commenti-sezione {
+    padding-top: clamp(36px, 4.5vw, 56px);
+  }
+</style>

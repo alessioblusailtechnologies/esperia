@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet data-dc-atomics>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600;6..72,700;6..72,800&display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#f5f1e8;font-family:Archivo,sans-serif;color:#211d18}
+a{color:#1d5c63;text-decoration:none}
+a:hover{color:#164a50}
+input::placeholder{color:#a49b8b}
+</style>
+</helmet>
+
+<div style="min-height:100vh;background:#f5f1e8;display:flex;align-items:center;justify-content:center;padding:clamp(20px,4vw,48px);box-sizing:border-box">
+  <div style="width:100%;max-width:400px;display:flex;flex-direction:column;gap:22px">
+    <div style="display:flex;flex-direction:column;gap:4px;align-items:center;text-align:center">
+      <div style="font-family:'Newsreader',serif;font-size:34px;font-weight:800;letter-spacing:-0.8px">Esperia</div>
+      <div style="font-size:10px;font-weight:700;letter-spacing:2.4px;color:#1d5c63">BACKOFFICE REDAZIONALE</div>
+    </div>
+
+    <div style="background:#faf7f0;border:1px solid #e0d9c8;border-radius:14px;padding:clamp(22px,3vw,30px);display:flex;flex-direction:column;gap:16px">
+      <div style="display:flex;flex-direction:column;gap:6px">
+        <div style="font-size:11px;font-weight:700;letter-spacing:1.2px;color:#5c554a">EMAIL</div>
+        <input value="{{ email }}" onChange="{{ onEmail }}" placeholder="nome.cognome@esperia.it" style="border:1px solid #e0d9c8;border-radius:10px;background:#fffdf8;outline:none;padding:12px 14px;font-size:13.5px;font-family:Archivo,sans-serif;color:#211d18" style-focus="border-color:#1d5c63">
+      </div>
+      <div style="display:flex;flex-direction:column;gap:6px">
+        <div style="display:flex;align-items:baseline;gap:10px">
+          <div style="font-size:11px;font-weight:700;letter-spacing:1.2px;color:#5c554a;flex:1">PASSWORD</div>
+          <span onClick="{{ toggleReveal }}" style="font-size:11px;font-weight:600;color:#1d5c63;cursor:pointer" style-hover="color:#164a50">{{ revealLabel }}</span>
+        </div>
+        <input type="{{ pwType }}" value="{{ pw }}" onChange="{{ onPw }}" placeholder="••••••••" style="border:1px solid #e0d9c8;border-radius:10px;background:#fffdf8;outline:none;padding:12px 14px;font-size:13.5px;font-family:Archivo,sans-serif;color:#211d18" style-focus="border-color:#1d5c63">
+      </div>
+
+      <sc-if value="{{ hasError }}" hint-placeholder-val="{{ false }}">
+        <div style="font-size:12px;line-height:1.5;color:#9c2a20;background:#f7e6e4;border-radius:8px;padding:10px 12px">Credenziali non riconosciute. Dopo cinque tentativi l'accesso viene bloccato per 15 minuti.</div>
+      </sc-if>
+
+      <div onClick="{{ submit }}" style="font-size:13px;font-weight:700;background:#1d5c63;color:#faf7f0;border-radius:999px;padding:13px 20px;text-align:center;cursor:pointer" style-hover="background:#164a50">{{ submitLabel }}</div>
+
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;border-top:1px solid #eee7d9;padding-top:14px">
+        <div onClick="{{ toggleRemember }}" style="display:flex;align-items:center;gap:8px;cursor:pointer">
+          <div style="width:16px;height:16px;border-radius:4px;border:1px solid #cdc4b2;background:{{ remBg }};display:flex;align-items:center;justify-content:center;font-size:10px;color:#faf7f0">{{ remMark }}</div>
+          <span style="font-size:12px;color:#5c554a">Ricordami su questo computer</span>
+        </div>
+        <span style="font-size:12px;font-weight:600;color:#1d5c63;cursor:pointer" style-hover="color:#164a50">Password dimenticata?</span>
+      </div>
+    </div>
+
+    <div style="font-size:11.5px;line-height:1.55;color:#8a8378;text-align:center">Gli account sono creati dall'amministrazione. Per un nuovo accesso scrivi a <span style="color:#1d5c63;font-weight:600">redazione@esperia.it</span>.</div>
+  </div>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;errorState&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Stati&quot;}}">
+class Component extends DCLogic {
+  state = { email: '', pw: '', reveal: false, remember: true, error: null, loading: false };
+  renderVals() {
+    const s = this.state;
+    return {
+      email: s.email, pw: s.pw,
+      onEmail: e => this.setState({ email: e.target.value, error: null }),
+      onPw: e => this.setState({ pw: e.target.value, error: null }),
+      pwType: s.reveal ? 'text' : 'password',
+      revealLabel: s.reveal ? 'Nascondi' : 'Mostra',
+      toggleReveal: () => this.setState(p => ({ reveal: !p.reveal })),
+      remBg: s.remember ? '#1d5c63' : 'transparent',
+      remMark: s.remember ? '✓' : '',
+      toggleRemember: () => this.setState(p => ({ remember: !p.remember })),
+      hasError: (this.props.errorState ?? false) || s.error === true,
+      submitLabel: s.loading ? 'Verifica in corso…' : 'Accedi',
+      submit: () => {
+        const ok = s.email.trim().endsWith('@esperia.it') && s.pw.length >= 6;
+        this.setState({ loading: true });
+        setTimeout(() => this.setState({ loading: false, error: !ok }), 500);
+      }
+    };
+  }
+}
+
+</script>
+</body>
+</html>

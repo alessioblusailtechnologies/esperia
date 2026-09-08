@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet data-dc-atomics>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600;6..72,700;6..72,800&display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#faf7f0;font-family:Archivo,sans-serif;color:#211d18}
+a{color:#b3261e;text-decoration:none}
+a:hover{color:#8f1e17}
+input::placeholder{color:#8a8378}
+</style>
+</helmet>
+
+<div style="min-height:100vh;background:#faf7f0;padding-bottom:40px">
+<div style="max-width:1280px;margin:0 auto">
+
+  <!-- ============ HEADER ============ -->
+  <div style="display:flex;align-items:center;gap:18px;flex-wrap:wrap;padding:18px clamp(16px,3vw,40px);border-bottom:1px solid #e6dfd1">
+    <div style="font-family:'Newsreader',serif;font-size:26px;font-weight:800;letter-spacing:-0.5px;cursor:pointer">Esperia</div>
+    <div style="display:flex;gap:clamp(12px,1.6vw,20px);font-size:13px;font-weight:600;color:#5c554a;flex-wrap:wrap;flex:1;min-width:200px">
+      <span style="cursor:pointer" style-hover="color:#b3261e">Politica</span>
+      <span style="cursor:pointer" style-hover="color:#b3261e">Mondo</span>
+      <span style="cursor:pointer" style-hover="color:#b3261e">Economia</span>
+      <span style="cursor:pointer" style-hover="color:#b3261e">Cultura</span>
+      <span style="cursor:pointer" style-hover="color:#b3261e">Opinioni</span>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px;background:#f1ebdd;border-radius:999px;padding:8px 14px;flex:0 1 200px;min-width:120px">
+      <span style="font-size:13px;color:#8a8378">⌕</span>
+      <input placeholder="Cerca su Esperia" style="background:none;border:none;outline:none;font-size:12px;color:#211d18;font-family:Archivo,sans-serif;width:100%">
+    </div>
+    <div style="display:flex;align-items:center;gap:8px;font-size:12.5px;font-weight:600;white-space:nowrap;color:#211d18">
+      <span style="cursor:pointer" style-hover="color:#b3261e">Accedi</span>
+      <span style="color:#cdc4b2">/</span>
+      <span style="cursor:pointer;text-decoration:underline;text-decoration-color:#cdc4b2;text-underline-offset:3px" style-hover="color:#b3261e">Registrati</span>
+    </div>
+  </div>
+
+  <!-- ============ CAMPO DI RICERCA AMPIO ============ -->
+  <div style="padding:clamp(26px,3.6vw,44px) clamp(16px,3vw,40px) 0">
+    <div style="display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;padding-bottom:14px">
+      <div style="font-size:10.5px;font-weight:700;letter-spacing:2px;color:#8a8378">RICERCA</div>
+      <div style="height:1px;background:#e6dfd1;flex:1"></div>
+      <div onClick="{{ toggleEmpty }}" style="font-size:11px;color:#a39c90;cursor:pointer;border-bottom:1px dotted #cdc4b2" style-hover="color:#211d18">vista prototipo: {{ stateLabel }}</div>
+    </div>
+    <div style="display:flex;align-items:center;gap:14px;border-bottom:2px solid #211d18;padding:0 2px 12px">
+      <span style="font-size:clamp(20px,2.4vw,28px);color:#8a8378">⌕</span>
+      <input value="{{ query }}" onChange="{{ setQuery }}" style="flex:1;min-width:60px;background:none;border:none;outline:none;font-family:'Newsreader',serif;font-size:clamp(24px,3.4vw,40px);font-weight:600;letter-spacing:-0.5px;color:#211d18;width:100%">
+      <span onClick="{{ clearQuery }}" style="font-size:12px;font-weight:600;color:#8a8378;cursor:pointer;white-space:nowrap" style-hover="color:#b3261e">Cancella</span>
+    </div>
+    <div style="font-size:13px;color:#5c554a;padding-top:12px">{{ resultLine }}</div>
+  </div>
+
+  <!-- ============ RISULTATI ============ -->
+  <sc-if value="{{ hasResults }}" hint-placeholder-val="{{ true }}">
+  <div style="padding:clamp(20px,2.4vw,30px) clamp(16px,3vw,40px) 0">
+    <div style="display:flex;flex-direction:column">
+      <div style="display:flex;gap:clamp(14px,2vw,22px);align-items:flex-start;padding:20px 0;border-top:1px solid #e6dfd1;cursor:pointer" style-hover="opacity:.75">
+        <div style="width:clamp(88px,11vw,132px);height:clamp(64px,8vw,92px);flex:0 0 auto"><x-import component-from-global-scope="image-slot" from="./image-slot.js" id="sv1-r1" shape="rounded" radius="8" placeholder="foto" hint-size="132px,92px"></x-import></div>
+        <div style="flex:1;display:flex;flex-direction:column;gap:7px">
+          <div style="font-size:9.5px;font-weight:700;letter-spacing:1.6px;color:#b3261e">POLITICA</div>
+          <div style="font-family:'Newsreader',serif;font-size:clamp(18px,1.7vw,23px);line-height:1.22;font-weight:600;text-wrap:pretty">Manovra, il governo trova l'intesa sul taglio dell'Irpef per il ceto medio</div>
+          <div style="font-size:13px;line-height:1.55;color:#5c554a;max-width:80ch">Il vertice a Palazzo Chigi chiude l'accordo sulla <mark style="background:#f6e2b0;color:#211d18;padding:0 2px">manovra</mark>: seconda aliquota <mark style="background:#f6e2b0;color:#211d18;padding:0 2px">Irpef</mark> al 33% fino a 60 mila euro, coperture da banche e assicurazioni.</div>
+          <div style="font-size:11.5px;color:#8a8378">27 agosto 2026</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:clamp(14px,2vw,22px);align-items:flex-start;padding:20px 0;border-top:1px solid #e6dfd1;cursor:pointer" style-hover="opacity:.75">
+        <div style="width:clamp(88px,11vw,132px);height:clamp(64px,8vw,92px);flex:0 0 auto"><x-import component-from-global-scope="image-slot" from="./image-slot.js" id="sv1-r2" shape="rounded" radius="8" placeholder="foto" hint-size="132px,92px"></x-import></div>
+        <div style="flex:1;display:flex;flex-direction:column;gap:7px">
+          <div style="font-size:9.5px;font-weight:700;letter-spacing:1.6px;color:#b3261e">ECONOMIA</div>
+          <div style="font-family:'Newsreader',serif;font-size:clamp(18px,1.7vw,23px);line-height:1.22;font-weight:600;text-wrap:pretty">Contributo delle banche, l'Abi chiede garanzie sulla durata del prelievo</div>
+          <div style="font-size:13px;line-height:1.55;color:#5c554a;max-width:80ch">Metà delle coperture della <mark style="background:#f6e2b0;color:#211d18;padding:0 2px">manovra</mark> arriva dal settore creditizio. L'associazione chiede che il prelievo resti temporaneo e non incida sul credito alle imprese.</div>
+          <div style="font-size:11.5px;color:#8a8378">27 agosto 2026</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:clamp(14px,2vw,22px);align-items:flex-start;padding:20px 0;border-top:1px solid #e6dfd1;cursor:pointer" style-hover="opacity:.75">
+        <div style="width:clamp(88px,11vw,132px);height:clamp(64px,8vw,92px);flex:0 0 auto"><x-import component-from-global-scope="image-slot" from="./image-slot.js" id="sv1-r3" shape="rounded" radius="8" placeholder="foto" hint-size="132px,92px"></x-import></div>
+        <div style="flex:1;display:flex;flex-direction:column;gap:7px">
+          <div style="font-size:9.5px;font-weight:700;letter-spacing:1.6px;color:#b3261e">ECONOMIA</div>
+          <div style="font-family:'Newsreader',serif;font-size:clamp(18px,1.7vw,23px);line-height:1.22;font-weight:600;text-wrap:pretty">Cosa cambia in busta paga: le simulazioni sui redditi fino a 60 mila euro</div>
+          <div style="font-size:13px;line-height:1.55;color:#5c554a;max-width:80ch">Il beneficio pieno del taglio <mark style="background:#f6e2b0;color:#211d18;padding:0 2px">Irpef</mark> arriva a 660 euro annui nella fascia più alta, mentre sotto i 28 mila euro non cambia nulla rispetto al 2026.</div>
+          <div style="font-size:11.5px;color:#8a8378">26 agosto 2026</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:clamp(14px,2vw,22px);align-items:flex-start;padding:20px 0;border-top:1px solid #e6dfd1;cursor:pointer" style-hover="opacity:.75">
+        <div style="width:clamp(88px,11vw,132px);height:clamp(64px,8vw,92px);flex:0 0 auto"><x-import component-from-global-scope="image-slot" from="./image-slot.js" id="sv1-r4" shape="rounded" radius="8" placeholder="foto" hint-size="132px,92px"></x-import></div>
+        <div style="flex:1;display:flex;flex-direction:column;gap:7px">
+          <div style="font-size:9.5px;font-weight:700;letter-spacing:1.6px;color:#b3261e">POLITICA</div>
+          <div style="font-family:'Newsreader',serif;font-size:clamp(18px,1.7vw,23px);line-height:1.22;font-weight:600;text-wrap:pretty">Milleduecento emendamenti: la strategia delle opposizioni sulla sanità</div>
+          <div style="font-size:13px;line-height:1.55;color:#5c554a;max-width:80ch">L'esame della <mark style="background:#f6e2b0;color:#211d18;padding:0 2px">manovra</mark> parte martedì in commissione Bilancio. Il voto finale è atteso entro il 20 dicembre, con la fiducia già ipotizzata al Senato.</div>
+          <div style="font-size:11.5px;color:#8a8378">26 agosto 2026</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:clamp(14px,2vw,22px);align-items:flex-start;padding:20px 0;border-top:1px solid #e6dfd1;cursor:pointer" style-hover="opacity:.75">
+        <div style="width:clamp(88px,11vw,132px);height:clamp(64px,8vw,92px);flex:0 0 auto"><x-import component-from-global-scope="image-slot" from="./image-slot.js" id="sv1-r5" shape="rounded" radius="8" placeholder="foto" hint-size="132px,92px"></x-import></div>
+        <div style="flex:1;display:flex;flex-direction:column;gap:7px">
+          <div style="font-size:9.5px;font-weight:700;letter-spacing:1.6px;color:#b3261e">OPINIONI</div>
+          <div style="font-family:'Newsreader',serif;font-size:clamp(18px,1.7vw,23px);line-height:1.22;font-weight:600;text-wrap:pretty">Il federalismo fiscale che nessuno vuole nominare</div>
+          <div style="font-size:13px;line-height:1.55;color:#5c554a;max-width:80ch">Ogni <mark style="background:#f6e2b0;color:#211d18;padding:0 2px">manovra</mark> rinvia la questione del riparto tra Stato e Regioni: senza una riforma dell'<mark style="background:#f6e2b0;color:#211d18;padding:0 2px">Irpef</mark> regionale il problema resta intatto.</div>
+          <div style="font-size:11.5px;color:#8a8378">25 agosto 2026</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:clamp(14px,2vw,22px);align-items:flex-start;padding:20px 0;border-top:1px solid #e6dfd1;border-bottom:1px solid #e6dfd1;cursor:pointer" style-hover="opacity:.75">
+        <div style="width:clamp(88px,11vw,132px);height:clamp(64px,8vw,92px);flex:0 0 auto"><x-import component-from-global-scope="image-slot" from="./image-slot.js" id="sv1-r6" shape="rounded" radius="8" placeholder="foto" hint-size="132px,92px"></x-import></div>
+        <div style="flex:1;display:flex;flex-direction:column;gap:7px">
+          <div style="font-size:9.5px;font-weight:700;letter-spacing:1.6px;color:#b3261e">CRONACA</div>
+          <div style="font-family:'Newsreader',serif;font-size:clamp(18px,1.7vw,23px);line-height:1.22;font-weight:600;text-wrap:pretty">Aree interne, il fondo prorogato di un anno: i sindaci chiedono di più</div>
+          <div style="font-size:13px;line-height:1.55;color:#5c554a;max-width:80ch">Nella <mark style="background:#f6e2b0;color:#211d18;padding:0 2px">manovra</mark> entra la proroga del fondo, ma Anci stima 320 comuni con bilanci in sofferenza già dal prossimo esercizio.</div>
+          <div style="font-size:11.5px;color:#8a8378">24 agosto 2026</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- paginazione -->
+    <div style="display:flex;justify-content:center;align-items:center;gap:6px;flex-wrap:wrap;padding:clamp(30px,3.6vw,46px) 0 0">
+      <span onClick="{{ prev }}" style="font-size:12.5px;font-weight:600;color:{{ prevColor }};padding:9px 14px;cursor:pointer" style-hover="color:#211d18">← Precedente</span>
+      <span onClick="{{ p1 }}" style="font-size:12.5px;font-weight:700;min-width:34px;text-align:center;padding:9px 0;border-radius:999px;cursor:pointer;background:{{ p1Bg }};color:{{ p1Color }}">1</span>
+      <span onClick="{{ p2 }}" style="font-size:12.5px;font-weight:700;min-width:34px;text-align:center;padding:9px 0;border-radius:999px;cursor:pointer;background:{{ p2Bg }};color:{{ p2Color }}">2</span>
+      <span onClick="{{ p3 }}" style="font-size:12.5px;font-weight:700;min-width:34px;text-align:center;padding:9px 0;border-radius:999px;cursor:pointer;background:{{ p3Bg }};color:{{ p3Color }}">3</span>
+      <span onClick="{{ p4 }}" style="font-size:12.5px;font-weight:700;min-width:34px;text-align:center;padding:9px 0;border-radius:999px;cursor:pointer;background:{{ p4Bg }};color:{{ p4Color }}">4</span>
+      <span style="font-size:12.5px;color:#a39c90;padding:9px 4px">…</span>
+      <span onClick="{{ p8 }}" style="font-size:12.5px;font-weight:700;min-width:34px;text-align:center;padding:9px 0;border-radius:999px;cursor:pointer;background:{{ p8Bg }};color:{{ p8Color }}">8</span>
+      <span onClick="{{ next }}" style="font-size:12.5px;font-weight:600;color:#5c554a;padding:9px 14px;cursor:pointer" style-hover="color:#211d18">Successiva →</span>
+    </div>
+  </div>
+  </sc-if>
+
+  <!-- ============ STATO VUOTO ============ -->
+  <sc-if value="{{ isEmpty }}" hint-placeholder-val="{{ false }}">
+  <div style="padding:clamp(26px,3vw,40px) clamp(16px,3vw,40px) 0">
+    <div style="border-top:1px solid #e6dfd1;padding-top:clamp(28px,3.4vw,42px);display:flex;flex-direction:column;gap:14px;max-width:620px">
+      <div style="font-family:'Newsreader',serif;font-size:clamp(24px,2.6vw,32px);line-height:1.18;font-weight:700;text-wrap:pretty">Nessun risultato per «{{ query }}»</div>
+      <div style="font-size:14px;line-height:1.6;color:#5c554a">Prova con parole più generiche o controlla l'ortografia. Puoi anche ripartire da una sezione.</div>
+    </div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;padding-top:24px">
+      <span onClick="{{ suggest }}" style="font-size:13px;font-weight:600;background:#f1ebdd;border-radius:999px;padding:10px 18px;cursor:pointer" style-hover="background:#211d18;color:#faf7f0">Politica</span>
+      <span onClick="{{ suggest }}" style="font-size:13px;font-weight:600;background:#f1ebdd;border-radius:999px;padding:10px 18px;cursor:pointer" style-hover="background:#211d18;color:#faf7f0">Mondo</span>
+      <span onClick="{{ suggest }}" style="font-size:13px;font-weight:600;background:#f1ebdd;border-radius:999px;padding:10px 18px;cursor:pointer" style-hover="background:#211d18;color:#faf7f0">Economia</span>
+      <span onClick="{{ suggest }}" style="font-size:13px;font-weight:600;background:#f1ebdd;border-radius:999px;padding:10px 18px;cursor:pointer" style-hover="background:#211d18;color:#faf7f0">Cultura</span>
+      <span onClick="{{ suggest }}" style="font-size:13px;font-weight:600;background:#f1ebdd;border-radius:999px;padding:10px 18px;cursor:pointer" style-hover="background:#211d18;color:#faf7f0">Opinioni</span>
+    </div>
+    <div style="font-size:12.5px;color:#8a8378;padding-top:18px">Oppure consulta l'<span style="color:#b3261e;font-weight:600;border-bottom:1px solid #b3261e;cursor:pointer">archivio completo</span> degli articoli.</div>
+  </div>
+  </sc-if>
+
+  <!-- ============ FOOTER ============ -->
+  <div style="margin:clamp(40px,5vw,64px) clamp(16px,3vw,40px) 0;padding-top:30px;border-top:1px solid #e6dfd1">
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:clamp(20px,3vw,40px)">
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <div style="font-family:'Newsreader',serif;font-size:24px;font-weight:800;letter-spacing:-0.5px">Esperia</div>
+        <div style="font-size:12px;line-height:1.5;color:#8a8378;max-width:26ch">Quotidiano online di politica e attualità. Registrazione Tribunale di Roma n. 214/2024.</div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:9px">
+        <div style="font-size:10px;font-weight:700;letter-spacing:1.8px;color:#8a8378">CATEGORIE</div>
+        <span style="font-size:13px;cursor:pointer;color:#211d18" style-hover="color:#b3261e">Politica</span>
+        <span style="font-size:13px;cursor:pointer;color:#211d18" style-hover="color:#b3261e">Mondo</span>
+        <span style="font-size:13px;cursor:pointer;color:#211d18" style-hover="color:#b3261e">Economia</span>
+        <span style="font-size:13px;cursor:pointer;color:#211d18" style-hover="color:#b3261e">Cultura</span>
+        <span style="font-size:13px;cursor:pointer;color:#211d18" style-hover="color:#b3261e">Opinioni</span>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:9px">
+        <div style="font-size:10px;font-weight:700;letter-spacing:1.8px;color:#8a8378">TESTATA</div>
+        <span style="font-size:13px;cursor:pointer;color:#211d18" style-hover="color:#b3261e">Chi siamo</span>
+        <span style="font-size:13px;cursor:pointer;color:#211d18" style-hover="color:#b3261e">Contatti</span>
+        <span style="font-size:13px;cursor:pointer;color:#211d18" style-hover="color:#b3261e">Privacy policy</span>
+        <span style="font-size:13px;cursor:pointer;color:#211d18" style-hover="color:#b3261e">Cookie policy</span>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:9px">
+        <div style="font-size:10px;font-weight:700;letter-spacing:1.8px;color:#8a8378">SEGUI ESPERIA</div>
+        <span style="font-size:13px;cursor:pointer;color:#211d18;display:flex;align-items:center;gap:7px" style-hover="color:#b3261e"><span style="font-size:10px;font-weight:700;letter-spacing:0.5px;background:#e8b04b;color:#211d18;border-radius:4px;padding:2px 6px">RSS</span> Feed RSS</span>
+        <span style="font-size:13px;cursor:pointer;color:#211d18" style-hover="color:#b3261e">Newsletter</span>
+        <span style="font-size:13px;cursor:pointer;color:#211d18" style-hover="color:#b3261e">Community</span>
+      </div>
+    </div>
+    <div style="display:flex;flex-wrap:wrap;gap:8px 20px;padding:26px 0 8px;font-size:11.5px;color:#8a8378;border-top:1px solid #e6dfd1;margin-top:28px">
+      <span>© 2026 Esperia Editoriale S.r.l. — P. IVA 04871230581 — Via dei Serpenti 42, 00184 Roma</span>
+      <span>Direttore responsabile: Emanuele Ragusa</span>
+    </div>
+  </div>
+
+</div>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;emptyState&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Stati&quot;}}">
+class Component extends DCLogic {
+  state = { q: null, empty: null, page: 1 };
+  renderVals() {
+    const empty = this.state.empty === null ? (this.props.emptyState ?? false) : this.state.empty;
+    const q = this.state.q === null ? (empty ? 'manovra irpef quorum' : 'manovra irpef') : this.state.q;
+    const p = this.state.page;
+    const pg = n => ({ bg: p === n ? '#211d18' : 'transparent', color: p === n ? '#faf7f0' : '#5c554a' });
+    const a = pg(1), b = pg(2), c = pg(3), d = pg(4), e = pg(8);
+    return {
+      query: q,
+      setQuery: ev => this.setState({ q: ev.target.value }),
+      clearQuery: () => this.setState({ q: '' }),
+      hasResults: !empty, isEmpty: empty,
+      stateLabel: empty ? 'nessun risultato' : 'con risultati',
+      toggleEmpty: () => this.setState({ empty: !empty, q: null }),
+      suggest: () => this.setState({ empty: false, q: null }),
+      resultLine: empty
+        ? '0 risultati · nessuna corrispondenza in archivio'
+        : '47 risultati · ordinati per pertinenza · ultimi 12 mesi',
+      prev: () => this.setState(s => ({ page: Math.max(1, s.page - 1) })),
+      next: () => this.setState(s => ({ page: Math.min(8, s.page + 1) })),
+      prevColor: p === 1 ? '#cdc4b2' : '#5c554a',
+      p1: () => this.setState({ page: 1 }), p2: () => this.setState({ page: 2 }),
+      p3: () => this.setState({ page: 3 }), p4: () => this.setState({ page: 4 }),
+      p8: () => this.setState({ page: 8 }),
+      p1Bg: a.bg, p1Color: a.color, p2Bg: b.bg, p2Color: b.color,
+      p3Bg: c.bg, p3Color: c.color, p4Bg: d.bg, p4Color: d.color,
+      p8Bg: e.bg, p8Color: e.color
+    };
+  }
+}
+
+</script>
+</body>
+</html>

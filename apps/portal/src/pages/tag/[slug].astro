@@ -1,0 +1,36 @@
+---
+import Base from '@/layouts/Base.astro'
+import ArticleListing from '@/components/ArticleListing.astro'
+import { ARTICLES_PER_PAGE, getArticles, getTagBySlug } from '@/lib/payload'
+import { absoluteUrl, breadcrumbJsonLd } from '@/lib/seo'
+
+/** Listing per tag — RF-P-03. */
+
+const { slug } = Astro.params
+const tag = slug ? await getTagBySlug(slug) : null
+if (!tag) return Astro.rewrite('/404')
+
+const pagina = Math.max(1, Number(Astro.url.searchParams.get('pagina') ?? '1') || 1)
+const risultati = await getArticles({ tagSlug: tag.slug, page: pagina, limit: ARTICLES_PER_PAGE })
+
+if (pagina > 1 && risultati.docs.length === 0) return Astro.rewrite('/404')
+
+const base = `/tag/${tag.slug}`
+const titoloSeo = pagina > 1 ? `${tag.name} — pagina ${pagina}` : tag.name
+---
+
+<Base
+  title={titoloSeo}
+  description={tag.description ?? `Tutti gli articoli su ${tag.name}.`}
+  canonical={absoluteUrl(pagina > 1 ? `${base}?pagina=${pagina}` : base)}
+  jsonLd={[breadcrumbJsonLd([{ name: 'Home', url: '/' }, { name: tag.name, url: base }])]}
+>
+  <ArticleListing
+    eyebrow="Argomento"
+    titolo={tag.name}
+    descrizione={tag.description}
+    risultati={risultati}
+    base={base}
+    messaggioVuoto="Non ci sono ancora articoli con questo argomento."
+  />
+</Base>

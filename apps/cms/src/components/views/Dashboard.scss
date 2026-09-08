@@ -1,0 +1,242 @@
+/* Dashboard redazionale — dai design (Dashboard v1). */
+
+.cruscotto {
+  padding: 20px clamp(16px, 2.4vw, 32px) 48px;
+  font-family: var(--font-body);
+}
+
+.cruscotto__testata {
+  display: flex;
+  align-items: flex-end;
+  gap: 14px;
+  flex-wrap: wrap;
+  padding-bottom: 16px;
+}
+
+.cruscotto__testata > div {
+  flex: 1;
+  min-width: 220px;
+}
+
+.cruscotto__saluto {
+  font-family: var(--font-serif);
+  font-size: clamp(24px, 2.8vw, 32px);
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  margin: 0 0 4px;
+}
+
+.cruscotto__sottotitolo {
+  font-size: 12.5px;
+  color: #8a8378;
+  margin: 0;
+}
+
+.cruscotto__nuovo {
+  font-size: 12px;
+  font-weight: 700;
+  background: var(--esperia-accento);
+  color: #faf7f0;
+  border-radius: 8px;
+  padding: 10px 16px;
+  white-space: nowrap;
+  text-decoration: none;
+}
+
+.cruscotto__nuovo:hover {
+  background: var(--esperia-accento-scuro);
+  color: #faf7f0;
+}
+
+.cruscotto__griglia {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 14px;
+  align-items: start;
+}
+
+/* --- Riquadro ------------------------------------------------------------- */
+
+.riquadro {
+  background: var(--esperia-pannello);
+  border: 1px solid var(--theme-border-color);
+  border-radius: 14px;
+  padding: clamp(16px, 2vw, 20px);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.riquadro__testata {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.riquadro__testata h2 {
+  font-family: var(--font-serif);
+  font-size: 19px;
+  font-weight: 700;
+  flex: 1;
+  margin: 0;
+}
+
+.riquadro__testata a {
+  font-size: 11.5px;
+  font-weight: 700;
+  color: var(--esperia-accento);
+  white-space: nowrap;
+  text-decoration: none;
+}
+
+.riquadro__testata a:hover {
+  color: var(--esperia-accento-scuro);
+}
+
+.riquadro__nota {
+  font-size: 11.5px;
+  color: #8a8378;
+  margin: 0;
+}
+
+.riquadro__vuoto,
+.riquadro__coda {
+  font-size: 12.5px;
+  line-height: 1.6;
+  color: #5c554a;
+  border-top: 1px solid var(--esperia-filo);
+  padding-top: 12px;
+  margin: 0;
+}
+
+/* --- Voce di coda --------------------------------------------------------- */
+
+.voce {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  border-top: 1px solid var(--esperia-filo);
+  padding-top: 11px;
+  text-decoration: none;
+  color: inherit;
+}
+
+.voce:hover {
+  opacity: 0.75;
+  color: inherit;
+}
+
+.voce__testo {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.voce__titolo {
+  font-family: var(--font-serif);
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+/* Gli hot topic non sono titoli redazionali: restano in carattere di testo. */
+.voce__titolo--breve {
+  font-family: var(--font-body);
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.voce__meta {
+  font-size: 10.5px;
+  color: #a49b8b;
+}
+
+.voce__eta {
+  font-size: 11px;
+  font-weight: 700;
+  color: #8a8378;
+  white-space: nowrap;
+}
+
+.voce--orario .voce__quando {
+  width: 56px;
+  flex: 0 0 56px;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.voce__ora {
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  font-weight: 500;
+}
+
+.voce__giorno {
+  font-size: 10px;
+  color: #a49b8b;
+}
+
+.voce__rilevanza {
+  font-size: 11px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.voce__rilevanza--alta {
+  color: #9c4a1e;
+}
+
+.voce__rilevanza--media {
+  color: #8a6413;
+}
+
+.voce__rilevanza--bassa {
+  color: #8a8378;
+}
+
+/* --- Cifre della moderazione ---------------------------------------------- */
+
+.cifre {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.cifra {
+  flex: 1;
+  min-width: 120px;
+  background: var(--esperia-superficie);
+  border-radius: 10px;
+  padding: 13px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.cifra--allarme {
+  background: var(--stato-revisione-bg);
+}
+
+.cifra__numero {
+  font-family: var(--font-serif);
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.cifra--allarme .cifra__numero {
+  color: var(--stato-revisione-fg);
+}
+
+.cifra__etichetta {
+  font-size: 11px;
+  color: #5c554a;
+}
+
+.cifra--allarme .cifra__etichetta {
+  color: #8a5a3e;
+}

@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet data-dc-atomics>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600;6..72,700;6..72,800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#f5f1e8;font-family:Archivo,sans-serif;color:#211d18}
+a{color:#1d5c63;text-decoration:none}
+a:hover{color:#164a50}
+input,select,textarea{font-family:Archivo,sans-serif}
+</style>
+</helmet>
+
+<div style="display:flex;min-height:100vh;background:#f5f1e8;align-items:stretch">
+  <dc-import name="Nav Laterale v1" active="Hot topic AI" style="background:#211d18;align-self:stretch" hint-size="230px,100vh"></dc-import>
+
+  <div style="flex:1;display:flex;flex-direction:column;min-width:0">
+    <dc-import name="Barra Superiore v1" title="Hot topic AI" search-placeholder="Cerca un argomento" hint-size="100%,70px"></dc-import>
+
+    <!-- principio -->
+    <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:11px clamp(16px,2.4vw,32px);background:#211d18;color:#faf7f0">
+      <span style="font-size:9.5px;font-weight:700;letter-spacing:1.6px;color:#e8b04b">ASSISTENTE AI</span>
+      <span style="font-size:12px;color:#cdc4b2;flex:1;min-width:200px">L'AI propone, la redazione decide: ogni argomento resta un suggerimento e ogni testo generato entra nel flusso come bozza da revisionare.</span>
+      <span onClick="{{ cycleView }}" style="font-size:11px;color:#a49b8b;cursor:pointer;border-bottom:1px dotted #6b6459;white-space:nowrap" style-hover="color:#faf7f0">vista prototipo: {{ viewLabel }}</span>
+    </div>
+
+    <!-- ===================== PROVIDER NON DISPONIBILE ===================== -->
+    <sc-if value="{{ isDown }}" hint-placeholder-val="{{ false }}">
+    <div style="padding:clamp(20px,3vw,34px) clamp(16px,2.4vw,32px)">
+      <div style="background:#faf7f0;border:1px solid #e2c9a8;border-radius:14px;padding:clamp(22px,3vw,32px);display:flex;gap:16px;flex-wrap:wrap;align-items:flex-start">
+        <div style="width:34px;height:34px;border-radius:50%;background:#f3e6c9;color:#8a6413;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;flex:0 0 34px">!</div>
+        <div style="flex:1;min-width:240px;display:flex;flex-direction:column;gap:9px">
+          <div style="font-family:'Newsreader',serif;font-size:22px;font-weight:700">Rilevazione argomenti non disponibile</div>
+          <div style="font-size:13.5px;line-height:1.6;color:#5c554a;max-width:70ch">Il provider di analisi non risponde dalle 11:20. L'ultima rilevazione utile risale a <b>oggi, 09:40</b> e resta consultabile in archivio. Nessuna proposta viene generata nel frattempo: il lavoro redazionale sugli articoli non è in alcun modo bloccato.</div>
+          <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#a49b8b">provider: news-intel · errore: timeout gateway (504) · nuovo tentativo automatico tra 4 min</div>
+          <div style="display:flex;gap:10px;flex-wrap:wrap;padding-top:6px">
+            <div onClick="{{ retry }}" style="font-size:12.5px;font-weight:700;border:1px solid #d9d2c4;border-radius:8px;padding:10px 16px;cursor:pointer" style-hover="border-color:#211d18">Riprova adesso</div>
+            <div style="font-size:12.5px;font-weight:700;border:1px solid #d9d2c4;border-radius:8px;padding:10px 16px;cursor:pointer" style-hover="border-color:#211d18">Vedi archivio rilevazioni</div>
+            <div style="font-size:12.5px;font-weight:700;color:#1d5c63;padding:10px 4px;cursor:pointer" style-hover="color:#164a50">Scrivi un articolo senza assistente →</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    </sc-if>
+
+    <!-- ===================== ELENCO ===================== -->
+    <sc-if value="{{ isList }}" hint-placeholder-val="{{ true }}">
+    <div style="display:flex;flex-direction:column;gap:14px;padding:18px clamp(16px,2.4vw,32px) 40px">
+
+      <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;background:#faf7f0;border:1px solid #e0d9c8;border-radius:12px;padding:12px 14px">
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:nowrap;min-width:0">
+          <div style="font-size:10px;font-weight:700;letter-spacing:1.4px;color:#8a8378;white-space:nowrap">AMBITO</div>
+          <div style="display:flex;gap:6px;flex-wrap:wrap;min-width:0">
+            <sc-for list="{{ scopes }}" as="sc" hint-placeholder-count="6">
+              <span onClick="{{ sc.pick }}" style="font-size:11.5px;font-weight:600;border-radius:999px;padding:6px 12px;cursor:pointer;white-space:nowrap;background:{{ sc.bg }};color:{{ sc.fg }}">{{ sc.label }}</span>
+            </sc-for>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:nowrap">
+          <div style="width:1px;height:22px;background:#e0d9c8"></div>
+          <div style="font-size:10px;font-weight:700;letter-spacing:1.4px;color:#8a8378;white-space:nowrap">FINESTRA</div>
+          <div style="display:flex;gap:3px;background:#f1ebdd;border-radius:8px;padding:3px">
+            <sc-for list="{{ windows }}" as="w" hint-placeholder-count="4">
+              <span onClick="{{ w.pick }}" style="font-size:11.5px;font-weight:700;border-radius:6px;padding:6px 11px;cursor:pointer;white-space:nowrap;background:{{ w.bg }};color:{{ w.fg }}">{{ w.label }}</span>
+            </sc-for>
+          </div>
+        </div>
+        <div style="flex:1;min-width:8px"></div>
+        <div style="font-size:11.5px;color:#8a8378">{{ countLabel }}</div>
+      </div>
+
+      <sc-for list="{{ topics }}" as="t" hint-placeholder-count="4">
+        <div style="background:#faf7f0;border:1px solid #e0d9c8;border-radius:12px;padding:clamp(16px,2vw,22px);display:flex;flex-direction:column;gap:12px;opacity:{{ t.opacity }}">
+          <div style="display:flex;gap:14px;flex-wrap:wrap;align-items:flex-start">
+            <div style="flex:1;min-width:240px;display:flex;flex-direction:column;gap:7px">
+              <div style="display:flex;align-items:center;gap:9px;flex-wrap:wrap">
+                <span style="font-size:9.5px;font-weight:700;letter-spacing:1.4px;color:#1d5c63">{{ t.scope }}</span>
+                <span style="font-size:11px;color:#a49b8b">· rilevato {{ t.when }}</span>
+                <span style="font-size:9px;font-weight:700;letter-spacing:1px;background:#f1ebdd;color:#5c554a;border-radius:4px;padding:2px 7px">PROPOSTA</span>
+              </div>
+              <div onClick="{{ t.open }}" style="font-family:'Newsreader',serif;font-size:clamp(19px,1.9vw,23px);line-height:1.22;font-weight:700;cursor:pointer;text-wrap:pretty" style-hover="color:#1d5c63">{{ t.title }}</div>
+              <div style="font-size:13px;line-height:1.6;color:#5c554a;max-width:80ch">{{ t.summary }}</div>
+            </div>
+            <div style="width:150px;display:flex;flex-direction:column;gap:6px">
+              <div style="display:flex;align-items:baseline;gap:6px">
+                <div style="font-size:9.5px;font-weight:700;letter-spacing:1.2px;color:#8a8378;flex:1">RILEVANZA</div>
+                <div style="font-size:12px;font-weight:800;color:{{ t.relColor }}">{{ t.rel }}</div>
+              </div>
+              <div style="height:6px;border-radius:999px;background:#eee7d9;overflow:hidden">
+                <div style="height:6px;border-radius:999px;width:{{ t.relWidth }};background:{{ t.relColor }}"></div>
+              </div>
+              <div style="font-size:10.5px;color:#a49b8b">{{ t.relNote }}</div>
+            </div>
+          </div>
+
+          <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;border-top:1px solid #eee7d9;padding-top:11px">
+            <span style="font-size:9.5px;font-weight:700;letter-spacing:1.2px;color:#8a8378">FONTI</span>
+            <sc-for list="{{ t.sources }}" as="s" hint-placeholder-count="3">
+              <a href="{{ s.url }}" target="_blank" style="display:inline-flex;align-items:center;gap:6px;font-size:11.5px;font-weight:600;background:#f1ebdd;border-radius:999px;padding:5px 11px;color:#211d18" style-hover="background:#ece4d1">{{ s.name }}<span style="font-size:10px;color:#1d5c63">↗</span></a>
+            </sc-for>
+            <span style="font-size:11px;color:#a49b8b">{{ t.sourceNote }}</span>
+          </div>
+
+          <div style="display:flex;gap:9px;flex-wrap:wrap;align-items:center">
+            <div onClick="{{ t.generate }}" style="font-size:12.5px;font-weight:700;background:#1d5c63;color:#faf7f0;border-radius:8px;padding:10px 16px;cursor:pointer" style-hover="background:#164a50">Genera bozza</div>
+            <div onClick="{{ t.open }}" style="font-size:12.5px;font-weight:700;border:1px solid #d9d2c4;border-radius:8px;padding:10px 16px;cursor:pointer" style-hover="border-color:#211d18">Approfondisci</div>
+            <div onClick="{{ t.ignore }}" style="font-size:12.5px;font-weight:600;color:#8a8378;padding:10px 8px;cursor:pointer" style-hover="color:#b3261e">Ignora</div>
+            <div style="flex:1"></div>
+            <div style="font-size:11px;color:#a49b8b">{{ t.stateNote }}</div>
+          </div>
+        </div>
+      </sc-for>
+    </div>
+    </sc-if>
+
+    <!-- ===================== DETTAGLIO ===================== -->
+    <sc-if value="{{ isDetail }}" hint-placeholder-val="{{ false }}">
+    <div style="padding:18px clamp(16px,2.4vw,32px) 48px;display:flex;flex-direction:column;gap:16px">
+      <div onClick="{{ backToList }}" style="font-size:12px;font-weight:700;color:#5c554a;cursor:pointer;width:fit-content" style-hover="color:#1d5c63">← Tutti gli argomenti</div>
+
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px;align-items:start">
+        <div style="background:#faf7f0;border:1px solid #e0d9c8;border-radius:14px;padding:clamp(18px,2.4vw,26px);display:flex;flex-direction:column;gap:14px">
+          <div style="display:flex;align-items:center;gap:9px;flex-wrap:wrap">
+            <span style="font-size:9.5px;font-weight:700;letter-spacing:1.4px;color:#1d5c63">ECONOMIA · FISCO</span>
+            <span style="font-size:11px;color:#a49b8b">· rilevato 22 min fa · 14 fonti</span>
+            <span style="font-size:9px;font-weight:700;letter-spacing:1px;background:#f1ebdd;color:#5c554a;border-radius:4px;padding:2px 7px">PROPOSTA</span>
+          </div>
+          <div style="font-family:'Newsreader',serif;font-size:clamp(24px,2.8vw,34px);line-height:1.14;font-weight:700;letter-spacing:-0.5px;text-wrap:pretty">Contributo delle banche nella manovra: l'Abi apre allo scontro sulla durata del prelievo</div>
+          <div style="display:flex;gap:16px;flex-wrap:wrap;align-items:center">
+            <div style="display:flex;flex-direction:column;gap:5px;min-width:170px;flex:1">
+              <div style="display:flex;align-items:baseline;gap:8px">
+                <div style="font-size:9.5px;font-weight:700;letter-spacing:1.2px;color:#8a8378;flex:1">RILEVANZA</div>
+                <div style="font-size:13px;font-weight:800;color:#9c2a20">alta · 92</div>
+              </div>
+              <div style="height:6px;border-radius:999px;background:#eee7d9;overflow:hidden"><div style="height:6px;width:92%;border-radius:999px;background:#9c2a20"></div></div>
+              <div style="font-size:10.5px;color:#a49b8b">14 fonti in 3 ore · nessun pezzo Esperia sul tema</div>
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:10px;border-top:1px solid #eee7d9;padding-top:14px">
+            <div style="font-size:10px;font-weight:700;letter-spacing:1.4px;color:#8a8378">SINTESI ESTESA — PROPOSTA DEL SISTEMA</div>
+            <div style="font-size:14px;line-height:1.68;color:#2b261f">L'associazione bancaria italiana ha chiesto formalmente che il contributo previsto dalla manovra resti limitato a due esercizi, con clausola di revisione legata al costo del credito alle imprese. Il Mef, nella nota tecnica di ieri sera, quantifica in 2,1 miliardi la quota attesa dal settore.</div>
+            <div style="font-size:14px;line-height:1.68;color:#2b261f">Tre agenzie riportano posizioni divergenti all'interno della maggioranza sulla natura strutturale del prelievo. Il tema si intreccia con l'esame in commissione Bilancio previsto per martedì e con la richiesta delle Regioni sul riparto sanitario.</div>
+            <div style="font-size:11.5px;line-height:1.55;color:#a49b8b;font-style:italic">Sintesi ricavata dalle fonti elencate. Va verificata dalla redazione prima di qualsiasi utilizzo: nessun testo di questa scheda è pubblicabile così com'è.</div>
+          </div>
+          <div style="display:flex;gap:9px;flex-wrap:wrap;border-top:1px solid #eee7d9;padding-top:14px">
+            <div onClick="{{ generateFromDetail }}" style="font-size:12.5px;font-weight:700;background:#1d5c63;color:#faf7f0;border-radius:8px;padding:11px 18px;cursor:pointer" style-hover="background:#164a50">Genera bozza da questo argomento</div>
+            <div style="font-size:12.5px;font-weight:700;border:1px solid #d9d2c4;border-radius:8px;padding:11px 18px;cursor:pointer" style-hover="border-color:#211d18">Assegna a un redattore</div>
+            <div onClick="{{ ignoreDetail }}" style="font-size:12.5px;font-weight:600;color:#8a8378;padding:11px 6px;cursor:pointer" style-hover="color:#b3261e">Ignora argomento</div>
+          </div>
+          <sc-if value="{{ draftCreated }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex;gap:12px;align-items:flex-start;background:#f1ebdd;border-radius:10px;padding:13px 15px">
+              <span style="font-size:14px;color:#1e6b47">✓</span>
+              <div style="display:flex;flex-direction:column;gap:4px">
+                <div style="font-size:12.5px;font-weight:700">Bozza generata e messa in coda</div>
+                <div style="font-size:12px;line-height:1.55;color:#5c554a">La proposta è entrata in <b>Articoli</b> con stato Bozza e attribuzione «assistente AI». Richiede revisione umana prima di qualsiasi avanzamento nel flusso.</div>
+                <div style="font-size:12px;font-weight:700;color:#1d5c63;cursor:pointer;width:fit-content" style-hover="color:#164a50">Apri la bozza nell'editor →</div>
+              </div>
+            </div>
+          </sc-if>
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:16px">
+          <div style="background:#faf7f0;border:1px solid #e0d9c8;border-radius:14px;padding:clamp(16px,2vw,22px);display:flex;flex-direction:column;gap:12px">
+            <div style="font-size:10px;font-weight:700;letter-spacing:1.4px;color:#8a8378">FONTI CON ESTRATTI</div>
+            <sc-for list="{{ detailSources }}" as="s" hint-placeholder-count="4">
+              <div style="display:flex;flex-direction:column;gap:5px;border-top:1px solid #eee7d9;padding-top:11px">
+                <div style="display:flex;align-items:baseline;gap:8px;flex-wrap:wrap">
+                  <a href="{{ s.url }}" target="_blank" style="font-size:12px;font-weight:700;color:#211d18" style-hover="color:#1d5c63">{{ s.name }} ↗</a>
+                  <span style="font-size:10.5px;color:#a49b8b">{{ s.time }}</span>
+                </div>
+                <div style="font-size:12.5px;line-height:1.6;color:#5c554a;border-left:2px solid #e0d9c8;padding-left:10px">{{ s.quote }}</div>
+                <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#c0b7a4">{{ s.url }}</div>
+              </div>
+            </sc-for>
+          </div>
+          <div style="background:#faf7f0;border:1px solid #e0d9c8;border-radius:14px;padding:clamp(16px,2vw,22px);display:flex;flex-direction:column;gap:10px">
+            <div style="font-size:10px;font-weight:700;letter-spacing:1.4px;color:#8a8378">ARGOMENTI CORRELATI</div>
+            <div style="display:flex;gap:7px;flex-wrap:wrap">
+              <span style="font-size:11.5px;font-weight:600;background:#f1ebdd;border-radius:999px;padding:6px 12px;cursor:pointer" style-hover="background:#ece4d1">Riparto sanitario regioni</span>
+              <span style="font-size:11.5px;font-weight:600;background:#f1ebdd;border-radius:999px;padding:6px 12px;cursor:pointer" style-hover="background:#ece4d1">Detrazioni sopra 120 mila</span>
+              <span style="font-size:11.5px;font-weight:600;background:#f1ebdd;border-radius:999px;padding:6px 12px;cursor:pointer" style-hover="background:#ece4d1">Commissione Bilancio</span>
+              <span style="font-size:11.5px;font-weight:600;background:#f1ebdd;border-radius:999px;padding:6px 12px;cursor:pointer" style-hover="background:#ece4d1">Costo del credito Pmi</span>
+            </div>
+            <div style="font-size:11.5px;line-height:1.55;color:#a49b8b;border-top:1px solid #eee7d9;padding-top:10px">Due articoli Esperia già pubblicati toccano il tema: la redazione può decidere di aggiornarli invece di aprire un nuovo pezzo.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    </sc-if>
+  </div>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{}">
+const TOPICS = [
+  {
+    id: 1, scope: 'ECONOMIA · FISCO', when: '22 min fa', rel: 92, relNote: '14 fonti in 3 ore · nessun pezzo Esperia',
+    title: "Contributo delle banche nella manovra: l'Abi apre allo scontro sulla durata del prelievo",
+    summary: "L'associazione chiede che il prelievo resti limitato a due esercizi con clausola sul costo del credito. Il Mef quantifica in 2,1 miliardi la quota attesa dal settore.",
+    sources: [
+      { name: 'Ansa', url: 'https://www.ansa.it/' },
+      { name: 'Il Sole 24 Ore', url: 'https://www.ilsole24ore.com/' },
+      { name: 'Reuters', url: 'https://www.reuters.com/' }
+    ],
+    sourceNote: '· e altre 11 fonti, elencate nel dettaglio'
+  },
+  {
+    id: 2, scope: 'POLITICA · PARLAMENTO', when: '48 min fa', rel: 78, relNote: '9 fonti in 4 ore · 1 pezzo Esperia collegato',
+    title: 'Milleduecento emendamenti alla manovra: le opposizioni puntano sul capitolo sanità',
+    summary: 'Il calendario della commissione Bilancio slitta di due giorni. Sei Regioni chiedono la revisione del riparto del fondo sanitario nazionale.',
+    sources: [
+      { name: 'AGI', url: 'https://www.agi.it/' },
+      { name: 'Adnkronos', url: 'https://www.adnkronos.com/' }
+    ],
+    sourceNote: '· e altre 7 fonti'
+  },
+  {
+    id: 3, scope: 'MONDO · UNIONE EUROPEA', when: '1 ora fa', rel: 64, relNote: '7 fonti in 6 ore · tema ricorrente',
+    title: 'Dazi agroalimentari: Roma chiede una clausola di salvaguardia al tavolo di Bruxelles',
+    summary: 'Il rinvio del vertice a settembre lascia aperta la partita sulle denominazioni protette. Confagricoltura stima 400 milioni di export a rischio.',
+    sources: [
+      { name: 'Reuters', url: 'https://www.reuters.com/' },
+      { name: 'Politico Europe', url: 'https://www.politico.eu/' },
+      { name: 'Ansa', url: 'https://www.ansa.it/' }
+    ],
+    sourceNote: '· e altre 4 fonti'
+  },
+  {
+    id: 4, scope: 'CRONACA · TERRITORIO', when: '2 ore fa', rel: 41, relNote: '4 fonti locali · segnale debole',
+    title: 'Aree interne, i sindaci appenninici preparano una piattaforma comune per l’autunno',
+    summary: 'Anci stima 320 comuni con bilanci in sofferenza dal 2027. La proroga del fondo copre un solo esercizio.',
+    sources: [
+      { name: 'Il Messaggero', url: 'https://www.ilmessaggero.it/' },
+      { name: 'ANSA Abruzzo', url: 'https://www.ansa.it/abruzzo/' }
+    ],
+    sourceNote: '· e altre 2 fonti'
+  }
+];
+
+const DETAIL_SOURCES = [
+  { name: 'Ansa', time: 'oggi, 10:58', quote: "L'Abi chiede che il contributo previsto dalla manovra sia limitato a due esercizi e accompagnato da una clausola di revisione.", url: 'https://www.ansa.it/' },
+  { name: 'Il Sole 24 Ore', time: 'oggi, 10:31', quote: 'La nota tecnica del Mef quantifica in 2,1 miliardi la quota attesa dal settore creditizio per il primo anno.', url: 'https://www.ilsole24ore.com/' },
+  { name: 'Reuters', time: 'oggi, 09:47', quote: 'Italian banks push back on the levy, warning about lending costs for small firms.', url: 'https://www.reuters.com/' },
+  { name: 'Adnkronos', time: 'oggi, 09:12', quote: 'Nella maggioranza restano posizioni divergenti sulla natura strutturale del prelievo.', url: 'https://www.adnkronos.com/' }
+];
+
+const SCOPES = ['Tutti', 'Politica', 'Economia', 'Mondo', 'Cronaca', 'Cultura'];
+const WINDOWS = ['3 ore', '12 ore', '24 ore', '7 giorni'];
+
+class Component extends DCLogic {
+  state = { view: 'list', scope: 'Tutti', window: '12 ore', ignored: [], generated: [], draftCreated: false };
+
+  renderVals() {
+    const s = this.state;
+    const views = ['elenco', 'dettaglio', 'provider non disponibile'];
+    const cur = s.view === 'list' ? 'elenco' : (s.view === 'detail' ? 'dettaglio' : 'provider non disponibile');
+    const relColor = r => r >= 85 ? '#9c2a20' : (r >= 70 ? '#9c4a1e' : (r >= 55 ? '#8a6413' : '#5c554a'));
+    const relWord = r => r >= 85 ? 'alta' : (r >= 70 ? 'media-alta' : (r >= 55 ? 'media' : 'bassa'));
+    const visible = TOPICS.filter(t => s.scope === 'Tutti' || t.scope.toLowerCase().startsWith(s.scope.toLowerCase()));
+
+    return {
+      viewLabel: cur,
+      cycleView: () => {
+        const next = views[(views.indexOf(cur) + 1) % views.length];
+        this.setState({ view: next === 'elenco' ? 'list' : (next === 'dettaglio' ? 'detail' : 'down'), draftCreated: false });
+      },
+      isList: s.view === 'list', isDetail: s.view === 'detail', isDown: s.view === 'down',
+      retry: () => this.setState({ view: 'list' }),
+      scopes: SCOPES.map(sc => ({
+        label: sc,
+        bg: s.scope === sc ? '#211d18' : '#f1ebdd',
+        fg: s.scope === sc ? '#faf7f0' : '#5c554a',
+        pick: () => this.setState({ scope: sc })
+      })),
+      windows: WINDOWS.map(w => ({
+        label: w,
+        bg: s.window === w ? '#faf7f0' : 'transparent',
+        fg: s.window === w ? '#211d18' : '#8a8378',
+        pick: () => this.setState({ window: w })
+      })),
+      countLabel: (visible.length === 0 ? 'nessun argomento proposto' : (visible.length === 1 ? '1 argomento proposto' : visible.length + ' argomenti proposti')) + ' · finestra ' + s.window,
+      topics: visible.map(t => {
+        const ign = s.ignored.includes(t.id);
+        const gen = s.generated.includes(t.id);
+        return {
+          scope: t.scope, when: t.when, title: t.title, summary: t.summary,
+          rel: relWord(t.rel) + ' · ' + t.rel,
+          relWidth: t.rel + '%', relColor: relColor(t.rel), relNote: t.relNote,
+          sources: t.sources, sourceNote: t.sourceNote,
+          opacity: ign ? '0.45' : '1',
+          stateNote: ign ? 'argomento ignorato · non ricomparirà per 7 giorni'
+            : (gen ? 'bozza generata · in attesa di revisione in Articoli' : 'nessun testo pubblicato: la bozza va revisionata'),
+          open: () => this.setState({ view: 'detail', draftCreated: false }),
+          generate: () => this.setState(p => ({ generated: p.generated.concat(t.id) })),
+          ignore: () => this.setState(p => ({ ignored: p.ignored.includes(t.id) ? p.ignored.filter(x => x !== t.id) : p.ignored.concat(t.id) }))
+        };
+      }),
+      detailSources: DETAIL_SOURCES,
+      draftCreated: s.draftCreated,
+      generateFromDetail: () => this.setState({ draftCreated: true }),
+      ignoreDetail: () => this.setState({ view: 'list' }),
+      backToList: () => this.setState({ view: 'list', draftCreated: false })
+    };
+  }
+}
+
+</script>
+</body>
+</html>

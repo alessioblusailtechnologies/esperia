@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<span style="display:inline-flex;align-items:center;gap:6px;font-size:10.5px;font-weight:700;letter-spacing:0.3px;border-radius:999px;padding:4px 11px;white-space:nowrap;background:{{ bg }};color:{{ fg }}">
+  <span style="width:5px;height:5px;border-radius:50%;background:{{ fg }}"></span>{{ label }}
+</span>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:160,&quot;height&quot;:40},&quot;status&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;bozza&quot;,&quot;revisione&quot;,&quot;approvato&quot;,&quot;programmato&quot;,&quot;pubblicato&quot;],&quot;default&quot;:&quot;bozza&quot;,&quot;tsType&quot;:&quot;string&quot;}}">
+const BO_STATUS = {
+  bozza:         { bg: '#f3e6c9', fg: '#8a6413', label: 'Bozza' },
+  revisione:     { bg: '#f6dccf', fg: '#9c4a1e', label: 'In revisione' },
+  approvato:     { bg: '#dfe6f5', fg: '#2c4c86', label: 'Approvato' },
+  programmato:   { bg: '#e6e1f2', fg: '#57488c', label: 'Programmato' },
+  pubblicato:    { bg: '#dcebe4', fg: '#1e6b47', label: 'Pubblicato' }
+};
+if (typeof window !== 'undefined') window.BO_STATUS = BO_STATUS;
+class Component extends DCLogic {
+  renderVals() {
+    const s = BO_STATUS[this.props.status] || BO_STATUS.bozza;
+    return { bg: s.bg, fg: s.fg, label: s.label };
+  }
+}
+
+</script>
+</body>
+</html>

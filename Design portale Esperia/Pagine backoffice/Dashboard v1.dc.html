@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet data-dc-atomics>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600;6..72,700;6..72,800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#f5f1e8;font-family:Archivo,sans-serif;color:#211d18}
+a{color:#1d5c63;text-decoration:none}
+a:hover{color:#164a50}
+</style>
+</helmet>
+
+<div style="display:flex;min-height:100vh;background:#f5f1e8;align-items:stretch">
+  <dc-import name="Nav Laterale v1" active="Dashboard" user-name="{{ userName }}" user-role="{{ navRole }}" style="background:#211d18;align-self:stretch" hint-size="230px,100vh"></dc-import>
+
+  <div style="flex:1;display:flex;flex-direction:column;min-width:0">
+    <dc-import name="Barra Superiore v1" title="Dashboard" search-placeholder="Cerca in redazione" user-name="{{ userName }}" user-role="{{ topRole }}" hint-size="100%,70px"></dc-import>
+
+    <!-- intestazione -->
+    <div style="display:flex;align-items:flex-end;gap:14px;flex-wrap:wrap;padding:20px clamp(16px,2.4vw,32px) 0">
+      <div style="display:flex;flex-direction:column;gap:4px;flex:1;min-width:220px">
+        <div style="font-family:'Newsreader',serif;font-size:clamp(24px,2.8vw,32px);font-weight:700;letter-spacing:-0.5px">{{ greeting }}</div>
+        <div style="font-size:12.5px;color:#8a8378">{{ subline }}</div>
+      </div>
+      <div onClick="{{ cycleRole }}" style="display:flex;align-items:center;gap:7px;font-size:11px;font-weight:600;background:#f1ebdd;border-radius:999px;padding:6px 12px;cursor:pointer;color:#5c554a;white-space:nowrap" style-hover="background:#ece4d1;color:#211d18">
+        <span style="font-size:9.5px;font-weight:700;letter-spacing:1px;color:#a49b8b">VISTA</span>{{ roleLabel }}<span style="font-size:8px;color:#a49b8b">▾</span>
+      </div>
+      <div style="font-size:12px;font-weight:700;background:#1d5c63;color:#faf7f0;border-radius:8px;padding:10px 16px;cursor:pointer;white-space:nowrap" style-hover="background:#164a50">+ Nuovo articolo</div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px;padding:16px clamp(16px,2.4vw,32px) 48px;align-items:start">
+
+      <!-- BLOCCO 1: in lavorazione / coda di revisione -->
+      <div style="background:#faf7f0;border:1px solid #e0d9c8;border-radius:14px;padding:clamp(16px,2vw,20px);display:flex;flex-direction:column;gap:12px">
+        <div style="display:flex;align-items:baseline;gap:10px;flex-wrap:wrap">
+          <div style="font-family:'Newsreader',serif;font-size:19px;font-weight:700;flex:1">{{ block1Title }}</div>
+          <div style="font-size:11.5px;font-weight:700;color:#1d5c63;cursor:pointer;white-space:nowrap" style-hover="color:#164a50">Vai ad Articoli →</div>
+        </div>
+        <div style="font-size:11.5px;color:#8a8378">{{ block1Note }}</div>
+        <sc-for list="{{ block1 }}" as="a" hint-placeholder-count="4">
+          <div style="display:flex;gap:12px;align-items:center;border-top:1px solid #eee7d9;padding-top:11px;cursor:pointer" style-hover="opacity:.75">
+            <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:3px">
+              <div style="font-family:'Newsreader',serif;font-size:15px;font-weight:600;line-height:1.3">{{ a.title }}</div>
+              <div style="font-size:10.5px;color:#a49b8b">{{ a.meta }}</div>
+            </div>
+            <dc-import name="Pastiglia Stato v1" status="{{ a.status }}" hint-size="110px,22px"></dc-import>
+          </div>
+        </sc-for>
+      </div>
+
+      <!-- BLOCCO 2: attesa di revisione -->
+      <div style="background:#faf7f0;border:1px solid #e0d9c8;border-radius:14px;padding:clamp(16px,2vw,20px);display:flex;flex-direction:column;gap:12px">
+        <div style="display:flex;align-items:baseline;gap:10px;flex-wrap:wrap">
+          <div style="font-family:'Newsreader',serif;font-size:19px;font-weight:700;flex:1">In attesa di revisione</div>
+          <div style="font-size:11.5px;font-weight:700;color:#1d5c63;cursor:pointer;white-space:nowrap" style-hover="color:#164a50">Apri la coda →</div>
+        </div>
+        <div style="font-size:11.5px;color:#8a8378">{{ block2Note }}</div>
+        <sc-for list="{{ block2 }}" as="a" hint-placeholder-count="3">
+          <div style="display:flex;gap:12px;align-items:center;border-top:1px solid #eee7d9;padding-top:11px;cursor:pointer" style-hover="opacity:.75">
+            <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:3px">
+              <div style="font-family:'Newsreader',serif;font-size:15px;font-weight:600;line-height:1.3">{{ a.title }}</div>
+              <div style="font-size:10.5px;color:#a49b8b">{{ a.meta }}</div>
+            </div>
+            <div style="font-size:11px;font-weight:700;color:{{ a.ageColor }};white-space:nowrap">{{ a.age }}</div>
+          </div>
+        </sc-for>
+        <sc-if value="{{ block2Empty }}" hint-placeholder-val="{{ false }}">
+          <div style="border-top:1px solid #eee7d9;padding-top:14px;font-size:12.5px;line-height:1.6;color:#8a8378">Nessun tuo pezzo è in revisione in questo momento. Quando invii un articolo lo trovi qui con lo stato aggiornato.</div>
+        </sc-if>
+      </div>
+
+      <!-- BLOCCO 3: programmati -->
+      <div style="background:#faf7f0;border:1px solid #e0d9c8;border-radius:14px;padding:clamp(16px,2vw,20px);display:flex;flex-direction:column;gap:12px">
+        <div style="display:flex;align-items:baseline;gap:10px;flex-wrap:wrap">
+          <div style="font-family:'Newsreader',serif;font-size:19px;font-weight:700;flex:1">Programmati</div>
+          <div style="font-size:11.5px;font-weight:700;color:#1d5c63;cursor:pointer;white-space:nowrap" style-hover="color:#164a50">Calendario →</div>
+        </div>
+        <div style="font-size:11.5px;color:#8a8378">prossime uscite in ordine cronologico</div>
+        <sc-for list="{{ scheduled }}" as="sc" hint-placeholder-count="4">
+          <div style="display:flex;gap:12px;align-items:center;border-top:1px solid #eee7d9;padding-top:11px;cursor:pointer" style-hover="opacity:.75">
+            <div style="width:56px;flex:0 0 56px;display:flex;flex-direction:column;gap:1px">
+              <div style="font-family:'IBM Plex Mono',monospace;font-size:12.5px;font-weight:500;color:#211d18">{{ sc.time }}</div>
+              <div style="font-size:10px;color:#a49b8b">{{ sc.day }}</div>
+            </div>
+            <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:3px">
+              <div style="font-family:'Newsreader',serif;font-size:15px;font-weight:600;line-height:1.3">{{ sc.title }}</div>
+              <div style="font-size:10.5px;color:#a49b8b">{{ sc.meta }}</div>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+
+      <!-- BLOCCO 4: hot topic -->
+      <div style="background:#faf7f0;border:1px solid #e0d9c8;border-radius:14px;padding:clamp(16px,2vw,20px);display:flex;flex-direction:column;gap:12px">
+        <div style="display:flex;align-items:baseline;gap:10px;flex-wrap:wrap">
+          <div style="font-family:'Newsreader',serif;font-size:19px;font-weight:700;flex:1">Hot topic suggeriti</div>
+          <div style="font-size:11.5px;font-weight:700;color:#1d5c63;cursor:pointer;white-space:nowrap" style-hover="color:#164a50">Tutti gli argomenti →</div>
+        </div>
+        <div style="font-size:11.5px;color:#8a8378">proposte dell'assistente: nessun testo pubblicato senza revisione</div>
+        <sc-for list="{{ topics }}" as="t" hint-placeholder-count="3">
+          <div style="display:flex;gap:12px;align-items:flex-start;border-top:1px solid #eee7d9;padding-top:11px;cursor:pointer" style-hover="opacity:.75">
+            <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:3px">
+              <div style="font-size:13px;font-weight:600;line-height:1.4">{{ t.title }}</div>
+              <div style="font-size:10.5px;color:#a49b8b">{{ t.meta }}</div>
+            </div>
+            <div style="font-size:11px;font-weight:800;color:{{ t.color }};white-space:nowrap">{{ t.rel }}</div>
+          </div>
+        </sc-for>
+      </div>
+
+      <!-- BLOCCO 5: moderazione -->
+      <div style="background:#faf7f0;border:1px solid #e0d9c8;border-radius:14px;padding:clamp(16px,2vw,20px);display:flex;flex-direction:column;gap:12px">
+        <div style="display:flex;align-items:baseline;gap:10px;flex-wrap:wrap">
+          <div style="font-family:'Newsreader',serif;font-size:19px;font-weight:700;flex:1">Commenti in moderazione</div>
+          <div style="font-size:11.5px;font-weight:700;color:#1d5c63;cursor:pointer;white-space:nowrap" style-hover="color:#164a50">Vai a Moderazione →</div>
+        </div>
+        <div style="display:flex;gap:12px;flex-wrap:wrap">
+          <div style="flex:1;min-width:120px;background:#f1ebdd;border-radius:10px;padding:13px 14px;display:flex;flex-direction:column;gap:2px">
+            <div style="font-family:'Newsreader',serif;font-size:28px;font-weight:700;line-height:1">{{ modPending }}</div>
+            <div style="font-size:11px;color:#5c554a">in attesa di approvazione</div>
+          </div>
+          <div style="flex:1;min-width:120px;background:#f6dccf;border-radius:10px;padding:13px 14px;display:flex;flex-direction:column;gap:2px">
+            <div style="font-family:'Newsreader',serif;font-size:28px;font-weight:700;line-height:1;color:#9c4a1e">{{ modReports }}</div>
+            <div style="font-size:11px;color:#8a5a3e">segnalazioni aperte</div>
+          </div>
+        </div>
+        <div style="font-size:12px;line-height:1.6;color:#5c554a;border-top:1px solid #eee7d9;padding-top:11px">{{ modNote }}</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;role&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;redattore&quot;,&quot;caporedattore&quot;],&quot;default&quot;:&quot;redattore&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Ruolo&quot;}}">
+const MINE = [
+  { title: 'Regionali in Veneto, il campo largo tratta sul nome del candidato', meta: 'ultima modifica 20 min fa · 430 parole', status: 'bozza' },
+  { title: 'Premierato, la riforma torna in Senato: il calendario dei lavori', meta: 'ultima modifica ieri, 19:44 · 320 parole', status: 'bozza' },
+  { title: "Manovra, l'intesa sul taglio dell'Irpef per il ceto medio", meta: 'pubblicato oggi 07:15 · 1.420 parole', status: 'pubblicato' },
+  { title: 'Milleduecento emendamenti: la strategia delle opposizioni', meta: 'approvato · uscita 28 ago 07:00', status: 'approvato' }
+];
+
+const DESK = [
+  { title: 'Vertice UE sui dazi: Roma chiede una clausola per l\u2019agroalimentare', meta: 'Luca Ferraro · inviato 1 ora fa · Mondo', status: 'revisione' },
+  { title: 'Stellantis rinvia il piano Mirafiori: incontro al Mimit', meta: 'Elena Costa · inviato 2 ore fa · Economia', status: 'revisione' },
+  { title: '«Le aree interne non si salvano con un decreto»', meta: 'Giulia Sanna · inviato ieri 16:12 · Opinioni', status: 'revisione' },
+  { title: 'Sanità, il piano assunzioni si ferma in Conferenza delle Regioni', meta: 'Elena Costa · bozza avanzata · Politica', status: 'bozza' }
+];
+
+const REVIEW_QUEUE = [
+  { title: 'Vertice UE sui dazi: Roma chiede una clausola', meta: 'Luca Ferraro · Mondo', age: '1 h', urgent: false },
+  { title: 'Stellantis rinvia il piano Mirafiori', meta: 'Elena Costa · Economia', age: '2 h', urgent: false },
+  { title: '«Le aree interne non si salvano con un decreto»', meta: 'Giulia Sanna · Opinioni', age: '19 h', urgent: true }
+];
+
+const MY_REVIEW = [
+  { title: 'Regionali in Veneto: il retroscena del vertice romano', meta: 'inviato 35 min fa · attende Davide Priori', age: '35 min', urgent: false }
+];
+
+const SCHEDULED = [
+  { time: '18:00', day: 'oggi', title: 'Pensioni, il tavolo tecnico slitta: nessuna quota nella bozza', meta: 'Elena Costa · Economia' },
+  { time: '06:00', day: '28 ago', title: 'Contributo delle banche, l\u2019Abi chiede garanzie sulla durata', meta: 'Elena Costa · Economia' },
+  { time: '07:00', day: '28 ago', title: 'Milleduecento emendamenti: la strategia delle opposizioni', meta: 'Emanuele Ragusa · Politica' },
+  { time: '08:00', day: '29 ago', title: 'Venezia 83, il film sul processo di Palermo', meta: 'Giulia Sanna · Cultura' }
+];
+
+const TOPICS = [
+  { title: "Contributo delle banche: l'Abi apre allo scontro sulla durata", meta: 'Economia · 14 fonti · 22 min fa', rel: '92', color: '#9c2a20' },
+  { title: 'Milleduecento emendamenti sulla sanità in commissione', meta: 'Politica · 9 fonti · 48 min fa', rel: '78', color: '#9c4a1e' },
+  { title: 'Dazi agroalimentari e clausola di salvaguardia', meta: 'Mondo · 7 fonti · 1 ora fa', rel: '64', color: '#8a6413' }
+];
+
+class Component extends DCLogic {
+  state = { role: null };
+
+  renderVals() {
+    const role = this.state.role || this.props.role || 'redattore';
+    const chief = role === 'caporedattore';
+    return {
+      roleLabel: role,
+      cycleRole: () => this.setState({ role: chief ? 'redattore' : 'caporedattore' }),
+      userName: chief ? 'Davide Priori' : 'Emanuele Ragusa',
+      navRole: chief ? 'Caporedattore · desk' : 'Redattore · politica',
+      topRole: chief ? 'CAPOREDATTORE' : 'REDATTORE',
+      greeting: chief ? 'Buongiorno Davide' : 'Buongiorno Emanuele',
+      subline: chief
+        ? 'giovedì 27 agosto 2026 · coda di revisione dell\u2019intera redazione, 4 uscite programmate'
+        : 'giovedì 27 agosto 2026 · 2 bozze aperte, 1 pezzo in attesa di revisione',
+      block1Title: chief ? 'Lavori della redazione' : 'I tuoi articoli in lavorazione',
+      block1Note: chief ? 'ultimi movimenti su tutti i desk' : 'solo i tuoi pezzi, ordinati per ultima modifica',
+      block1: chief ? DESK : MINE,
+      block2Note: chief ? 'coda dell\u2019intera redazione · tocca a te approvare' : 'i tuoi pezzi inviati, in attesa del caporedattore',
+      block2: (chief ? REVIEW_QUEUE : MY_REVIEW).map(a => ({
+        title: a.title, meta: a.meta, age: 'da ' + a.age,
+        ageColor: a.urgent ? '#9c2a20' : '#8a8378'
+      })),
+      block2Empty: false,
+      scheduled: SCHEDULED,
+      topics: TOPICS,
+      modPending: chief ? '12' : '12',
+      modReports: chief ? '3' : '3',
+      modNote: chief
+        ? 'Nessun commento è visibile ai lettori prima dell\u2019approvazione. Le segnalazioni aperte da più di 24 ore vengono evidenziate in rosso nella coda.'
+        : 'La moderazione è in carico ai caporedattori: puoi segnalare un commento problematico dall\u2019articolo, e resterà invisibile ai lettori finché non viene valutato.'
+    };
+  }
+}
+
+</script>
+</body>
+</html>

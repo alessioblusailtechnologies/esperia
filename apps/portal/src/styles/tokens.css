@@ -1,0 +1,147 @@
+/* =============================================================================
+   Design token del portale Esperia
+   -----------------------------------------------------------------------------
+   Valori estratti dai design consegnati dal Committente
+   (Design portale Esperia / Pagine — Home, Articolo, Listing, Ricerca v1).
+
+   Nessun componente del portale contiene un colore o una dimensione scritti a
+   mano: tutti leggono le variabili definite qui. Una revisione della grafica si
+   applica cambiando questi valori.
+
+   NOTA SUL TEMA SCURO: i design consegnati definiscono una sola palette, calda
+   e chiara. Non abbiamo inventato una variante scura — sarebbe stata una scelta
+   di design non concordata. La struttura a token la rende innestabile in un
+   secondo momento ridefinendo questo blocco.
+   ============================================================================= */
+
+:root {
+  /* --- Colore ------------------------------------------------------------ */
+
+  /* Fondo carta caldo: è l'elemento che dà alla testata il suo carattere. */
+  --colore-fondo: #faf7f0;
+  /* Superficie alternativa: pillola di ricerca, pannelli, tag, citazioni. */
+  --colore-superficie: #f1ebdd;
+  /* Campi di inserimento e riquadri attivi, appena più chiari del fondo. */
+  --colore-superficie-chiara: #fffdf8;
+  /* Inverso: banner cookie, bottone primario, tag al passaggio del mouse. */
+  --colore-inverso: #211d18;
+  --colore-inverso-hover: #3d372e;
+
+  --colore-testo: #211d18;
+  /* Il corpo dell'articolo è di un tono appena più morbido del titolo:
+     su testi lunghi riduce il contrasto duro senza scendere sotto AA. */
+  --colore-testo-corpo: #2b261f;
+  --colore-testo-tenue: #5c554a;
+  --colore-testo-meta: #8a8378;
+  --colore-testo-debole: #a39c90;
+  --colore-testo-inverso: #faf7f0;
+
+  --colore-accento: #b3261e;
+  --colore-accento-scuro: #8f1e17;
+
+  --colore-bordo: #e6dfd1;
+  --colore-bordo-medio: #e0d8c8;
+  --colore-bordo-forte: #cdc4b2;
+
+  /* Evidenziazione dei termini nei risultati di ricerca. */
+  --colore-evidenza: #f6e2b0;
+  /* Pastiglia RSS nel footer. */
+  --colore-rss: #e8b04b;
+
+  --colore-successo: #1b5e20;
+  --colore-attenzione: #8a5a00;
+  --colore-errore: #b3261e;
+
+  /* Anello di focus: non va mai rimosso. È il requisito di accessibilità più
+     facile da rompere e più difficile da accorgersene. RNF-07 */
+  --colore-focus: #211d18;
+
+  /* Trama del segnaposto avatar, ripresa dai design. */
+  --trama-avatar: repeating-linear-gradient(45deg, #e0d8c8 0 4px, #efe9dc 4px 8px);
+
+  /* --- Tipografia -------------------------------------------------------- */
+
+  /* Newsreader per titoli e citazioni, Archivo per interfaccia e corpo dei
+     testi brevi. I fallback sono scelti per metrica simile, così l'eventuale
+     FOUT non sposta il layout. */
+  --font-titoli: Newsreader, Georgia, 'Times New Roman', serif;
+  --font-testo: Archivo, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+
+  --peso-normale: 400;
+  --peso-medio: 600;
+  --peso-forte: 700;
+  --peso-extra: 800;
+
+  /* Scala fluida: nessun media query per la dimensione del testo. */
+  --testo-micro: 9.5px; /* etichetta categoria nelle liste */
+  --testo-eyebrow: 10.5px; /* titoletti di sezione */
+  --testo-xs: 11.5px; /* meta, orari, crediti foto */
+  --testo-sm: 12.5px; /* meta principali, bottoni */
+  --testo-base: 13.5px; /* sommari delle schede, interfaccia */
+  --testo-md: clamp(15px, 1.3vw, 17px); /* sommario di apertura */
+  --testo-lettura: clamp(17px, 1.45vw, 18.5px); /* corpo dell'articolo */
+
+  --titolo-lista: clamp(17px, 1.5vw, 20px);
+  --titolo-scheda: 22px;
+  --titolo-risultato: clamp(18px, 1.7vw, 23px);
+  --titolo-sezione: clamp(24px, 2.4vw, 29px); /* h2 dentro l'articolo */
+  --titolo-articolo: clamp(30px, 4.4vw, 54px);
+  --titolo-apertura: clamp(32px, 4.6vw, 60px);
+  --titolo-elenco: clamp(34px, 5vw, 60px); /* h1 di categoria e tag */
+
+  --interlinea-titolo: 1.06;
+  --interlinea-titoletto: 1.22;
+  --interlinea-normale: 1.5;
+  /* Il corpo dell'articolo è testo lungo: serve più aria fra le righe. */
+  --interlinea-lettura: 1.72;
+
+  --spaziatura-eyebrow: 2px;
+  --spaziatura-titolo: -1px;
+
+  /* --- Spaziatura -------------------------------------------------------- */
+  --spazio-1: 3px;
+  --spazio-2: 6px;
+  --spazio-3: 9px;
+  --spazio-4: 12px;
+  --spazio-5: 16px;
+  --spazio-6: 22px;
+  --spazio-7: 30px;
+  --spazio-8: clamp(28px, 3vw, 40px);
+  --spazio-9: clamp(34px, 4vw, 54px);
+
+  /* --- Layout ------------------------------------------------------------ */
+  --larghezza-contenuto: 1280px;
+  /* Le tre larghezze dell'articolo, dai design:
+     testo stretto per la lettura, testata un po' più larga, foto di apertura
+     debordante rispetto al testo. */
+  --larghezza-lettura: 680px;
+  --larghezza-testata: 760px;
+  --larghezza-media: 1000px;
+
+  --padding-laterale: clamp(16px, 3vw, 40px);
+  --padding-articolo: clamp(18px, 4vw, 40px);
+
+  --raggio-sm: 8px; /* miniature */
+  --raggio-md: 12px; /* schede */
+  --raggio-lg: 14px; /* apertura, pannelli, banner */
+  --raggio-pill: 999px;
+
+  --ombra-banner: 0 18px 40px rgb(33 29 24 / 28%);
+  --ombra-modale: 0 22px 50px rgb(33 29 24 / 32%);
+  --velo-modale: rgb(33 29 24 / 42%);
+
+  --transizione: 150ms ease;
+
+  color-scheme: light;
+}
+
+/* -----------------------------------------------------------------------------
+   Token specifici di componenti presenti nei design ma non riconducibili
+   alla scala generale.
+   -------------------------------------------------------------------------- */
+:root {
+  /* Interruttore delle preferenze cookie. */
+  --colore-interruttore-spento: #d8d0be;
+  /* Bordo dei bottoni sul fondo scuro del banner. */
+  --colore-bordo-inverso: #6b6459;
+}

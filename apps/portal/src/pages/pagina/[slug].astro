@@ -1,0 +1,52 @@
+---
+import '@/styles/articolo.css'
+
+import Base from '@/layouts/Base.astro'
+import { getPageBySlug, getSiteSettings } from '@/lib/payload'
+import { renderRichText } from '@/lib/lexical-render'
+import { absoluteUrl, breadcrumbJsonLd, pageJsonLd } from '@/lib/seo'
+
+/** Pagine editoriali di servizio — RF-P-10 (chi siamo, contatti, privacy, cookie). */
+
+const { slug } = Astro.params
+const pagina = slug ? await getPageBySlug(slug) : null
+if (!pagina) return Astro.rewrite('/404')
+
+const settings = await getSiteSettings()
+const corpo = renderRichText(pagina.content)
+const percorso = `/pagina/${pagina.slug}`
+---
+
+<Base
+  title={pagina.seo?.metaTitle || pagina.title}
+  description={pagina.seo?.metaDescription}
+  canonical={pagina.seo?.canonicalUrl || absoluteUrl(percorso)}
+  noIndex={pagina.seo?.noIndex ?? false}
+  jsonLd={[
+    pageJsonLd(pagina, settings),
+    breadcrumbJsonLd([{ name: 'Home', url: '/' }, { name: pagina.title, url: percorso }]),
+  ]}
+>
+  <article class="statica">
+    <header class="colonna-testata statica__testata">
+      <h1 class="statica__titolo">{pagina.title}</h1>
+    </header>
+
+    <div class="colonna-lettura articolo__corpo" set:html={corpo} />
+  </article>
+</Base>
+
+<style>
+  .statica__testata {
+    padding-top: clamp(30px, 4.5vw, 56px);
+    padding-bottom: clamp(20px, 3vw, 30px);
+    border-bottom: 1px solid var(--colore-bordo);
+  }
+
+  .statica__titolo {
+    font-size: var(--titolo-articolo);
+    line-height: 1.07;
+    font-weight: var(--peso-forte);
+    letter-spacing: var(--spaziatura-titolo);
+  }
+</style>

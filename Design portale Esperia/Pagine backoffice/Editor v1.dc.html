@@ -1,0 +1,894 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet data-dc-atomics>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600;6..72,700;6..72,800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#f5f1e8;font-family:Archivo,sans-serif;color:#211d18}
+a{color:#1d5c63;text-decoration:none}
+a:hover{color:#164a50}
+input::placeholder,textarea::placeholder{color:#a49b8b}
+input,textarea,select{font-family:Archivo,sans-serif}
+@keyframes esperiaPulse{0%{opacity:.35}50%{opacity:.75}100%{opacity:.35}}
+</style>
+</helmet>
+
+<div style="display:flex;min-height:100vh;background:#f5f1e8;align-items:stretch">
+  <dc-import name="Nav Laterale v1" active="Articoli" style="background:#211d18;align-self:stretch" hint-size="230px,100vh"></dc-import>
+
+  <div style="flex:1;display:flex;flex-direction:column;min-width:0">
+
+    <!-- ===== BARRA SUPERIORE EDITOR ===== -->
+    <div ref="{{ headerRef }}" style="position:sticky;top:0;z-index:30;background:#faf7f0;border-bottom:1px solid #e0d9c8">
+      <div style="display:flex;align-items:center;gap:14px;padding:11px clamp(14px,2vw,26px);min-height:52px;box-sizing:border-box">
+        <div style="display:flex;align-items:center;gap:7px;font-size:12px;font-weight:700;color:#5c554a;cursor:pointer;white-space:nowrap;flex-shrink:0" style-hover="color:#1d5c63">
+          <span style="width:26px;height:26px;border-radius:50%;border:1px solid #e0d9c8;display:flex;align-items:center;justify-content:center;font-size:12px">←</span>
+          Articoli
+        </div>
+        <div style="width:1px;height:24px;background:#e0d9c8;flex-shrink:0"></div>
+        <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:1px">
+          <div style="font-family:'Newsreader',serif;font-size:17px;font-weight:600;line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ titleShort }}</div>
+          <div style="font-size:10px;font-weight:700;letter-spacing:1.2px;color:#a49b8b;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">POLITICA · /politica/{{ slug }}</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
+          <div onClick="{{ openPreview }}" style="font-size:12px;font-weight:700;color:#5c554a;border:1px solid #e0d9c8;border-radius:8px;padding:9px 15px;cursor:pointer;white-space:nowrap" style-hover="border-color:#211d18;color:#211d18">Anteprima</div>
+          <div onClick="{{ saveDraft }}" style="font-size:12px;font-weight:700;color:#5c554a;border:1px solid #e0d9c8;border-radius:8px;padding:9px 15px;cursor:pointer;white-space:nowrap" style-hover="border-color:#211d18;color:#211d18">Salva bozza</div>
+          <div onClick="{{ primaryAction }}" style="font-size:12px;font-weight:700;background:{{ primaryBg }};color:{{ primaryFg }};border-radius:8px;padding:10px 18px;cursor:{{ primaryCursor }};white-space:nowrap">{{ primaryLabel }}</div>
+        </div>
+      </div>
+
+      <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:0 clamp(14px,2vw,26px) 10px">
+        <dc-import name="Pastiglia Stato v1" status="{{ status }}" hint-size="120px,22px"></dc-import>
+        <div style="display:flex;align-items:center;gap:7px;font-size:11.5px;color:#8a8378">
+          <span style="width:5px;height:5px;border-radius:50%;background:#c6bda9"></span>{{ saveNote }}
+        </div>
+        <span onClick="{{ openRevisions }}" style="font-size:11.5px;font-weight:600;color:#1d5c63;cursor:pointer" style-hover="color:#164a50">Storico revisioni →</span>
+        <div style="flex:1;min-width:8px"></div>
+        <div onClick="{{ cycleRole }}" style="display:flex;align-items:center;gap:7px;font-size:11px;font-weight:600;background:#f1ebdd;border-radius:999px;padding:5px 11px;cursor:pointer;white-space:nowrap;color:#5c554a" style-hover="background:#ece4d1;color:#211d18">
+          <span style="font-size:9.5px;font-weight:700;letter-spacing:1px;color:#a49b8b">RUOLO</span>{{ roleLabel }}<span style="font-size:8px;color:#a49b8b">▾</span>
+        </div>
+      </div>
+
+      <!-- ===== AVANZAMENTO WORKFLOW ===== -->
+      <div style="display:flex;align-items:center;gap:0;padding:9px clamp(14px,2vw,26px);flex-wrap:wrap;border-top:1px solid #eee7d9;background:#f8f4ea">
+        <sc-for list="{{ steps }}" as="st" hint-placeholder-count="4">
+          <div style="display:flex;align-items:center;gap:9px;padding-right:12px">
+            <div style="width:19px;height:19px;border-radius:50%;background:{{ st.dotBg }};color:{{ st.dotFg }};border:1px solid {{ st.dotBorder }};display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700">{{ st.mark }}</div>
+            <div style="font-size:11.5px;font-weight:{{ st.weight }};color:{{ st.color }};white-space:nowrap">{{ st.label }}</div>
+            <div style="width:{{ st.lineWidth }};height:1px;background:{{ st.lineBg }}"></div>
+          </div>
+        </sc-for>
+        <div style="flex:1;min-width:12px"></div>
+        <div style="font-size:11px;color:#8a8378">{{ workflowNote }}</div>
+      </div>
+    </div>
+
+    <!-- ===== CORPO: SCRITTURA + PANNELLI ===== -->
+    <div style="display:grid;grid-template-columns:{{ gridCols }};align-items:start;gap:0">
+
+      <!-- COLONNA DI SCRITTURA -->
+      <div style="min-width:0;display:flex;flex-direction:column;padding:clamp(20px,3vw,38px) clamp(16px,3vw,40px) 60px">
+        <div style="width:100%;max-width:780px;margin:0 auto;background:#fffdf8;border:1px solid #e0d9c8;border-radius:14px;padding:clamp(18px,2.4vw,30px);box-sizing:border-box;display:flex;flex-direction:column;gap:6px">
+          <div style="font-size:9.5px;font-weight:700;letter-spacing:1.4px;color:#a49b8b">TITOLO</div>
+          <textarea ref="{{ titleRef }}" value="{{ fTitle }}" onChange="{{ onTitle }}" rows="1" placeholder="Titolo dell'articolo" style="border:none;outline:none;background:transparent;resize:none;overflow:hidden;font-family:'Newsreader',serif;font-size:clamp(26px,3.4vw,40px);font-weight:700;letter-spacing:-0.8px;line-height:1.12;color:#211d18;width:100%;padding:2px 0;border-bottom:1px solid #eee7d9" style-focus="border-bottom-color:#1d5c63"></textarea>
+          <div style="font-size:9.5px;font-weight:700;letter-spacing:1.4px;color:#a49b8b;padding-top:14px">OCCHIELLO</div>
+          <input value="{{ fKicker }}" onChange="{{ onKicker }}" placeholder="Occhiello (es. MANOVRA 2027)" style="border:none;outline:none;background:transparent;font-size:11px;font-weight:700;letter-spacing:2px;color:#b3261e;text-transform:uppercase;width:100%;padding:6px 0;border-bottom:1px solid #eee7d9" style-focus="border-bottom-color:#1d5c63">
+          <div style="font-size:9.5px;font-weight:700;letter-spacing:1.4px;color:#a49b8b;padding-top:14px">SOTTOTITOLO</div>
+          <textarea ref="{{ sfRef }}" value="{{ fStandfirst }}" onChange="{{ onStandfirst }}" placeholder="Sottotitolo: una o due righe che spiegano il pezzo" rows="1" style="border:none;outline:none;background:transparent;resize:none;overflow:hidden;font-family:'Newsreader',serif;font-size:clamp(16px,1.6vw,19px);line-height:1.45;color:#5c554a;width:100%;padding:2px 0 8px;border-bottom:1px solid #eee7d9" style-focus="border-bottom-color:#1d5c63"></textarea>
+
+          <div style="font-size:9.5px;font-weight:700;letter-spacing:1.4px;color:#a49b8b;padding:18px 0 6px">CORPO DELL'ARTICOLO</div>
+
+          <!-- toolbar ancorata -->
+          <div style="position:sticky;top:{{ toolbarTop }};z-index:20;display:flex;gap:8px;align-items:center;flex-wrap:wrap;row-gap:6px;background:#f8f4ea;border:1px solid #e0d9c8;border-radius:10px 10px 0 0;padding:7px 9px">
+            <div style="display:flex;gap:2px;background:#f1ebdd;border-radius:8px;padding:2px">
+              <div style="font-size:13px;font-weight:800;min-width:30px;height:28px;display:flex;align-items:center;justify-content:center;border-radius:6px;cursor:pointer;color:#211d18" style-hover="background:#fffdf8">B</div>
+              <div style="font-family:'Newsreader',serif;font-size:15px;font-style:italic;min-width:30px;height:28px;display:flex;align-items:center;justify-content:center;border-radius:6px;cursor:pointer;color:#211d18" style-hover="background:#fffdf8">I</div>
+              <div style="font-size:12px;font-weight:600;padding:0 11px;height:28px;display:flex;align-items:center;border-radius:6px;cursor:pointer;color:#211d18;white-space:nowrap" style-hover="background:#fffdf8">Link</div>
+            </div>
+            <div style="display:flex;gap:2px;background:#f1ebdd;border-radius:8px;padding:2px">
+              <div style="font-family:'Newsreader',serif;font-size:14px;font-weight:700;min-width:34px;height:28px;display:flex;align-items:center;justify-content:center;border-radius:6px;cursor:pointer" style-hover="background:#fffdf8">H2</div>
+              <div style="font-family:'Newsreader',serif;font-size:12.5px;font-weight:700;min-width:34px;height:28px;display:flex;align-items:center;justify-content:center;border-radius:6px;cursor:pointer" style-hover="background:#fffdf8">H3</div>
+            </div>
+            <div style="display:flex;gap:2px;background:#f1ebdd;border-radius:8px;padding:2px">
+              <div style="font-size:13px;min-width:32px;height:28px;display:flex;align-items:center;justify-content:center;border-radius:6px;cursor:pointer" style-hover="background:#fffdf8">•—</div>
+              <div style="font-size:11.5px;font-weight:700;min-width:32px;height:28px;display:flex;align-items:center;justify-content:center;border-radius:6px;cursor:pointer" style-hover="background:#fffdf8">1—</div>
+              <div style="font-family:'Newsreader',serif;font-size:16px;min-width:32px;height:28px;display:flex;align-items:center;justify-content:center;border-radius:6px;cursor:pointer" style-hover="background:#fffdf8">”</div>
+            </div>
+            <div style="display:flex;gap:2px;background:#f1ebdd;border-radius:8px;padding:2px">
+              <div style="font-size:12px;font-weight:600;padding:0 11px;height:28px;display:flex;align-items:center;border-radius:6px;cursor:pointer;white-space:nowrap" style-hover="background:#fffdf8">Immagine</div>
+              <div style="font-size:12px;font-weight:600;padding:0 11px;height:28px;display:flex;align-items:center;border-radius:6px;cursor:pointer;white-space:nowrap" style-hover="background:#fffdf8">Embed</div>
+            </div>
+            <div style="flex:1;min-width:4px"></div>
+            <div style="font-size:10.5px;color:#a49b8b;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:180px">seleziona il testo per il menu rapido</div>
+          </div>
+
+          <textarea value="{{ fBody }}" onChange="{{ onBody }}" onMouseUp="{{ onSelectText }}" onKeyUp="{{ onSelectText }}" placeholder="Scrivi qui il corpo dell'articolo…" style="border:1px solid #e0d9c8;border-top:none;border-radius:0 0 10px 10px;outline:none;background:#fffdf8;resize:vertical;font-size:16.5px;line-height:1.75;color:#2b261f;width:100%;min-height:440px;padding:16px 18px;box-sizing:border-box" style-focus="background:#fff"></textarea>
+
+          <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;border-top:1px solid #e0d9c8;padding-top:12px;font-size:11.5px;color:#8a8378">
+            <span>{{ wordCount }} parole</span>
+            <span>·</span>
+            <span>{{ readMinutes }} min di lettura</span>
+            <span>·</span>
+            <span>{{ charCount }} caratteri</span>
+            <div style="flex:1"></div>
+            <span style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:#a49b8b">bozza salvata localmente</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== PANNELLI LATERALI ===== -->
+      <div style="border-left:1px solid #e0d9c8;background:#faf7f0;align-self:stretch;min-height:100%;display:flex;flex-direction:column;width:{{ panelWidth }}">
+        <div onClick="{{ togglePanels }}" style="display:flex;align-items:center;gap:8px;padding:12px 14px;border-bottom:1px solid #e0d9c8;cursor:pointer">
+          <div style="font-size:10px;font-weight:700;letter-spacing:1.6px;color:#8a8378;flex:1">{{ panelsHeader }}</div>
+          <div style="font-size:11px;color:#8a8378">{{ panelsChevron }}</div>
+        </div>
+
+        <sc-if value="{{ panelsOpen }}" hint-placeholder-val="{{ true }}">
+        <div style="display:flex;flex-direction:column">
+
+          <!-- PUBBLICAZIONE -->
+          <div onClick="{{ openPub }}" style="display:flex;align-items:center;gap:8px;padding:13px 14px;border-bottom:1px solid #eee7d9;cursor:pointer;background:{{ pubHeadBg }}">
+            <div style="font-size:12.5px;font-weight:700;flex:1">Pubblicazione</div>
+            <div style="font-size:11px;color:#8a8378">{{ pubChevron }}</div>
+          </div>
+          <sc-if value="{{ pubOpen }}" hint-placeholder-val="{{ true }}">
+          <div style="display:flex;flex-direction:column;gap:14px;padding:14px;border-bottom:1px solid #eee7d9">
+            <div style="display:flex;flex-direction:column;gap:6px">
+              <div style="font-size:10px;font-weight:700;letter-spacing:1.2px;color:#8a8378">AUTORE</div>
+              <select value="{{ author }}" onChange="{{ onAuthor }}" style="font-size:12.5px;background:#f1ebdd;border:none;outline:none;border-radius:8px;padding:9px 11px;cursor:pointer;color:#211d18">
+                <option value="Emanuele Ragusa">Emanuele Ragusa</option>
+                <option value="Luca Ferraro">Luca Ferraro</option>
+                <option value="Elena Costa">Elena Costa</option>
+                <option value="Giulia Sanna">Giulia Sanna</option>
+              </select>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:6px">
+              <div style="font-size:10px;font-weight:700;letter-spacing:1.2px;color:#8a8378">DATA DI PUBBLICAZIONE</div>
+              <div style="font-size:12.5px;color:#211d18;background:#f1ebdd;border-radius:8px;padding:9px 11px">{{ pubDateLabel }}</div>
+              <div onClick="{{ openSchedule }}" style="font-size:12px;font-weight:700;color:#1d5c63;cursor:pointer" style-hover="color:#164a50">Pianifica a data e ora futura →</div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:7px">
+              <div style="font-size:10px;font-weight:700;letter-spacing:1.2px;color:#8a8378">VISIBILITÀ</div>
+              <div onClick="{{ visPublic }}" style="display:flex;align-items:center;gap:9px;cursor:pointer">
+                <div style="width:15px;height:15px;border-radius:50%;border:1px solid #cdc4b2;display:flex;align-items:center;justify-content:center;background:{{ vis1Fill }}"><div style="width:5px;height:5px;border-radius:50%;background:{{ vis1Dot }}"></div></div>
+                <span style="font-size:12.5px">Pubblica</span>
+              </div>
+              <div onClick="{{ visMembers }}" style="display:flex;align-items:center;gap:9px;cursor:pointer">
+                <div style="width:15px;height:15px;border-radius:50%;border:1px solid #cdc4b2;display:flex;align-items:center;justify-content:center;background:{{ vis2Fill }}"><div style="width:5px;height:5px;border-radius:50%;background:{{ vis2Dot }}"></div></div>
+                <span style="font-size:12.5px">Solo utenti registrati</span>
+              </div>
+              <div onClick="{{ visPrivate }}" style="display:flex;align-items:center;gap:9px;cursor:pointer">
+                <div style="width:15px;height:15px;border-radius:50%;border:1px solid #cdc4b2;display:flex;align-items:center;justify-content:center;background:{{ vis3Fill }}"><div style="width:5px;height:5px;border-radius:50%;background:{{ vis3Dot }}"></div></div>
+                <span style="font-size:12.5px">Privato (solo redazione)</span>
+              </div>
+            </div>
+          </div>
+          </sc-if>
+
+          <!-- CATEGORIE E TAG -->
+          <div onClick="{{ openTax }}" style="display:flex;align-items:center;gap:8px;padding:13px 14px;border-bottom:1px solid #eee7d9;cursor:pointer;background:{{ taxHeadBg }}">
+            <div style="font-size:12.5px;font-weight:700;flex:1">Categorie e tag</div>
+            <div style="font-size:11px;color:#8a8378">{{ taxChevron }}</div>
+          </div>
+          <sc-if value="{{ taxOpen }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex;flex-direction:column;gap:14px;padding:14px;border-bottom:1px solid #eee7d9">
+            <div style="display:flex;flex-direction:column;gap:7px">
+              <div style="font-size:10px;font-weight:700;letter-spacing:1.2px;color:#8a8378">CATEGORIA PRINCIPALE</div>
+              <sc-for list="{{ cats }}" as="c" hint-placeholder-count="5">
+                <div onClick="{{ c.pick }}" style="display:flex;align-items:center;gap:9px;cursor:pointer">
+                  <div style="width:15px;height:15px;border-radius:50%;border:1px solid #cdc4b2;display:flex;align-items:center;justify-content:center;background:{{ c.fill }}"><div style="width:5px;height:5px;border-radius:50%;background:{{ c.dot }}"></div></div>
+                  <span style="font-size:12.5px">{{ c.label }}</span>
+                </div>
+              </sc-for>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:8px">
+              <div style="font-size:10px;font-weight:700;letter-spacing:1.2px;color:#8a8378">TAG</div>
+              <div style="display:flex;gap:6px;flex-wrap:wrap">
+                <sc-for list="{{ tags }}" as="t" hint-placeholder-count="3">
+                  <span style="display:inline-flex;align-items:center;gap:6px;font-size:11.5px;font-weight:600;background:#f1ebdd;border-radius:999px;padding:5px 10px">{{ t.label }}<span onClick="{{ t.remove }}" style="color:#8a8378;cursor:pointer;font-weight:700" style-hover="color:#b3261e">×</span></span>
+                </sc-for>
+              </div>
+              <input value="{{ tagQuery }}" onChange="{{ onTagQuery }}" placeholder="Cerca o crea un tag" style="border:1px solid #e0d9c8;border-radius:8px;background:#fffdf8;outline:none;padding:8px 10px;font-size:12.5px;color:#211d18" style-focus="border-color:#1d5c63">
+              <sc-if value="{{ showTagList }}" hint-placeholder-val="{{ false }}">
+              <div style="display:flex;flex-direction:column;border:1px solid #e0d9c8;border-radius:8px;overflow:hidden">
+                <sc-for list="{{ tagSuggestions }}" as="s" hint-placeholder-count="3">
+                  <div onClick="{{ s.add }}" style="font-size:12.5px;padding:8px 10px;cursor:pointer;background:#fffdf8;border-bottom:1px solid #f3eee2" style-hover="background:#f1ebdd">{{ s.label }}</div>
+                </sc-for>
+                <sc-if value="{{ canCreateTag }}" hint-placeholder-val="{{ false }}">
+                  <div onClick="{{ createTag }}" style="font-size:12.5px;font-weight:700;color:#1d5c63;padding:8px 10px;cursor:pointer;background:#fffdf8" style-hover="background:#f1ebdd">+ Crea «{{ tagQuery }}»</div>
+                </sc-if>
+              </div>
+              </sc-if>
+            </div>
+          </div>
+          </sc-if>
+
+          <!-- IMMAGINE DI COPERTINA -->
+          <div onClick="{{ openCover }}" style="display:flex;align-items:center;gap:8px;padding:13px 14px;border-bottom:1px solid #eee7d9;cursor:pointer;background:{{ coverHeadBg }}">
+            <div style="font-size:12.5px;font-weight:700;flex:1">Immagine di copertina</div>
+            <div style="font-size:11px;color:#8a8378">{{ coverChevron }}</div>
+          </div>
+          <sc-if value="{{ coverOpen }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex;flex-direction:column;gap:12px;padding:14px;border-bottom:1px solid #eee7d9">
+            <div style="height:150px"><x-import component-from-global-scope="image-slot" from="./image-slot.js" id="ed-cover" shape="rounded" radius="10" placeholder="trascina qui la foto di copertina" hint-size="100%,150px"></x-import></div>
+            <div style="display:flex;gap:8px">
+              <div style="flex:1;font-size:11.5px;font-weight:700;text-align:center;border:1px solid #d9d2c4;border-radius:999px;padding:8px 10px;cursor:pointer" style-hover="border-color:#211d18">Carica file</div>
+              <div style="flex:1;font-size:11.5px;font-weight:700;text-align:center;border:1px solid #d9d2c4;border-radius:999px;padding:8px 10px;cursor:pointer" style-hover="border-color:#211d18">Libreria media</div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:6px">
+              <div style="font-size:10px;font-weight:700;letter-spacing:1.2px;color:#8a8378">DIDASCALIA</div>
+              <textarea value="{{ caption }}" onChange="{{ onCaption }}" rows="2" placeholder="Cosa mostra la foto" style="border:1px solid #e0d9c8;border-radius:8px;background:#fffdf8;outline:none;resize:vertical;padding:9px 11px;font-size:12.5px;line-height:1.5;color:#211d18" style-focus="border-color:#1d5c63"></textarea>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:6px">
+              <div style="font-size:10px;font-weight:700;letter-spacing:1.2px;color:#8a8378">CREDITO FOTOGRAFICO</div>
+              <input value="{{ credit }}" onChange="{{ onCredit }}" placeholder="Nome fotografo / agenzia" style="border:1px solid #e0d9c8;border-radius:8px;background:#fffdf8;outline:none;padding:8px 11px;font-size:12.5px;color:#211d18" style-focus="border-color:#1d5c63">
+            </div>
+          </div>
+          </sc-if>
+
+          <!-- SEO -->
+          <div onClick="{{ openSeo }}" style="display:flex;align-items:center;gap:8px;padding:13px 14px;border-bottom:1px solid #eee7d9;cursor:pointer;background:{{ seoHeadBg }}">
+            <div style="font-size:12.5px;font-weight:700;flex:1">SEO</div>
+            <div style="font-size:11px;color:#8a8378">{{ seoChevron }}</div>
+          </div>
+          <sc-if value="{{ seoOpen }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex;flex-direction:column;gap:14px;padding:14px;border-bottom:1px solid #eee7d9">
+            <div style="display:flex;flex-direction:column;gap:6px">
+              <div style="display:flex;align-items:baseline;gap:8px">
+                <div style="font-size:10px;font-weight:700;letter-spacing:1.2px;color:#8a8378;flex:1">META TITLE</div>
+                <div style="font-size:10.5px;font-weight:700;color:{{ metaTitleColor }}">{{ metaTitleCount }}/60</div>
+              </div>
+              <input value="{{ metaTitle }}" onChange="{{ onMetaTitle }}" style="border:1px solid #e0d9c8;border-radius:8px;background:#fffdf8;outline:none;padding:8px 11px;font-size:12.5px;color:#211d18" style-focus="border-color:#1d5c63">
+              <div style="font-size:10.5px;color:#a49b8b">consigliati 50–60 caratteri</div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:6px">
+              <div style="display:flex;align-items:baseline;gap:8px">
+                <div style="font-size:10px;font-weight:700;letter-spacing:1.2px;color:#8a8378;flex:1">META DESCRIPTION</div>
+                <div style="font-size:10.5px;font-weight:700;color:{{ metaDescColor }}">{{ metaDescCount }}/155</div>
+              </div>
+              <textarea value="{{ metaDesc }}" onChange="{{ onMetaDesc }}" rows="3" style="border:1px solid #e0d9c8;border-radius:8px;background:#fffdf8;outline:none;resize:vertical;padding:9px 11px;font-size:12.5px;line-height:1.5;color:#211d18" style-focus="border-color:#1d5c63"></textarea>
+              <div style="font-size:10.5px;color:#a49b8b">consigliati 120–155 caratteri</div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:6px">
+              <div style="font-size:10px;font-weight:700;letter-spacing:1.2px;color:#8a8378">SLUG</div>
+              <div style="display:flex;align-items:center;gap:0;border:1px solid #e0d9c8;border-radius:8px;background:#fffdf8;padding:0 10px">
+                <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#a49b8b;white-space:nowrap">/politica/</span>
+                <input value="{{ slug }}" onChange="{{ onSlug }}" style="border:none;outline:none;background:none;padding:8px 2px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:#211d18;width:100%">
+              </div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:7px">
+              <div style="font-size:10px;font-weight:700;letter-spacing:1.2px;color:#8a8378">IMMAGINE PER LA CONDIVISIONE</div>
+              <div style="height:100px"><x-import component-from-global-scope="image-slot" from="./image-slot.js" id="ed-og" shape="rounded" radius="10" placeholder="og:image 1200×630" hint-size="100%,100px"></x-import></div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:7px">
+              <div style="font-size:10px;font-weight:700;letter-spacing:1.2px;color:#8a8378">ANTEPRIMA NEI MOTORI DI RICERCA</div>
+              <div style="background:#fffdf8;border:1px solid #e0d9c8;border-radius:10px;padding:12px">
+                <div style="font-size:11px;color:#4a7c59">esperia.it › politica › {{ slug }}</div>
+                <div style="font-size:15px;line-height:1.3;color:#1a0dab;padding-top:3px;text-wrap:pretty">{{ metaTitle }}</div>
+                <div style="font-size:12px;line-height:1.5;color:#4d5156;padding-top:4px">{{ metaDesc }}</div>
+              </div>
+            </div>
+          </div>
+          </sc-if>
+
+          <!-- ASSISTENTE AI (predisposto) -->
+          <div onClick="{{ openAi }}" style="display:flex;align-items:center;gap:8px;padding:13px 14px;border-bottom:1px solid #eee7d9;cursor:pointer;background:{{ aiHeadBg }}">
+            <div style="font-size:12.5px;font-weight:700;flex:1">Assistente AI</div>
+            <span style="font-size:9px;font-weight:700;letter-spacing:1px;background:#211d18;color:#e8b04b;border-radius:4px;padding:2px 6px">BETA</span>
+            <div style="font-size:11px;color:#8a8378">{{ aiChevron }}</div>
+          </div>
+          <sc-if value="{{ aiOpen }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex;flex-direction:column;gap:14px;padding:14px;border-bottom:1px solid #eee7d9">
+
+            <div style="font-size:11px;line-height:1.5;color:#5c554a;background:#f1ebdd;border-radius:8px;padding:10px 11px">L'assistente propone, la redazione decide: ogni risultato compare accanto al testo attuale e va accettato o rifiutato a mano.</div>
+
+            <!-- provider non disponibile -->
+            <sc-if value="{{ aiDown }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex;flex-direction:column;gap:9px;background:#faf7f0;border:1px solid #e2c9a8;border-radius:10px;padding:12px 13px">
+              <div style="display:flex;align-items:center;gap:8px">
+                <span style="width:20px;height:20px;border-radius:50%;background:#f3e6c9;color:#8a6413;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700">!</span>
+                <div style="font-size:12px;font-weight:700">Assistente non disponibile</div>
+              </div>
+              <div style="font-size:11.5px;line-height:1.55;color:#5c554a">Il provider non risponde dalle 11:20. Gli strumenti restano disattivati; scrittura, salvataggio, pianificazione e pubblicazione dell'articolo funzionano normalmente.</div>
+              <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#a49b8b">timeout gateway (504) · nuovo tentativo tra 4 min</div>
+              <div onClick="{{ toggleAiDown }}" style="font-size:11.5px;font-weight:700;color:#1d5c63;cursor:pointer;width:fit-content" style-hover="color:#164a50">Riprova adesso</div>
+            </div>
+            </sc-if>
+
+            <!-- strumenti sul testo -->
+            <div style="display:flex;flex-direction:column;gap:8px">
+              <div style="display:flex;align-items:baseline;gap:8px">
+                <div style="font-size:10px;font-weight:700;letter-spacing:1.2px;color:#8a8378;flex:1">STRUMENTI SUL TESTO</div>
+                <div onClick="{{ toggleAiDown }}" style="font-size:10px;color:#c0b7a4;cursor:pointer;border-bottom:1px dotted #d9d2c4" style-hover="color:#211d18">{{ aiStateLabel }}</div>
+              </div>
+              <div style="font-size:11px;color:#a49b8b">{{ aiScopeNote }}</div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:7px">
+                <sc-for list="{{ aiTools }}" as="tool" hint-placeholder-count="4">
+                  <div onClick="{{ tool.run }}" style="font-size:11.5px;font-weight:700;text-align:center;border:1px solid {{ tool.border }};border-radius:8px;padding:10px 8px;cursor:{{ tool.cursor }};color:{{ tool.color }};background:{{ tool.bg }}">{{ tool.label }}</div>
+                </sc-for>
+              </div>
+            </div>
+
+            <!-- proposta a confronto -->
+            <sc-if value="{{ aiBusy }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex;flex-direction:column;gap:8px;border-top:1px solid #eee7d9;padding-top:13px">
+              <div style="display:flex;align-items:center;gap:8px">
+                <div style="width:8px;height:8px;border-radius:50%;background:#1d5c63;animation:esperiaPulse 1.1s ease-in-out infinite"></div>
+                <div style="font-size:11.5px;font-weight:700">{{ aiBusyLabel }}</div>
+              </div>
+              <div style="height:11px;border-radius:6px;background:#f1ebdd;animation:esperiaPulse 1.4s ease-in-out infinite"></div>
+              <div style="height:11px;border-radius:6px;background:#f1ebdd;animation:esperiaPulse 1.4s .15s ease-in-out infinite;width:86%"></div>
+              <div style="height:11px;border-radius:6px;background:#f1ebdd;animation:esperiaPulse 1.4s .3s ease-in-out infinite;width:64%"></div>
+            </div>
+            </sc-if>
+
+            <sc-if value="{{ aiHasResult }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex;flex-direction:column;gap:10px;border-top:1px solid #eee7d9;padding-top:13px">
+              <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+                <span style="font-size:9px;font-weight:700;letter-spacing:1px;background:#211d18;color:#e8b04b;border-radius:4px;padding:3px 6px">PROPOSTA</span>
+                <div style="font-size:11.5px;font-weight:700;flex:1">{{ aiResultTitle }}</div>
+              </div>
+
+              <sc-if value="{{ aiIsList }}" hint-placeholder-val="{{ false }}">
+              <div style="display:flex;flex-direction:column;gap:7px">
+                <sc-for list="{{ aiItems }}" as="it" hint-placeholder-count="3">
+                  <div style="display:flex;gap:9px;align-items:flex-start;background:#fffdf8;border:1px solid #e0d9c8;border-radius:8px;padding:10px 11px">
+                    <div style="font-size:12.5px;line-height:1.5;flex:1;color:#211d18">{{ it.text }}</div>
+                    <div onClick="{{ it.accept }}" style="font-size:10.5px;font-weight:700;color:#1d5c63;cursor:pointer;white-space:nowrap" style-hover="color:#164a50">{{ it.action }}</div>
+                  </div>
+                </sc-for>
+              </div>
+              </sc-if>
+
+              <sc-if value="{{ aiIsDiff }}" hint-placeholder-val="{{ false }}">
+              <div style="display:flex;flex-direction:column;gap:8px">
+                <div style="display:flex;flex-direction:column;gap:4px">
+                  <div style="font-size:9.5px;font-weight:700;letter-spacing:1px;color:#a49b8b">TESTO ATTUALE</div>
+                  <div style="font-size:12px;line-height:1.6;color:#5c554a;background:#f7ded9;border-radius:8px;padding:10px 11px">{{ aiCurrentText }}</div>
+                </div>
+                <div style="display:flex;flex-direction:column;gap:4px">
+                  <div style="font-size:9.5px;font-weight:700;letter-spacing:1px;color:#1e6b47">PROPOSTA</div>
+                  <div style="font-size:12px;line-height:1.6;color:#211d18;background:#dcebe4;border-radius:8px;padding:10px 11px">{{ aiProposedText }}</div>
+                </div>
+              </div>
+              </sc-if>
+
+              <div style="display:flex;gap:7px;flex-wrap:wrap">
+                <div onClick="{{ aiAccept }}" style="flex:1;min-width:110px;font-size:11.5px;font-weight:700;text-align:center;background:#1d5c63;color:#faf7f0;border-radius:8px;padding:9px 10px;cursor:pointer" style-hover="background:#164a50">Accetta e sostituisci</div>
+                <div onClick="{{ aiReject }}" style="flex:1;min-width:90px;font-size:11.5px;font-weight:700;text-align:center;border:1px solid #d9d2c4;border-radius:8px;padding:9px 10px;cursor:pointer" style-hover="border-color:#211d18">Rifiuta</div>
+              </div>
+              <div style="font-size:10.5px;line-height:1.5;color:#a49b8b;font-style:italic">{{ aiFootnote }}</div>
+            </sc-if>
+
+            <!-- generazione immagini -->
+            <div style="display:flex;flex-direction:column;gap:9px;border-top:1px solid #eee7d9;padding-top:13px">
+              <div style="font-size:10px;font-weight:700;letter-spacing:1.2px;color:#8a8378">IMMAGINI PER L'ARTICOLO</div>
+              <textarea value="{{ imgPrompt }}" onChange="{{ onImgPrompt }}" rows="3" placeholder="Descrivi l'immagine: soggetto, ambiente, taglio fotografico…" style="border:1px solid #e0d9c8;border-radius:8px;background:#fffdf8;outline:none;resize:vertical;padding:10px 11px;font-size:12px;line-height:1.55;color:#211d18" style-focus="border-color:#1d5c63"></textarea>
+              <div onClick="{{ genImages }}" style="font-size:11.5px;font-weight:700;text-align:center;border:1px solid {{ imgBorder }};border-radius:8px;padding:9px 10px;cursor:{{ imgCursor }};color:{{ imgColor }}">{{ imgLabel }}</div>
+              <sc-if value="{{ imgHasResults }}" hint-placeholder-val="{{ false }}">
+              <div style="display:flex;flex-direction:column;gap:8px">
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:7px">
+                  <sc-for list="{{ imgProposals }}" as="im" hint-placeholder-count="4">
+                    <div onClick="{{ im.pick }}" style="display:flex;flex-direction:column;gap:5px;cursor:pointer">
+                      <div style="height:78px;border-radius:8px;border:2px solid {{ im.border }};background:repeating-linear-gradient(135deg,#ece4d1 0 6px,#f4eee0 6px 12px);display:flex;align-items:flex-end;padding:6px;box-sizing:border-box">
+                        <span style="font-size:9px;font-weight:700;letter-spacing:0.8px;background:#faf7f0;color:#5c554a;border-radius:4px;padding:2px 5px">{{ im.label }}</span>
+                      </div>
+                      <div style="font-size:10px;color:#a49b8b">{{ im.note }}</div>
+                    </div>
+                  </sc-for>
+                </div>
+                <div onClick="{{ useAsCover }}" style="font-size:11.5px;font-weight:700;text-align:center;background:{{ coverBtnBg }};color:{{ coverBtnFg }};border-radius:8px;padding:9px 10px;cursor:{{ coverBtnCursor }}">{{ coverBtnLabel }}</div>
+                <div style="font-size:10.5px;line-height:1.5;color:#a49b8b;font-style:italic">Immagini generate: vanno etichettate come tali in didascalia e approvate dal caposervizio prima della pubblicazione.</div>
+              </div>
+              </sc-if>
+            </div>
+          </div>
+          </sc-if>
+
+        </div>
+        </sc-if>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== MENU CONTESTUALE ALLA SELEZIONE ===== -->
+<sc-if value="{{ selMenuOpen }}" hint-placeholder-val="{{ false }}">
+<div style="position:fixed;left:{{ selX }};top:{{ selY }};z-index:70;transform:translate(-50%,-100%);background:#211d18;color:#faf7f0;border-radius:9px;padding:5px;display:flex;gap:2px;box-shadow:0 10px 24px rgba(33,29,24,.3)">
+  <div style="font-size:12.5px;font-weight:800;padding:6px 9px;border-radius:6px;cursor:pointer" style-hover="background:#3a352c">B</div>
+  <div style="font-size:12.5px;font-style:italic;font-family:'Newsreader',serif;padding:6px 9px;border-radius:6px;cursor:pointer" style-hover="background:#3a352c">I</div>
+  <div style="font-size:11.5px;padding:6px 9px;border-radius:6px;cursor:pointer" style-hover="background:#3a352c">Link</div>
+  <div style="font-size:11.5px;padding:6px 9px;border-radius:6px;cursor:pointer" style-hover="background:#3a352c">H2</div>
+  <div style="font-size:11.5px;font-family:'Newsreader',serif;font-style:italic;padding:6px 9px;border-radius:6px;cursor:pointer" style-hover="background:#3a352c">« Cit.</div>
+  <div style="font-size:11.5px;color:#e8b04b;padding:6px 9px;border-radius:6px;cursor:pointer" style-hover="background:#3a352c">Riscrivi</div>
+</div>
+</sc-if>
+
+<!-- ===== ANTEPRIMA PORTALE ===== -->
+<sc-if value="{{ previewOpen }}" hint-placeholder-val="{{ false }}">
+<div style="position:fixed;inset:0;z-index:80;background:#faf7f0;display:flex;flex-direction:column">
+  <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:12px clamp(14px,2vw,26px);background:#211d18;color:#faf7f0">
+    <div style="font-size:10px;font-weight:700;letter-spacing:1.8px;color:#e8b04b">ANTEPRIMA</div>
+    <div style="font-size:12px;color:#a49b8b;flex:1;min-width:120px">così apparirà su esperia.it · {{ pubDateLabel }}</div>
+    <div style="display:flex;gap:6px;background:#3a352c;border-radius:999px;padding:3px">
+      <div onClick="{{ prevDesktop }}" style="font-size:11px;font-weight:700;border-radius:999px;padding:5px 12px;cursor:pointer;background:{{ pvDeskBg }};color:{{ pvDeskFg }}">Desktop</div>
+      <div onClick="{{ prevMobile }}" style="font-size:11px;font-weight:700;border-radius:999px;padding:5px 12px;cursor:pointer;background:{{ pvMobBg }};color:{{ pvMobFg }}">Mobile</div>
+    </div>
+    <div onClick="{{ closePreview }}" style="font-size:12px;font-weight:700;border:1px solid #6b6459;border-radius:999px;padding:7px 16px;cursor:pointer" style-hover="border-color:#faf7f0">Chiudi anteprima</div>
+  </div>
+  <div style="flex:1;overflow:auto;padding:clamp(20px,3vw,40px) 20px 60px">
+    <div style="max-width:{{ previewWidth }};margin:0 auto;background:#faf7f0">
+      <div style="font-size:10.5px;font-weight:700;letter-spacing:2px;color:#b3261e">{{ fKicker }}</div>
+      <div style="font-family:'Newsreader',serif;font-size:clamp(28px,3.6vw,46px);line-height:1.08;font-weight:700;letter-spacing:-1px;padding-top:14px;text-wrap:pretty">{{ fTitle }}</div>
+      <div style="font-family:'Newsreader',serif;font-size:clamp(17px,1.7vw,21px);line-height:1.45;color:#5c554a;padding-top:14px;text-wrap:pretty">{{ fStandfirst }}</div>
+      <div style="display:flex;align-items:center;gap:10px;padding:18px 0;border-bottom:1px solid #e6dfd1;font-size:12px;color:#8a8378">
+        <div style="width:30px;height:30px;border-radius:50%;background:repeating-linear-gradient(45deg,#e0d8c8 0 4px,#efe9dc 4px 8px)"></div>
+        <span style="color:#211d18;font-weight:700">{{ author }}</span>
+        <span>· {{ pubDateLabel }} · {{ readMinutes }} min</span>
+      </div>
+      <div style="height:clamp(180px,26vw,320px);margin:22px 0 8px"><x-import component-from-global-scope="image-slot" from="./image-slot.js" id="ed-cover-preview" shape="rounded" radius="12" placeholder="copertina" hint-size="100%,320px"></x-import></div>
+      <div style="font-size:11.5px;color:#8a8378;line-height:1.5">{{ caption }} <span style="color:#a39c90">— {{ credit }}</span></div>
+      <div style="display:flex;flex-direction:column;gap:20px;padding-top:26px;max-width:680px">
+        <sc-for list="{{ previewParas }}" as="p" hint-placeholder-count="4">
+          <div style="font-size:17px;line-height:1.72;color:#2b261f">{{ p.text }}</div>
+        </sc-for>
+      </div>
+    </div>
+  </div>
+</div>
+</sc-if>
+
+<!-- ===== PIANIFICAZIONE ===== -->
+<sc-if value="{{ scheduleOpen }}" hint-placeholder-val="{{ false }}">
+<div style="position:fixed;inset:0;z-index:90;background:rgba(33,29,24,.45);display:flex;align-items:center;justify-content:center;padding:clamp(12px,2vw,24px)">
+  <div style="width:100%;max-width:420px;background:#faf7f0;border:1px solid #e0d9c8;border-radius:14px;padding:20px;display:flex;flex-direction:column;gap:16px;box-shadow:0 22px 50px rgba(33,29,24,.32);max-height:92vh;overflow:auto">
+    <div style="display:flex;align-items:baseline;gap:10px">
+      <div style="font-family:'Newsreader',serif;font-size:22px;font-weight:700;flex:1">Pianifica pubblicazione</div>
+      <span onClick="{{ closeSchedule }}" style="font-size:16px;color:#8a8378;cursor:pointer" style-hover="color:#211d18">×</span>
+    </div>
+    <div style="display:flex;align-items:center;gap:10px">
+      <span onClick="{{ prevMonth }}" style="font-size:13px;color:#5c554a;cursor:pointer;padding:4px 8px;border-radius:6px" style-hover="background:#f1ebdd">←</span>
+      <div style="font-size:12.5px;font-weight:700;flex:1;text-align:center">{{ monthLabel }}</div>
+      <span onClick="{{ nextMonth }}" style="font-size:13px;color:#5c554a;cursor:pointer;padding:4px 8px;border-radius:6px" style-hover="background:#f1ebdd">→</span>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px">
+      <div style="font-size:9.5px;font-weight:700;color:#a49b8b;text-align:center">L</div>
+      <div style="font-size:9.5px;font-weight:700;color:#a49b8b;text-align:center">M</div>
+      <div style="font-size:9.5px;font-weight:700;color:#a49b8b;text-align:center">M</div>
+      <div style="font-size:9.5px;font-weight:700;color:#a49b8b;text-align:center">G</div>
+      <div style="font-size:9.5px;font-weight:700;color:#a49b8b;text-align:center">V</div>
+      <div style="font-size:9.5px;font-weight:700;color:#a49b8b;text-align:center">S</div>
+      <div style="font-size:9.5px;font-weight:700;color:#a49b8b;text-align:center">D</div>
+      <sc-for list="{{ days }}" as="d" hint-placeholder-count="35">
+        <div onClick="{{ d.pick }}" style="font-size:12px;font-weight:{{ d.weight }};text-align:center;padding:8px 0;border-radius:8px;cursor:{{ d.cursor }};background:{{ d.bg }};color:{{ d.color }}">{{ d.label }}</div>
+      </sc-for>
+    </div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap">
+      <div style="display:flex;flex-direction:column;gap:6px;flex:1;min-width:120px">
+        <div style="font-size:10px;font-weight:700;letter-spacing:1.2px;color:#8a8378">ORARIO</div>
+        <input type="time" value="{{ time }}" onChange="{{ onTime }}" style="border:1px solid #e0d9c8;border-radius:8px;background:#fffdf8;outline:none;padding:8px 10px;font-size:12.5px;color:#211d18">
+      </div>
+      <div style="display:flex;flex-direction:column;gap:6px;flex:1;min-width:140px">
+        <div style="font-size:10px;font-weight:700;letter-spacing:1.2px;color:#8a8378">FUSO ORARIO</div>
+        <select value="{{ tz }}" onChange="{{ onTz }}" style="border:1px solid #e0d9c8;border-radius:8px;background:#fffdf8;outline:none;padding:8px 10px;font-size:12.5px;color:#211d18;cursor:pointer">
+          <option value="Europe/Rome">Europe/Rome (CEST)</option>
+          <option value="UTC">UTC</option>
+          <option value="Europe/London">Europe/London</option>
+        </select>
+      </div>
+    </div>
+    <div style="font-size:12px;line-height:1.5;color:#5c554a;background:#f1ebdd;border-radius:8px;padding:10px 12px">{{ scheduleSummary }}</div>
+    <div style="display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap">
+      <div onClick="{{ closeSchedule }}" style="font-size:12.5px;font-weight:700;border:1px solid #d9d2c4;border-radius:999px;padding:10px 18px;cursor:pointer" style-hover="border-color:#211d18">Annulla</div>
+      <div onClick="{{ confirmSchedule }}" style="font-size:12.5px;font-weight:700;background:#1d5c63;color:#faf7f0;border-radius:999px;padding:10px 18px;cursor:pointer" style-hover="background:#164a50">Programma</div>
+    </div>
+  </div>
+</div>
+</sc-if>
+
+<!-- ===== STORICO REVISIONI ===== -->
+<sc-if value="{{ revisionsOpen }}" hint-placeholder-val="{{ false }}">
+<div style="position:fixed;inset:0;z-index:90;background:rgba(33,29,24,.45);display:flex;align-items:stretch;justify-content:flex-end">
+  <div style="width:min(860px,100%);background:#f5f1e8;display:flex;flex-direction:column;box-shadow:-16px 0 40px rgba(33,29,24,.24)">
+    <div style="display:flex;align-items:center;gap:12px;padding:14px clamp(14px,2vw,24px);background:#faf7f0;border-bottom:1px solid #e0d9c8">
+      <div style="font-family:'Newsreader',serif;font-size:21px;font-weight:700;flex:1">Storico revisioni</div>
+      <div style="font-size:11.5px;color:#8a8378">{{ diffLabel }}</div>
+      <span onClick="{{ closeRevisions }}" style="font-size:17px;color:#8a8378;cursor:pointer" style-hover="color:#211d18">×</span>
+    </div>
+    <div style="display:grid;grid-template-columns:260px 1fr;flex:1;min-height:0">
+      <div style="border-right:1px solid #e0d9c8;background:#faf7f0;overflow:auto">
+        <div style="font-size:9.5px;font-weight:700;letter-spacing:1.4px;color:#8a8378;padding:12px 14px 6px">VERSIONI · seleziona due per confrontare</div>
+        <sc-for list="{{ revisions }}" as="v" hint-placeholder-count="5">
+          <div onClick="{{ v.pick }}" style="display:flex;gap:10px;align-items:flex-start;padding:12px 14px;border-top:1px solid #eee7d9;cursor:pointer;background:{{ v.bg }}">
+            <div style="width:18px;height:18px;border-radius:5px;border:1px solid #cdc4b2;flex:0 0 18px;display:flex;align-items:center;justify-content:center;font-size:9.5px;font-weight:700;background:{{ v.markBg }};color:#faf7f0">{{ v.mark }}</div>
+            <div style="display:flex;flex-direction:column;gap:2px;min-width:0">
+              <div style="font-size:12.5px;font-weight:700">{{ v.label }}</div>
+              <div style="font-size:11px;color:#8a8378">{{ v.author }} · {{ v.time }}</div>
+              <div style="font-size:10.5px;color:#a49b8b">{{ v.note }}</div>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+      <div style="display:flex;flex-direction:column;min-height:0">
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:12px 16px;border-bottom:1px solid #e0d9c8">
+          <div style="display:flex;align-items:center;gap:6px;font-size:11px;color:#5c554a"><span style="width:10px;height:10px;border-radius:3px;background:#f7ded9;border:1px solid #e2b5ac"></span>rimosso</div>
+          <div style="display:flex;align-items:center;gap:6px;font-size:11px;color:#5c554a"><span style="width:10px;height:10px;border-radius:3px;background:#dcebe4;border:1px solid #a9cdbb"></span>aggiunto</div>
+          <div style="flex:1"></div>
+          <div onClick="{{ restore }}" style="font-size:12px;font-weight:700;background:#1d5c63;color:#faf7f0;border-radius:999px;padding:8px 16px;cursor:pointer" style-hover="background:#164a50">{{ restoreLabel }}</div>
+        </div>
+        <div style="flex:1;overflow:auto;padding:16px;display:flex;flex-direction:column;gap:8px">
+          <sc-for list="{{ diffLines }}" as="l" hint-placeholder-count="6">
+            <div style="display:flex;gap:10px;align-items:flex-start;background:{{ l.bg }};border-radius:8px;padding:9px 11px">
+              <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:700;color:{{ l.signColor }};flex:0 0 12px">{{ l.sign }}</div>
+              <div style="font-size:13px;line-height:1.6;color:#2b261f;text-decoration:{{ l.deco }}">{{ l.text }}</div>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</sc-if>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{}">
+const BODY0 = `L'intesa è arrivata poco dopo le due di notte, dopo sei ore di riunione a Palazzo Chigi. Il taglio della seconda aliquota Irpef dal 35 al 33 per cento salirà fino a 60 mila euro di reddito, un perimetro più ampio di quello discusso nella bozza tecnica di lunedì.
+
+Il costo dell'intervento è stimato in 4,2 miliardi per il primo anno. Le coperture, secondo la nota diffusa dal Mef, arriveranno per metà dal contributo di banche e assicurazioni e per il resto dalla revisione delle detrazioni sopra i 120 mila euro.
+
+Il contributo del settore creditizio resta la parte più fragile del quadro. L'Abi ha chiesto garanzie sulla natura temporanea del prelievo, mentre il viceministro all'Economia parla di un accordo già scritto nei numeri.
+
+L'esame parlamentare partirà martedì. Le opposizioni hanno già annunciato oltre milleduecento emendamenti, concentrati su sanità e contratti pubblici; la maggioranza punta all'approvazione entro il 20 dicembre.`;
+
+const REVS = [
+  { id: 5, label: 'Versione corrente', author: 'Emanuele Ragusa', time: 'oggi, 11:48', note: 'aggiunto il paragrafo sull\u2019Abi' },
+  { id: 4, label: 'Revisione 4', author: 'Davide Priori', time: 'oggi, 10:12', note: 'editing caposervizio' },
+  { id: 3, label: 'Revisione 3', author: 'Emanuele Ragusa', time: 'oggi, 08:55', note: 'inseriti i numeri del Mef' },
+  { id: 2, label: 'Revisione 2', author: 'Emanuele Ragusa', time: 'ieri, 22:40', note: 'prima stesura completa' },
+  { id: 1, label: 'Revisione 1', author: 'Emanuele Ragusa', time: 'ieri, 21:05', note: 'scaletta' }
+];
+
+const DIFF = [
+  { sign: ' ', text: "L'intesa è arrivata poco dopo le due di notte, dopo sei ore di riunione a Palazzo Chigi." },
+  { sign: '-', text: 'Il taglio della seconda aliquota Irpef salirà fino a 50 mila euro di reddito.' },
+  { sign: '+', text: 'Il taglio della seconda aliquota Irpef dal 35 al 33 per cento salirà fino a 60 mila euro di reddito, un perimetro più ampio di quello discusso nella bozza tecnica di lunedì.' },
+  { sign: ' ', text: "Il costo dell'intervento è stimato in 4,2 miliardi per il primo anno." },
+  { sign: '+', text: "L'Abi ha chiesto garanzie sulla natura temporanea del prelievo." },
+  { sign: '-', text: 'Nessun commento dal settore creditizio.' },
+  { sign: ' ', text: "L'esame parlamentare partirà martedì." }
+];
+
+const CATS = ['Politica', 'Mondo', 'Economia', 'Cultura', 'Opinioni'];
+const TAG_POOL = ['Manovra 2027', 'Irpef', 'Palazzo Chigi', 'Fisco', 'Commissione Bilancio', 'Mef', 'Abi', 'Detrazioni', 'Pensioni', 'Aree interne'];
+const STEPS = [
+  { key: 'bozza', label: 'Bozza' },
+  { key: 'revisione', label: 'In revisione' },
+  { key: 'approvato', label: 'Approvato' },
+  { key: 'pubblicato', label: 'Pubblicato' }
+];
+
+class Component extends DCLogic {
+  state = {
+    title: "Manovra, il governo trova l'intesa sul taglio dell'Irpef per il ceto medio",
+    kicker: 'MANOVRA 2027',
+    standfirst: 'Seconda aliquota al 33% fino a 60 mila euro, coperture da banche e assicurazioni. Le opposizioni annunciano battaglia in commissione Bilancio.',
+    body: BODY0,
+    status: 'bozza',
+    role: 'redattore',
+    saveNote: 'Salvato alle 11:48',
+    panel: 'pub', panelsOpen: true,
+    author: 'Emanuele Ragusa', visibility: 'public',
+    cat: 'Politica', tags: ['Manovra 2027', 'Irpef'], tagQuery: '',
+    caption: 'Il vertice a Palazzo Chigi si è chiuso poco dopo le due di notte.',
+    credit: 'Alessio Bruni / Esperia',
+    metaTitle: "Manovra 2027: intesa sul taglio dell'Irpef per il ceto medio",
+    metaDesc: "Seconda aliquota al 33% fino a 60 mila euro, coperture da banche e assicurazioni: cosa prevede l'accordo raggiunto a Palazzo Chigi.",
+    slug: 'manovra-taglio-irpef-ceto-medio',
+    preview: false, previewMode: 'desktop',
+    schedule: false, month: 7, day: 28, time: '07:00', tz: 'Europe/Rome',
+    scheduled: null,
+    revisions: false, sel: [5, 4],
+    selMenu: false, selX: 0, selY: 0,
+    headerH: 150,
+    aiDown: false, aiTool: null, aiBusy: false,
+    imgPrompt: 'Esterno di Palazzo Chigi di notte, luce fredda, taglio fotogiornalistico orizzontale',
+    imgBusy: false, imgDone: false, imgPick: null, coverSet: false
+  };
+
+  runTool(tool) {
+    if (this.state.aiDown) return;
+    clearTimeout(this._ai);
+    this.setState({ aiTool: tool, aiBusy: true });
+    this._ai = setTimeout(() => this.setState({ aiBusy: false }), 900);
+  }
+
+  headerRef = React.createRef();
+  titleRef = React.createRef();
+  sfRef = React.createRef();
+
+  fit = () => {
+    const h = this.headerRef.current && this.headerRef.current.offsetHeight;
+    if (h && Math.abs(h - this.state.headerH) > 1) this.setState({ headerH: h });
+    [this.titleRef, this.sfRef].forEach(r => {
+      const el = r && r.current;
+      if (!el) return;
+      el.style.height = 'auto';
+      el.style.height = el.scrollHeight + 'px';
+    });
+  };
+
+  componentDidMount() {
+    this.fit();
+    window.addEventListener('resize', this.fit);
+    if (typeof ResizeObserver !== 'undefined' && this.headerRef.current) {
+      this._ro = new ResizeObserver(this.fit);
+      this._ro.observe(this.headerRef.current);
+    }
+  }
+  componentDidUpdate() { this.fit(); }
+  componentWillUnmount() { window.removeEventListener('resize', this.fit); if (this._ro) this._ro.disconnect(); clearTimeout(this._t); clearTimeout(this._ai); clearTimeout(this._img); }
+
+  set(k) { return e => { this.setState({ [k]: e.target.value, saveNote: 'Salvataggio…' }); clearTimeout(this._t); this._t = setTimeout(() => this.setState({ saveNote: 'Salvato alle ' + new Date().toTimeString().slice(0, 5) }), 700); }; }
+
+  renderVals() {
+    const s = this.state;
+    const words = s.body.trim() ? s.body.trim().split(/\s+/).length : 0;
+    const curIdx = Math.max(0, STEPS.findIndex(x => x.key === (s.status === 'programmato' ? 'approvato' : s.status)));
+    const chief = s.role === 'caporedattore';
+    let pLabel = 'Invia in revisione', pAct = () => this.setState({ status: 'revisione' }), pOn = true;
+    if (s.status === 'revisione') { if (chief) { pLabel = 'Approva'; pAct = () => this.setState({ status: 'approvato' }); } else { pLabel = 'In attesa di revisione'; pOn = false; pAct = () => {}; } }
+    else if (s.status === 'approvato') { if (chief) { pLabel = 'Pubblica ora'; pAct = () => this.setState({ status: 'pubblicato' }); } else { pLabel = 'Approvazione richiesta'; pOn = false; pAct = () => {}; } }
+    else if (s.status === 'programmato') { if (chief) { pLabel = 'Pubblica ora'; pAct = () => this.setState({ status: 'pubblicato' }); } else { pLabel = 'Programmato'; pOn = false; pAct = () => {}; } }
+    else if (s.status === 'pubblicato') { pLabel = 'Aggiorna articolo'; pAct = () => this.setState({ saveNote: 'Aggiornato ora' }); }
+
+    const firstPara = (s.body.split(/\n\s*\n/)[0] || '').trim();
+    const q = s.tagQuery.trim().toLowerCase();
+    const suggestions = q ? TAG_POOL.filter(t => t.toLowerCase().includes(q) && !s.tags.includes(t)) : [];
+    const monthNames = ['gennaio', 'febbraio', 'marzo', 'aprile', 'maggio', 'giugno', 'luglio', 'agosto', 'settembre', 'ottobre', 'novembre', 'dicembre'];
+    const y = 2026, m = s.month;
+    const first = new Date(y, m, 1).getDay();
+    const lead = (first + 6) % 7;
+    const dim = new Date(y, m + 1, 0).getDate();
+    const days = [];
+    for (let i = 0; i < lead; i++) days.push({ label: '', bg: 'transparent', color: 'transparent', weight: '400', cursor: 'default', pick: () => {} });
+    for (let d = 1; d <= dim; d++) {
+      const on = d === s.day && m === s.month;
+      const past = m === 7 && d < 27;
+      days.push({
+        label: String(d), weight: on ? '700' : '500',
+        bg: on ? '#1d5c63' : 'transparent',
+        color: on ? '#faf7f0' : (past ? '#cdc4b2' : '#211d18'),
+        cursor: past ? 'default' : 'pointer',
+        pick: past ? () => {} : () => this.setState({ day: d })
+      });
+    }
+    const dateStr = s.day + ' ' + monthNames[m] + ' ' + y;
+    const pubLabel = s.status === 'pubblicato' ? '27 agosto 2026, 07:15'
+      : s.scheduled ? s.scheduled + ' (programmato)'
+      : 'alla pubblicazione';
+    const sel = s.sel;
+    const mtLen = s.metaTitle.length, mdLen = s.metaDesc.length;
+
+    return {
+      titleShort: s.title, status: s.status, saveNote: s.saveNote,
+      roleLabel: s.role,
+      cycleRole: () => this.setState({ role: chief ? 'redattore' : 'caporedattore' }),
+      aiDown: s.aiDown,
+      toggleAiDown: () => this.setState({ aiDown: !s.aiDown, aiTool: null, aiBusy: false }),
+      aiStateLabel: s.aiDown ? 'stato: non disponibile' : 'stato: attivo',
+      aiScopeNote: s.selMenu ? 'agisce sulla selezione corrente nel corpo' : 'nessuna selezione: agisce sul primo paragrafo del corpo',
+      aiTools: [
+        { key: 'rewrite', label: 'Riscrivi' },
+        { key: 'summary', label: 'Sintetizza' },
+        { key: 'titles', label: 'Titoli alternativi' },
+        { key: 'seo', label: 'Suggerimenti SEO' }
+      ].map(t => ({
+        label: t.label,
+        run: () => this.runTool(t.key),
+        border: s.aiDown ? '#eee7d9' : (s.aiTool === t.key ? '#1d5c63' : '#e0d9c8'),
+        color: s.aiDown ? '#c0b7a4' : (s.aiTool === t.key ? '#1d5c63' : '#211d18'),
+        bg: s.aiTool === t.key && !s.aiDown ? '#eaf2f2' : 'transparent',
+        cursor: s.aiDown ? 'default' : 'pointer'
+      })),
+      aiBusy: s.aiBusy && !s.aiDown,
+      aiBusyLabel: s.aiTool === 'titles' ? 'Elaborazione dei titoli proposti…' : (s.aiTool === 'seo' ? 'Analisi SEO del contenuto…' : 'Elaborazione della proposta…'),
+      aiHasResult: !!s.aiTool && !s.aiBusy && !s.aiDown,
+      aiIsList: (s.aiTool === 'titles' || s.aiTool === 'seo') && !s.aiBusy && !s.aiDown,
+      aiIsDiff: (s.aiTool === 'rewrite' || s.aiTool === 'summary') && !s.aiBusy && !s.aiDown,
+      aiResultTitle: s.aiTool === 'titles' ? 'Tre titoli alternativi'
+        : s.aiTool === 'seo' ? 'Quattro suggerimenti sul contenuto'
+        : s.aiTool === 'summary' ? 'Sintesi del primo paragrafo'
+        : 'Riscrittura del primo paragrafo',
+      aiCurrentText: firstPara,
+      aiProposedText: s.aiTool === 'summary'
+        ? "Intesa notturna a Palazzo Chigi: la seconda aliquota Irpef scende al 33% fino a 60 mila euro, oltre il perimetro della bozza tecnica."
+        : "Dopo sei ore di riunione a Palazzo Chigi, l'intesa è arrivata poco dopo le due di notte: la seconda aliquota Irpef scende dal 35 al 33 per cento e il beneficio arriva fino a 60 mila euro di reddito, un perimetro più largo di quello discusso lunedì nella bozza tecnica.",
+      aiItems: (s.aiTool === 'titles' ? [
+        { text: "Irpef al 33% fino a 60 mila euro: l'intesa notturna sulla manovra", action: 'Usa come titolo' },
+        { text: 'Manovra: il taglio Irpef si allarga al ceto medio, coperture dalle banche', action: 'Usa come titolo' },
+        { text: 'Seconda aliquota al 33%: cosa cambia in busta paga dal 2027', action: 'Usa come titolo' }
+      ] : [
+        { text: 'Il meta title supera i 60 caratteri: accorciarlo di 6 caratteri.', action: 'Apri SEO' },
+        { text: '«Irpef» non compare nei primi 100 caratteri del corpo.', action: 'Vedi punto' },
+        { text: 'Manca un collegamento interno alla scheda «Manovra 2027».', action: 'Inserisci' },
+        { text: 'Lo slug contiene 5 parole: accettabile, meglio 3–4.', action: 'Apri SEO' }
+      ]).map(it => ({
+        text: it.text, action: it.action,
+        accept: () => {
+          if (s.aiTool === 'titles') this.setState({ title: it.text, aiTool: null, saveNote: 'Titolo sostituito dalla proposta' });
+          else this.setState({ panel: 'seo' });
+        }
+      })),
+      aiFootnote: 'Niente viene applicato al pezzo finché non premi «Accetta»: il rifiuto lascia il testo intatto.',
+      aiAccept: () => {
+        if (s.aiTool === 'rewrite' || s.aiTool === 'summary') {
+          const proposed = s.aiTool === 'summary'
+            ? "Intesa notturna a Palazzo Chigi: la seconda aliquota Irpef scende al 33% fino a 60 mila euro, oltre il perimetro della bozza tecnica."
+            : "Dopo sei ore di riunione a Palazzo Chigi, l'intesa è arrivata poco dopo le due di notte: la seconda aliquota Irpef scende dal 35 al 33 per cento e il beneficio arriva fino a 60 mila euro di reddito, un perimetro più largo di quello discusso lunedì nella bozza tecnica.";
+          const parts = s.body.split(/\n\s*\n/);
+          parts[0] = proposed;
+          this.setState({ body: parts.join('\n\n'), aiTool: null, saveNote: 'Proposta accettata · da rileggere' });
+        } else this.setState({ aiTool: null });
+      },
+      aiReject: () => this.setState({ aiTool: null }),
+      imgPrompt: s.imgPrompt,
+      onImgPrompt: e => this.setState({ imgPrompt: e.target.value }),
+      imgLabel: s.aiDown ? 'Generazione non disponibile' : (s.imgBusy ? 'Generazione in corso…' : (s.imgDone ? 'Genera altre proposte' : 'Genera proposte')),
+      imgBorder: s.aiDown ? '#eee7d9' : '#e0d9c8',
+      imgColor: s.aiDown ? '#c0b7a4' : '#211d18',
+      imgCursor: s.aiDown || s.imgBusy ? 'default' : 'pointer',
+      genImages: () => {
+        if (s.aiDown || s.imgBusy) return;
+        clearTimeout(this._img);
+        this.setState({ imgBusy: true, imgDone: false, imgPick: null, coverSet: false });
+        this._img = setTimeout(() => this.setState({ imgBusy: false, imgDone: true }), 1100);
+      },
+      imgHasResults: s.imgDone && !s.aiDown,
+      imgProposals: [1, 2, 3, 4].map(n => ({
+        label: 'proposta ' + n,
+        note: n === 1 ? 'orizzontale 3:2' : (n === 2 ? 'taglio più stretto' : (n === 3 ? 'notturna, luce fredda' : 'variante verticale')),
+        border: s.imgPick === n ? '#1d5c63' : 'transparent',
+        pick: () => this.setState({ imgPick: n, coverSet: false })
+      })),
+      coverBtnLabel: s.coverSet ? '✓ impostata come copertina (bozza)' : (s.imgPick ? 'Usa la proposta ' + s.imgPick + ' come copertina' : 'Seleziona una proposta'),
+      coverBtnBg: s.coverSet ? '#dcebe4' : (s.imgPick ? '#1d5c63' : '#e0d9c8'),
+      coverBtnFg: s.coverSet ? '#1e6b47' : (s.imgPick ? '#faf7f0' : '#a49b8b'),
+      coverBtnCursor: s.imgPick ? 'pointer' : 'default',
+      useAsCover: () => { if (s.imgPick) this.setState({ coverSet: true, saveNote: 'Copertina proposta · da approvare' }); },
+      titleRef: this.titleRef, sfRef: this.sfRef, headerRef: this.headerRef,
+      toolbarTop: s.headerH + 'px',
+      fTitle: s.title, fKicker: s.kicker, fStandfirst: s.standfirst, fBody: s.body,
+      onTitle: this.set('title'), onKicker: this.set('kicker'), onStandfirst: this.set('standfirst'), onBody: this.set('body'),
+      wordCount: words, charCount: s.body.length, readMinutes: Math.max(1, Math.round(words / 190)),
+      saveDraft: () => this.setState({ saveNote: 'Salvato alle ' + new Date().toTimeString().slice(0, 5) }),
+      primaryLabel: pLabel, primaryAction: pAct,
+      primaryBg: pOn ? '#1d5c63' : '#e0d9c8', primaryFg: pOn ? '#faf7f0' : '#a49b8b',
+      primaryCursor: pOn ? 'pointer' : 'default',
+      workflowNote: chief ? 'come caporedattore puoi approvare e pubblicare' : 'come redattore puoi inviare in revisione',
+      steps: STEPS.map((st, i) => ({
+        label: st.label,
+        mark: i < curIdx ? '✓' : String(i + 1),
+        dotBg: i < curIdx ? '#1d5c63' : (i === curIdx ? '#211d18' : 'transparent'),
+        dotFg: i <= curIdx ? '#faf7f0' : '#a49b8b',
+        dotBorder: i <= curIdx ? 'transparent' : '#d9d2c4',
+        color: i === curIdx ? '#211d18' : (i < curIdx ? '#1d5c63' : '#a49b8b'),
+        weight: i === curIdx ? '700' : '600',
+        lineBg: i < curIdx ? '#1d5c63' : '#e0d9c8',
+        lineWidth: i === STEPS.length - 1 ? '0px' : 'clamp(16px,3vw,42px)'
+      })),
+      gridCols: s.panelsOpen ? 'minmax(0,1fr) minmax(280px,320px)' : 'minmax(0,1fr) 46px',
+      panelWidth: s.panelsOpen ? 'auto' : '46px',
+      panelsOpen: s.panelsOpen,
+      panelsHeader: s.panelsOpen ? 'IMPOSTAZIONI ARTICOLO' : '›',
+      panelsChevron: s.panelsOpen ? '⟩' : '',
+      togglePanels: () => this.setState(p => ({ panelsOpen: !p.panelsOpen })),
+      pubOpen: s.panel === 'pub', taxOpen: s.panel === 'tax', coverOpen: s.panel === 'cover', seoOpen: s.panel === 'seo', aiOpen: s.panel === 'ai',
+      pubHeadBg: s.panel === 'pub' ? '#f1ebdd' : 'transparent',
+      taxHeadBg: s.panel === 'tax' ? '#f1ebdd' : 'transparent',
+      coverHeadBg: s.panel === 'cover' ? '#f1ebdd' : 'transparent',
+      seoHeadBg: s.panel === 'seo' ? '#f1ebdd' : 'transparent',
+      aiHeadBg: s.panel === 'ai' ? '#f1ebdd' : 'transparent',
+      pubChevron: s.panel === 'pub' ? '−' : '+', taxChevron: s.panel === 'tax' ? '−' : '+',
+      coverChevron: s.panel === 'cover' ? '−' : '+', seoChevron: s.panel === 'seo' ? '−' : '+',
+      aiChevron: s.panel === 'ai' ? '−' : '+',
+      openPub: () => this.setState(p => ({ panel: p.panel === 'pub' ? '' : 'pub' })),
+      openTax: () => this.setState(p => ({ panel: p.panel === 'tax' ? '' : 'tax' })),
+      openCover: () => this.setState(p => ({ panel: p.panel === 'cover' ? '' : 'cover' })),
+      openSeo: () => this.setState(p => ({ panel: p.panel === 'seo' ? '' : 'seo' })),
+      openAi: () => this.setState(p => ({ panel: p.panel === 'ai' ? '' : 'ai' })),
+      author: s.author, onAuthor: e => this.setState({ author: e.target.value }),
+      pubDateLabel: pubLabel,
+      vis1Fill: s.visibility === 'public' ? '#1d5c63' : 'transparent', vis1Dot: s.visibility === 'public' ? '#faf7f0' : 'transparent',
+      vis2Fill: s.visibility === 'members' ? '#1d5c63' : 'transparent', vis2Dot: s.visibility === 'members' ? '#faf7f0' : 'transparent',
+      vis3Fill: s.visibility === 'private' ? '#1d5c63' : 'transparent', vis3Dot: s.visibility === 'private' ? '#faf7f0' : 'transparent',
+      visPublic: () => this.setState({ visibility: 'public' }),
+      visMembers: () => this.setState({ visibility: 'members' }),
+      visPrivate: () => this.setState({ visibility: 'private' }),
+      cats: CATS.map(c => ({ label: c, fill: s.cat === c ? '#1d5c63' : 'transparent', dot: s.cat === c ? '#faf7f0' : 'transparent', pick: () => this.setState({ cat: c }) })),
+      tags: s.tags.map(t => ({ label: t, remove: () => this.setState(p => ({ tags: p.tags.filter(x => x !== t) })) })),
+      tagQuery: s.tagQuery,
+      onTagQuery: e => this.setState({ tagQuery: e.target.value }),
+      showTagList: q.length > 0,
+      tagSuggestions: suggestions.map(t => ({ label: t, add: () => this.setState(p => ({ tags: p.tags.concat(t), tagQuery: '' })) })),
+      canCreateTag: q.length > 1 && !TAG_POOL.some(t => t.toLowerCase() === q),
+      createTag: () => this.setState(p => ({ tags: p.tags.concat(p.tagQuery.trim()), tagQuery: '' })),
+      caption: s.caption, onCaption: this.set('caption'),
+      credit: s.credit, onCredit: this.set('credit'),
+      metaTitle: s.metaTitle, onMetaTitle: this.set('metaTitle'),
+      metaDesc: s.metaDesc, onMetaDesc: this.set('metaDesc'),
+      metaTitleCount: mtLen, metaDescCount: mdLen,
+      metaTitleColor: mtLen >= 50 && mtLen <= 60 ? '#1e6b47' : '#9c4a1e',
+      metaDescColor: mdLen >= 120 && mdLen <= 155 ? '#1e6b47' : '#9c4a1e',
+      slug: s.slug, onSlug: this.set('slug'),
+      onSelectText: e => {
+        const el = e.target;
+        const has = el.selectionStart !== el.selectionEnd;
+        if (!has) { if (s.selMenu) this.setState({ selMenu: false }); return; }
+        const r = el.getBoundingClientRect();
+        const x = (e.clientX || r.left + r.width / 2), yy = (e.clientY || r.top) - 14;
+        this.setState({ selMenu: true, selX: x, selY: Math.max(56, yy) });
+      },
+      selMenuOpen: s.selMenu, selX: s.selX + 'px', selY: s.selY + 'px',
+      previewOpen: s.preview,
+      openPreview: () => this.setState({ preview: true, selMenu: false }),
+      closePreview: () => this.setState({ preview: false }),
+      previewWidth: s.previewMode === 'mobile' ? '390px' : '900px',
+      prevDesktop: () => this.setState({ previewMode: 'desktop' }),
+      prevMobile: () => this.setState({ previewMode: 'mobile' }),
+      pvDeskBg: s.previewMode === 'desktop' ? '#faf7f0' : 'transparent',
+      pvDeskFg: s.previewMode === 'desktop' ? '#211d18' : '#a49b8b',
+      pvMobBg: s.previewMode === 'mobile' ? '#faf7f0' : 'transparent',
+      pvMobFg: s.previewMode === 'mobile' ? '#211d18' : '#a49b8b',
+      previewParas: s.body.split(/\n\s*\n/).filter(Boolean).map(t => ({ text: t.trim() })),
+      scheduleOpen: s.schedule,
+      openSchedule: () => this.setState({ schedule: true }),
+      closeSchedule: () => this.setState({ schedule: false }),
+      monthLabel: monthNames[m] + ' ' + y,
+      prevMonth: () => this.setState(p => ({ month: Math.max(7, p.month - 1) })),
+      nextMonth: () => this.setState(p => ({ month: Math.min(11, p.month + 1) })),
+      days,
+      time: s.time, onTime: e => this.setState({ time: e.target.value }),
+      tz: s.tz, onTz: e => this.setState({ tz: e.target.value }),
+      scheduleSummary: 'Pubblicazione automatica il ' + dateStr + ' alle ' + s.time + ' · ' + s.tz,
+      confirmSchedule: () => this.setState({ schedule: false, status: 'programmato', scheduled: dateStr + ', ' + s.time }),
+      revisionsOpen: s.revisions,
+      openRevisions: () => this.setState({ revisions: true }),
+      closeRevisions: () => this.setState({ revisions: false }),
+      revisions: REVS.map(v => {
+        const i = sel.indexOf(v.id);
+        return {
+          label: v.label, author: v.author, time: v.time, note: v.note,
+          bg: i > -1 ? '#f1ebdd' : 'transparent',
+          markBg: i > -1 ? '#1d5c63' : 'transparent',
+          mark: i === 0 ? 'B' : (i === 1 ? 'A' : ''),
+          pick: () => this.setState(p => {
+            if (p.sel.includes(v.id)) return { sel: p.sel.filter(x => x !== v.id) };
+            return { sel: [v.id, p.sel[0]].filter(x => x !== undefined) };
+          })
+        };
+      }),
+      diffLabel: sel.length === 2
+        ? 'confronto ' + (REVS.find(r => r.id === sel[1]) || {}).label + ' → ' + (REVS.find(r => r.id === sel[0]) || {}).label
+        : 'seleziona due versioni',
+      diffLines: DIFF.map(l => ({
+        sign: l.sign, text: l.text,
+        bg: l.sign === '+' ? '#dcebe4' : (l.sign === '-' ? '#f7ded9' : '#faf7f0'),
+        signColor: l.sign === '+' ? '#1e6b47' : (l.sign === '-' ? '#9c2a20' : '#a49b8b'),
+        deco: l.sign === '-' ? 'line-through' : 'none'
+      })),
+      restoreLabel: 'Ripristina questa versione',
+      restore: () => this.setState({ revisions: false, saveNote: 'Versione ripristinata', status: 'bozza' })
+    };
+  }
+}
+
+</script>
+</body>
+</html>
