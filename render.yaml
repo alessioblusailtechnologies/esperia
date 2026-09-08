@@ -17,7 +17,9 @@ services:
   - type: web
     name: esperia-portale-demo
     runtime: static
-    plan: free
+    # Niente `plan`: i siti statici non hanno istanze e quindi non hanno piani,
+    # sono gratuiti per definizione. Indicare `plan: free` fa rifiutare il
+    # blueprint con "no such plan free for service type web".
 
     # `corepack` legge la versione di pnpm da packageManager nel package.json.
     buildCommand: corepack enable && pnpm install --frozen-lockfile && pnpm --filter @esperia/portal build:demo
