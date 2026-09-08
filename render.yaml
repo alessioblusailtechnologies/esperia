@@ -21,8 +21,11 @@ services:
     # sono gratuiti per definizione. Indicare `plan: free` fa rifiutare il
     # blueprint con "no such plan free for service type web".
 
-    # `corepack` legge la versione di pnpm da packageManager nel package.json.
-    buildCommand: corepack enable && pnpm install --frozen-lockfile && pnpm --filter @esperia/portal build:demo
+    # `corepack pnpm` invece di `corepack enable && pnpm`: `enable` installa gli
+    # shim in /usr/bin, che sull'immagine di build di Render e' di sola lettura
+    # e fa fallire tutto con EROFS. La forma passante non scrive nulla e usa
+    # comunque la versione dichiarata in packageManager (pnpm@9.15.4).
+    buildCommand: corepack pnpm install --frozen-lockfile && corepack pnpm --filter @esperia/portal build:demo
     staticPublishPath: apps/portal/dist
 
     # Il portale dimostrativo cambia solo se cambia il portale.
@@ -37,6 +40,18 @@ services:
     pullRequestPreviewsEnabled: false
 
     envVars:
+      # Senza terminale interattivo corepack non puo' chiedere conferma prima di
+      # scaricare pnpm, e si ferma. Qui la conferma e' implicita: la versione la
+      # dichiara il repository, non un input dell'utente.
+      - key: COREPACK_ENABLE_DOWNLOAD_PROMPT
+        value: '0'
+
+      # `engines` ammette qualunque Node >= 20.9, e Render prende l'ultimo
+      # disponibile — al primo tentativo il 26, uscito da poco. Fissiamo il 24,
+      # che e' quello su cui la build e' stata verificata.
+      - key: NODE_VERSION
+        value: '24'
+
       - key: MOCK
         value: '1'
       # Serve a canonical, sitemap, feed RSS e Open Graph. Da riallineare se il
