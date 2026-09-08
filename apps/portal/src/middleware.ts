@@ -1,5 +1,6 @@
 import { defineMiddleware } from 'astro:middleware'
 import { getRedirects, getSiteSettings, CmsUnavailableError } from '@/lib/payload'
+import { MOCK } from '@/lib/modalita'
 
 /**
  * Middleware del portale.
@@ -58,6 +59,14 @@ function politicaCache(percorso: string, anteprima: boolean): string {
 }
 
 export const onRequest = defineMiddleware(async (context, next) => {
+  /*
+   * Modalita' dimostrativa: il sito e' statico, il middleware girerebbe solo
+   * durante la build e i suoi header finirebbero nel vuoto. Redirect e
+   * manutenzione arrivano dal CMS, che qui non c'e'; gli header di sicurezza
+   * li applica l'hosting (vedi render.yaml).
+   */
+  if (MOCK) return next()
+
   const percorso = context.url.pathname
   const tecnico = TECNICI.some((p) => percorso.startsWith(p))
 

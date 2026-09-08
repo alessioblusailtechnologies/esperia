@@ -7,6 +7,7 @@ import type {
   SiteSettings,
   Tag,
 } from './types'
+import { MOCK } from './modalita'
 
 /**
  * Client di lettura verso il CMS.
@@ -41,6 +42,21 @@ function buildQuery(params: Record<string, QueryValue>): string {
 }
 
 async function get<T>(path: string, init?: RequestInit): Promise<T> {
+  /*
+   * Modalita' dimostrativa: la sorgente cambia, la logica no.
+   *
+   * L'intercettazione sta qui, sul trasporto, e non piu' in alto: filtri,
+   * impaginazione, ordinamento, articoli correlati, cache di processo, RSS e
+   * sitemap continuano a passare dal codice di produzione. Cosi' il portale
+   * mostrato al Committente e' lo stesso che andra' online, con dati diversi.
+   *
+   * Import dinamico: i contenuti finti non entrano nel bundle reale.
+   */
+  if (MOCK) {
+    const { rispondiMock } = await import('@/mock/api')
+    return rispondiMock<T>(path)
+  }
+
   let res: Response
   try {
     res = await fetch(`${BASE}${path}`, {

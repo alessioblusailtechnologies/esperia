@@ -39,8 +39,8 @@ di collaudo.
 
 | ID | Requisito | Pri. | Dove | Stato |
 |---|---|---|---|---|
-| RF-C-01 | Registrazione e login | Must | Supabase Auth, trigger `handle_new_user` | 🟡 pagine di accesso da fare |
-| RF-C-02 | Profilo utente | Must | tabella `profiles` + RLS | 🟡 pagina profilo da fare |
+| RF-C-01 | Registrazione e login | Must | Supabase Auth, trigger `handle_new_user`; segnaposto in `portal/src/pages/accedi.astro` | 🟡 modulo di accesso da fare |
+| RF-C-02 | Profilo utente | Must | tabella `profiles` + RLS; segnaposto in `portal/src/pages/registrati.astro` | 🟡 pagina profilo da fare |
 | RF-C-03 | Commenti con risposte a 1 livello | Must | `islands/CommentsSection.tsx`, trigger `enforce_comment_depth` | ✅ |
 | RF-C-04 | Reazioni | Should | tabella `reactions`; "Mi piace" sui commenti nell'isola | ✅ sui commenti; 🟡 sugli articoli |
 | RF-C-05 | Segnalazione contenuti | Must | tabella `reports`, azione nell'isola commenti | ✅ |

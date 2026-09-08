@@ -6,6 +6,7 @@ import SiteHeader from '@/components/SiteHeader.astro'
 import SiteFooter from '@/components/SiteFooter.astro'
 import CookieBanner from '@/components/islands/CookieBanner.tsx'
 import { getCategories, getFooterPages, getSiteSettings } from '@/lib/payload'
+import { MOCK } from '@/lib/modalita'
 import { absoluteUrl, mediaUrl, resolveTitle, truncate, websiteJsonLd } from '@/lib/seo'
 import type { MetaInput } from '@/lib/seo'
 import { populated } from '@/lib/types'
@@ -145,6 +146,24 @@ const privacyPage = populated<Page>(settings.cookieBanner?.privacyPage)
   <body>
     <a class="salta-contenuto" href="#contenuto">Salta al contenuto principale</a>
 
+    {
+      /*
+       * Avviso della versione dimostrativa.
+       *
+       * Il sito e' pubblicamente raggiungibile e gli articoli sono inventati:
+       * chi ci arriva deve capirlo dalla prima schermata, non dal piede. E'
+       * volutamente estraneo alla grafica del giornale — non deve poter essere
+       * scambiato per un elemento editoriale, ne' disturbare la valutazione
+       * del design, che e' il motivo per cui questa versione esiste.
+       */
+      MOCK && (
+        <p class="avviso-dimostrazione" role="note">
+          <strong>Versione dimostrativa</strong> — contenuti di esempio per la revisione del
+          progetto. Non sono notizie.
+        </p>
+      )
+    }
+
     <div class="pagina">
       <div class="contenitore">
         <SiteHeader settings={settings} categories={categories} />
@@ -168,3 +187,24 @@ const privacyPage = populated<Page>(settings.cookieBanner?.privacyPage)
     )}
   </body>
 </html>
+
+<style>
+  /* Avviso della versione dimostrativa — non fa parte del design del giornale. */
+  .avviso-dimostrazione {
+    margin: 0;
+    padding: 7px var(--padding-laterale);
+    background: var(--colore-evidenza);
+    border-bottom: 1px solid var(--colore-bordo-forte);
+    color: var(--colore-testo);
+    font-family: var(--font-testo);
+    font-size: 12px;
+    line-height: 1.45;
+    text-align: center;
+  }
+
+  .avviso-dimostrazione strong {
+    font-weight: var(--peso-medio);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+</style>

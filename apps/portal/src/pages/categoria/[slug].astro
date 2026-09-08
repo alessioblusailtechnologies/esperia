@@ -1,12 +1,18 @@
 ---
 import Base from '@/layouts/Base.astro'
 import ArticleListing from '@/components/ArticleListing.astro'
-import { ARTICLES_PER_PAGE, getArticles, getCategoryBySlug } from '@/lib/payload'
+import { ARTICLES_PER_PAGE, getArticles, getCategories, getCategoryBySlug } from '@/lib/payload'
 import { absoluteUrl, breadcrumbJsonLd } from '@/lib/seo'
 import { populatedList } from '@/lib/types'
 import type { Tag } from '@/lib/types'
 
 /** Listing di categoria con paginazione — RF-P-02. Impaginazione dai design (Listing v1). */
+
+/** Percorsi pregenerati: solo build statica dimostrativa — vedi lib/modalita.ts. */
+export async function getStaticPaths() {
+  const categorie = await getCategories()
+  return categorie.map((c) => ({ params: { slug: c.slug } }))
+}
 
 const { slug } = Astro.params
 const categoria = slug ? await getCategoryBySlug(slug) : null

@@ -2,7 +2,9 @@
 import Base from '@/layouts/Base.astro'
 import ArticleCard from '@/components/ArticleCard.astro'
 import Pagination from '@/components/Pagination.astro'
-import { getCategories, searchArticles, CmsUnavailableError } from '@/lib/payload'
+import { getArticles, getCategories, searchArticles, CmsUnavailableError } from '@/lib/payload'
+import { MOCK } from '@/lib/modalita'
+import type { Article, RichTextDocument } from '@/lib/types'
 
 /** Ricerca full-text — RF-P-05. Impaginazione dai design (Ricerca v1). */
 
@@ -12,7 +14,52 @@ const pagina = Math.max(1, Number(Astro.url.searchParams.get('pagina') ?? '1') |
 let risultati = null
 let errore = false
 
-if (query.length >= 2) {
+/* -------------------------------------------------------------------------- */
+/* Ricerca nella versione dimostrativa                                        */
+/*                                                                            */
+/* In una build statica la query non esiste: viene digitata molto dopo che le  */
+/* pagine sono state generate. Invece di reimplementare la pagina, generiamo   */
+/* TUTTE le schede con lo stesso componente del portale reale e le filtriamo   */
+/* nel browser. Il corpus dimostrativo e' di poche decine di articoli: nessun  */
+/* indice da scaricare e, soprattutto, nessun markup duplicato che possa       */
+/* divergere dal design vero.                                                  */
+/*                                                                            */
+/* Differenze note rispetto alla ricerca vera, che resta quella di Postgres:   */
+/* niente stemming italiano e niente ordinamento per pertinenza (le schede     */
+/* restano in ordine di pubblicazione).                                        */
+/* -------------------------------------------------------------------------- */
+
+/** Testo di un documento Lexical, per l'attributo su cui filtra lo script. */
+function testoPiano(doc: RichTextDocument | null | undefined): string {
+  const pezzi: string[] = []
+  const visita = (nodo: unknown): void => {
+    if (!nodo || typeof nodo !== 'object') return
+    const n = nodo as { text?: unknown; children?: unknown }
+    if (typeof n.text === 'string') pezzi.push(n.text)
+    if (Array.isArray(n.children)) n.children.forEach(visita)
+  }
+  if (doc?.root) visita(doc.root)
+  return pezzi.join(' ')
+}
+
+let corpus: Article[] = []
+
+/*
+ * Lo script di filtro viene letto come TESTO da un file .js e scritto dentro un
+ * <script> con set:html.
+ *
+ * Perche' non `<script is:inline>{...}</script>`: con is:inline Astro non valuta
+ * l'espressione e nei sorgenti finiscono i delimitatori del template literal,
+ * producendo uno script che il browser accetta senza fare nulla — nessun errore
+ * in console, il che lo rende anche difficile da diagnosticare. Verificato.
+ */
+let scriptRicerca = ''
+
+if (MOCK) {
+  corpus = (await getArticles({ limit: 500 })).docs
+  const sorgente = await import('@/mock/ricerca-cliente.js?raw')
+  scriptRicerca = `<script>${sorgente.default}</script>`
+} else if (query.length >= 2) {
   try {
     risultati = await searchArticles(query, pagina)
   } catch (err) {
@@ -61,6 +108,7 @@ const rigaEsito = !risultati
       </form>
 
       {rigaEsito && <p class="ricerca__esito">{rigaEsito}</p>}
+      {MOCK && <p class="ricerca__esito" id="esito-mock" hidden></p>}
       {query.length > 0 && query.length < 2 && (
         <p class="ricerca__esito">Inserisci almeno due caratteri.</p>
       )}
@@ -82,6 +130,16 @@ const rigaEsito = !risultati
       </div>
     )}
 
+    {MOCK && (
+      <div class="ricerca__risultati" id="risultati-mock">
+        {corpus.map((a) => (
+          <div class="ricerca__voce" data-corpo={testoPiano(a.content)} hidden>
+            <ArticleCard article={a} variante="risultato" livelloTitolo={2} />
+          </div>
+        ))}
+      </div>
+    )}
+
     {risultati && (
       <Pagination
         paginaCorrente={risultati.page}
@@ -92,7 +150,7 @@ const rigaEsito = !risultati
     )}
 
     {(!risultati || risultati.docs.length === 0) && !errore && (
-      <div class="ricerca__vuoto">
+      <div class="ricerca__vuoto" id="stato-vuoto">
         <p class="ricerca__vuoto-testo">
           {query.length >= 2
             ? 'Prova con parole diverse, oppure sfoglia una sezione del giornale.'
@@ -105,6 +163,7 @@ const rigaEsito = !risultati
         </nav>
       </div>
     )}
+    {MOCK && <Fragment set:html={scriptRicerca} />}
   </div>
 </Base>
 

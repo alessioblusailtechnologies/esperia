@@ -1,5 +1,6 @@
 import type { APIRoute } from 'astro'
 import { absoluteUrl, SITE_URL } from '@/lib/seo'
+import { MOCK } from '@/lib/modalita'
 
 /**
  * robots.txt — RF-P-07.
@@ -8,8 +9,16 @@ import { absoluteUrl, SITE_URL } from '@/lib/seo'
  * collaudo indicizzato genera contenuti duplicati e cannibalizza il sito vero.
  */
 export const GET: APIRoute = () => {
+  /*
+   * La versione dimostrativa non va indicizzata MAI, nemmeno se pubblicata su
+   * un dominio dall'aria definitiva: contiene articoli inventati, e un motore
+   * di ricerca che li raccogliesse li presenterebbe come notizie.
+   */
   const produzione =
-    import.meta.env.PROD && !SITE_URL.includes('localhost') && !SITE_URL.includes('staging')
+    !MOCK &&
+    import.meta.env.PROD &&
+    !SITE_URL.includes('localhost') &&
+    !SITE_URL.includes('staging')
 
   const righe = produzione
     ? [

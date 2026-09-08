@@ -122,6 +122,30 @@ a token la rende innestabile ridefinendo un solo blocco.
 
 ---
 
+## Versione dimostrativa
+
+Il portale sa girare **senza CMS e senza database**: con `MOCK=1` i contenuti
+arrivano da fixture, la build diventa statica e il risultato si pubblica su un
+hosting qualunque. Serve a far vedere il portale al Committente prima che la
+redazione esista, e a lavorare al portale senza avviare il CMS.
+
+```bash
+pnpm --filter @esperia/portal build:demo     # genera apps/portal/dist
+pnpm --filter @esperia/portal preview:demo   # lo serve su :4321
+```
+
+L'intercettazione è una sola, sul trasporto HTTP verso il CMS: filtri,
+impaginazione, articoli correlati, SEO, RSS e sitemap restano il codice di
+produzione. Deploy in [`render.yaml`](render.yaml), dettagli e differenze note
+in **[`apps/portal/src/mock/README.md`](apps/portal/src/mock/README.md)**.
+
+> I contenuti sono inventati. La dimostrazione risponde `Disallow: /`, dichiara
+> in ogni pagina di essere tale e non usa fotografie di persone reali: le ragioni
+> stanno nel README della cartella `mock`, e vanno rispettate aggiungendo
+> contenuti.
+
+---
+
 ## Documentazione
 
 - **[`docs/stato-lavori.md`](docs/stato-lavori.md) — da leggere per primo se riprendi

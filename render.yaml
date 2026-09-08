@@ -1,0 +1,72 @@
+# Pubblicazione della versione dimostrativa del portale su Render.
+#
+# Sito statico, non servizio web: il piano gratuito dei servizi web spegne
+# l'istanza dopo quindici minuti di inattivita' e il primo che apre il link
+# aspetta quasi un minuto. Un sito statico sta sulla CDN, non si spegne mai e
+# resta gratuito. Il portale puo' essere generato per intero perche' in
+# modalita' dimostrativa i contenuti vengono dalle fixture (MOCK=1) e sono
+# quindi noti al momento della build — vedi apps/portal/src/mock/README.md.
+#
+# NON e' la configurazione di produzione. Il portale vero e' SSR e parla con il
+# CMS: quando l'hosting sara' deciso (V-02) andra' scritto un blueprint diverso,
+# con un servizio web per il portale, uno per il CMS e un database.
+#
+# Primo deploy: su Render, New > Blueprint, si punta al repository e si conferma.
+
+services:
+  - type: web
+    name: esperia-portale-demo
+    runtime: static
+    plan: free
+
+    # `corepack` legge la versione di pnpm da packageManager nel package.json.
+    buildCommand: corepack enable && pnpm install --frozen-lockfile && pnpm --filter @esperia/portal build:demo
+    staticPublishPath: apps/portal/dist
+
+    # Il portale dimostrativo cambia solo se cambia il portale.
+    buildFilter:
+      paths:
+        - apps/portal/**
+        - packages/shared/**
+        - package.json
+        - pnpm-lock.yaml
+        - render.yaml
+
+    pullRequestPreviewsEnabled: false
+
+    envVars:
+      - key: MOCK
+        value: '1'
+      # Serve a canonical, sitemap, feed RSS e Open Graph. Da riallineare se il
+      # servizio viene rinominato o gli si mette davanti un dominio.
+      - key: PUBLIC_SITE_URL
+        value: https://esperia-portale-demo.onrender.com
+
+    headers:
+      # Gli articoli sono inventati: non devono finire in nessun indice. Il
+      # robots.txt generato dice gia' Disallow, questo lo ribadisce a livello di
+      # risposta HTTP, che i motori rispettano anche senza leggere robots.
+      - path: /*
+        name: X-Robots-Tag
+        value: noindex, nofollow
+
+      # Gli stessi header che il middleware applica in produzione (RNF-03). Qui
+      # li mette l'hosting: in una build statica il middleware gira solo durante
+      # la generazione e i suoi header verrebbero scartati.
+      - path: /*
+        name: X-Content-Type-Options
+        value: nosniff
+      - path: /*
+        name: Referrer-Policy
+        value: strict-origin-when-cross-origin
+      - path: /*
+        name: Permissions-Policy
+        value: camera=(), microphone=(), geolocation=()
+      - path: /*
+        name: X-Frame-Options
+        value: SAMEORIGIN
+
+      # Le risorse con impronta nel nome sono immutabili.
+      - path: /_astro/*
+        name: Cache-Control
+        value: public, max-age=31536000, immutable

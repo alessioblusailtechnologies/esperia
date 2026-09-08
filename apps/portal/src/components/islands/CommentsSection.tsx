@@ -21,7 +21,66 @@ import {
 interface Props {
   articleId: string
   articleSlug: string
+  /**
+   * Versione dimostrativa: mostra una discussione di esempio invece del
+   * messaggio di servizio. La passa la pagina articolo — vedi lib/modalita.ts.
+   */
+  dimostrazione?: boolean
 }
+
+/*
+ * Discussione di esempio per la versione dimostrativa.
+ *
+ * La community vive su Supabase, che nella dimostrazione non c'e'. Senza questi
+ * commenti il blocco mostrerebbe "non disponibile", e chi guarda il design
+ * penserebbe a un difetto invece che a una parte non ancora collegata.
+ *
+ * Le azioni restano spente: e' esattamente cio' che vede un lettore non
+ * autenticato anche nel portale vero.
+ */
+const oreFa = (ore: number) => new Date(Date.now() - ore * 3_600_000).toISOString()
+
+const COMMENTI_DIMOSTRATIVI: CommentoConAutore[] = [
+  {
+    id: 'demo-1',
+    article_id: 'demo',
+    author_id: 'demo-1',
+    parent_id: null,
+    body: 'Sarebbe utile un riquadro con i numeri messi a confronto con l’anno scorso: dal testo si capisce la direzione, non la dimensione.',
+    status: 'approvato',
+    created_at: oreFa(2),
+    edited_at: null,
+    profiles: { display_name: 'Giulia M.', avatar_url: null, is_staff: false },
+    mi_piace: 7,
+    mio_mi_piace: false,
+  },
+  {
+    id: 'demo-2',
+    article_id: 'demo',
+    author_id: 'demo-2',
+    parent_id: 'demo-1',
+    body: 'Concordo. Anche solo la serie degli ultimi cinque anni aiuterebbe a inquadrare il dato.',
+    status: 'approvato',
+    created_at: oreFa(1),
+    edited_at: null,
+    profiles: { display_name: 'Redazione Esperia', avatar_url: null, is_staff: true },
+    mi_piace: 3,
+    mio_mi_piace: false,
+  },
+  {
+    id: 'demo-3',
+    article_id: 'demo',
+    author_id: 'demo-3',
+    parent_id: null,
+    body: 'Articolo chiaro. Mi interessa soprattutto il passaggio sulle coperture: si sa quando arriverà il testo definitivo?',
+    status: 'approvato',
+    created_at: oreFa(5),
+    edited_at: null,
+    profiles: { display_name: 'Marco T.', avatar_url: null, is_staff: false },
+    mi_piace: 2,
+    mio_mi_piace: false,
+  },
+]
 
 const relativo = new Intl.RelativeTimeFormat('it-IT', { numeric: 'auto' })
 const dataAssoluta = new Intl.DateTimeFormat('it-IT', {
@@ -48,7 +107,7 @@ function iniziali(nome: string): string {
     .join('')
 }
 
-export default function CommentsSection({ articleId, articleSlug }: Props) {
+export default function CommentsSection({ articleId, articleSlug, dimostrazione }: Props) {
   const supabase = useMemo(() => getSupabase(), [])
 
   const [utente, setUtente] = useState<User | null>(null)
@@ -249,9 +308,31 @@ export default function CommentsSection({ articleId, articleSlug }: Props) {
   /* ---------------------------------------------------------------------- */
 
   if (!supabase) {
+    if (!dimostrazione) {
+      return (
+        <>
+          <p class="riquadro">I commenti non sono al momento disponibili.</p>
+          <style>{stili}</style>
+        </>
+      )
+    }
+
     return (
       <>
-        <p class="riquadro">I commenti non sono al momento disponibili.</p>
+        <p class="riquadro">
+          Discussione di esempio. Per scrivere serve l’accesso: le pagine di registrazione e
+          login fanno parte del lavoro ancora da completare.
+        </p>
+
+        {COMMENTI_DIMOSTRATIVI.filter((c) => c.parent_id === null).map((c) => (
+          <div key={c.id}>
+            <Commento c={c} />
+            {COMMENTI_DIMOSTRATIVI.filter((r) => r.parent_id === c.id).map((r) => (
+              <Commento key={r.id} c={r} risposta />
+            ))}
+          </div>
+        ))}
+
         <style>{stili}</style>
       </>
     )

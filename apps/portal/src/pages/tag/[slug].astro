@@ -3,8 +3,26 @@ import Base from '@/layouts/Base.astro'
 import ArticleListing from '@/components/ArticleListing.astro'
 import { ARTICLES_PER_PAGE, getArticles, getTagBySlug } from '@/lib/payload'
 import { absoluteUrl, breadcrumbJsonLd } from '@/lib/seo'
+import { populatedList } from '@/lib/types'
+import type { Tag } from '@/lib/types'
 
 /** Listing per tag — RF-P-03. */
+
+/*
+ * Percorsi pregenerati: solo build statica dimostrativa — vedi lib/modalita.ts.
+ *
+ * I tag si ricavano dagli articoli invece che da una query dedicata: sono per
+ * definizione quelli in uso, e non serve aggiungere al client di produzione una
+ * funzione che esiste solo per la dimostrazione.
+ */
+export async function getStaticPaths() {
+  const { docs } = await getArticles({ limit: 500 })
+  const slugs = new Set<string>()
+  for (const a of docs) {
+    for (const t of populatedList<Tag>(a.tags)) slugs.add(t.slug)
+  }
+  return [...slugs].map((slug) => ({ params: { slug } }))
+}
 
 const { slug } = Astro.params
 const tag = slug ? await getTagBySlug(slug) : null

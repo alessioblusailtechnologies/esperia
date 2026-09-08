@@ -2,11 +2,17 @@
 import '@/styles/articolo.css'
 
 import Base from '@/layouts/Base.astro'
-import { getPageBySlug, getSiteSettings } from '@/lib/payload'
+import { getAllPublishedSlugs, getPageBySlug, getSiteSettings } from '@/lib/payload'
 import { renderRichText } from '@/lib/lexical-render'
 import { absoluteUrl, breadcrumbJsonLd, pageJsonLd } from '@/lib/seo'
 
 /** Pagine editoriali di servizio — RF-P-10 (chi siamo, contatti, privacy, cookie). */
+
+/** Percorsi pregenerati: solo build statica dimostrativa — vedi lib/modalita.ts. */
+export async function getStaticPaths() {
+  const { pages } = await getAllPublishedSlugs()
+  return pages.map((p) => ({ params: { slug: p.slug } }))
+}
 
 const { slug } = Astro.params
 const pagina = slug ? await getPageBySlug(slug) : null

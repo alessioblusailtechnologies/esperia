@@ -75,6 +75,7 @@ comandi, non l'abbiamo resa uno script perché non serve in produzione.
 | Banner cookie con consensi granulari; embed di terze parti caricati solo dopo consenso | ✅ |
 | Commenti con risposte a un livello, "mi piace", segnalazioni | ✅ |
 | Design consegnati (Home, Articolo, Listing, Ricerca v1) | ✅ |
+| Versione dimostrativa statica, senza CMS né database (`MOCK=1`) | ✅ |
 
 ### Backoffice
 
@@ -178,6 +179,8 @@ Il posto giusto è un componente React nella colonna laterale dell'editor
 - **Verificare il portale su un dispositivo mobile reale.** Il layout usa unità
   fluide con punto di rottura a 760px, ma non è stato guardato su un telefono:
   l'ambiente di sviluppo non lo permetteva. RF-P-08 è segnato 🟡 per questo.
+  La versione dimostrativa (§9) è ora pubblicabile: aprirla dal telefono è il
+  modo più rapido per chiudere questo punto.
 - Testi legali (privacy e cookie policy) dal Committente — i contenitori
   esistono, sono vuoti.
 - Dati della testata: registrazione al tribunale, partita IVA, direttore
@@ -221,6 +224,20 @@ verifica sessione e ruolo da sé con `payload.auth()`.
 **I global di Payload non esistono finché non li salvi.** Una `UPDATE` SQL su
 `payload.ai_settings` non fa nulla se nessuno ha mai salvato quel global: la
 riga non c'è. Usare `payload.updateGlobal()`.
+
+**Una sola rotta on-demand rende server l'intera build di Astro.** Il tipo di
+build si decide guardando le singole rotte: basta un `prerender = false` — ne
+bastava uno in `/api/preview` — perché una build statica si fermi con
+`NoAdapterInstalled`. Si corregge nell'hook `astro:route:setup`;
+`astro:routes:resolved` non serve allo scopo, è di sola lettura e rimuovere voci
+da lì non ha effetto.
+
+**`<script is:inline>{`…`}</script>` non fa quello che sembra.** Con `is:inline`
+Astro non valuta l'espressione: nell'HTML finiscono i delimitatori del template
+literal, il browser esegue un blocco vuoto e **non compare alcun errore in
+console**. Uno script che non parte e non si lamenta costa parecchio tempo. Se
+serve JavaScript condizionale in pagina, tenerlo in un file e iniettarlo come
+testo con `?raw` + `set:html`, come fa `mock/ricerca-cliente.js`.
 
 **Il browser mostra copie in cache dell'admin.** Durante lo sviluppo può
 mostrare un rendering vecchio dopo una modifica: sembra un bug che non c'è.
@@ -290,3 +307,52 @@ packages/shared/     ruoli, workflow, stati, tipi community — usato da entramb
 | **Region dei dati** | Supabase e storage in UE per RNF-04 |
 | **Testi legali** | Privacy e cookie policy: forniti dal Committente, i contenitori esistono |
 | **Priorità Should/Could** | Con V-01 a due mesi, l'analisi stessa prevede di consolidarle in kick-off. Vale la pena usarla davvero |
+
+---
+
+## 9. Versione dimostrativa
+
+Serve a mettere il portale davanti al Committente **prima** che il CMS sia
+popolato e prima che l'hosting sia deciso, per raccogliere i primi riscontri.
+
+```bash
+pnpm --filter @esperia/portal build:demo     # genera apps/portal/dist
+pnpm --filter @esperia/portal preview:demo   # lo serve su :4321
+```
+
+Con `MOCK=1` i contenuti arrivano dalle fixture in `apps/portal/src/mock/`, la
+build diventa statica e si pubblica su Render come sito statico — gratuito, su
+CDN, senza spegnimenti. Il blueprint è `render.yaml`: su Render, *New →
+Blueprint*, si punta al repository e si conferma.
+
+**Perché statico e non un servizio web:** il piano gratuito dei servizi web
+spegne l'istanza dopo quindici minuti di inattività, e il primo che apre il link
+aspetta quasi un minuto. Per un link che si manda al Committente è inaccettabile.
+
+**Come è fatto.** L'intercettazione è una sola, dentro `lib/payload.ts`: si
+sostituisce `get<T>()`, cioè il trasporto HTTP verso Payload. Tutto il resto —
+filtri, impaginazione, ordinamento, articoli correlati, SEO, RSS, sitemap —
+resta il codice di produzione, così ciò che il Committente giudica è davvero il
+portale che andrà online.
+
+**I contenuti sono inventati**, e il sito è pubblicamente raggiungibile. Le
+difese sono tre e vanno mantenute: `robots.txt` risponde `Disallow: /`, Render
+aggiunge `X-Robots-Tag: noindex`, e una fascia in cima a ogni pagina dichiara
+che si tratta di una dimostrazione. I testi citano istituzioni e ruoli, mai
+persone reali per nome.
+
+**Le immagini non sono fotografie.** Le quattro in `Design portale Esperia/
+uploads` non erano utilizzabili: tre ritraggono politici reali e identificabili,
+la quarta è lo screenshot del sito di qualcun altro. Una foto vera accanto a una
+notizia inventata la fa sembrare autentica. Al loro posto ci sono composizioni
+astratte generate nella palette del progetto. Se il Committente vuole fotografie
+nella dimostrazione deve fornirle con licenza d'uso: si sostituiscono i file in
+`public/mock/media/` mantenendo i nomi.
+
+Differenze note rispetto al portale vero (ricerca, impaginazione, commenti) e
+trappole incontrate: **[`apps/portal/src/mock/README.md`](../apps/portal/src/mock/README.md)**.
+
+Nel farlo sono state chiuse due lacune che riguardano anche il portale reale:
+`/accedi` e `/registrati` erano collegate dalla testata ma non esistevano, e
+portavano a due 404; ora ci sono due segnaposto che dichiarano la lavorazione in
+corso, da sostituire con le pagine vere quando si affronta il §4.2.

@@ -6,11 +6,13 @@ import ArticleCard from '@/components/ArticleCard.astro'
 import ShareButtons from '@/components/ShareButtons.astro'
 import CommentsSection from '@/components/islands/CommentsSection.tsx'
 import {
+  getAllPublishedSlugs,
   getArticleBySlug,
   getRelatedArticles,
   getSiteSettings,
   CmsUnavailableError,
 } from '@/lib/payload'
+import { MOCK } from '@/lib/modalita'
 import { applicaAttacco, renderRichText } from '@/lib/lexical-render'
 import { absoluteUrl, articleJsonLd, breadcrumbJsonLd, mediaUrl } from '@/lib/seo'
 import { populated, populatedList } from '@/lib/types'
@@ -18,6 +20,18 @@ import type { Author, Category, Media, Tag } from '@/lib/types'
 import { formatDataOra, isoDate, tempoLettura } from '@/lib/format'
 
 /** Pagina articolo — RF-P-04, RF-P-06, RF-P-07. Impaginazione dai design (Articolo v1). */
+
+/*
+ * Elenco dei percorsi da pregenerare.
+ *
+ * Serve solo alla build statica dimostrativa (MOCK=1, vedi lib/modalita.ts):
+ * in SSR Astro non chiama mai getStaticPaths, quindi il portale reale continua
+ * a risolvere lo slug a ogni richiesta e nessuna pagina viene congelata.
+ */
+export async function getStaticPaths() {
+  const { articles } = await getAllPublishedSlugs()
+  return articles.map((a) => ({ params: { slug: a.slug } }))
+}
 
 const { slug } = Astro.params
 
@@ -210,7 +224,12 @@ const modificato =
         Isola idratata solo quando entra nel viewport: la discussione sta in
         fondo alla pagina e non deve pesare sul caricamento iniziale (RNF-01).
       */}
-      <CommentsSection client:visible articleId={article.id} articleSlug={article.slug} />
+      <CommentsSection
+        client:visible
+        articleId={article.id}
+        articleSlug={article.slug}
+        dimostrazione={MOCK}
+      />
     </section>
   </article>
 </Base>

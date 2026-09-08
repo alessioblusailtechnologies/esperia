@@ -7,6 +7,7 @@ dist/
 .turbo/
 .astro/
 build/
+*.tsbuildinfo
 
 # env
 .env
@@ -15,7 +16,10 @@ build/
 
 # payload
 apps/cms/src/payload-types.ts.bak
-media/
+# I caricamenti del CMS, non una cartella "media" qualunque: la regola generica
+# `media/` escludeva anche apps/portal/public/mock/media, cioe' le copertine
+# della versione dimostrativa, che invece devono stare nel repository.
+apps/cms/media/
 
 # os / editor
 .DS_Store

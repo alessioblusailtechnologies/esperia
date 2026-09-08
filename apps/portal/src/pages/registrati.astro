@@ -1,0 +1,16 @@
+---
+import Base from '@/layouts/Base.astro'
+import AreaInLavorazione from '@/components/AreaInLavorazione.astro'
+
+/**
+ * Segnaposto della registrazione alla community — RF-C-02.
+ * Stessa ragione di accedi.astro: evitare che la testata porti a una 404.
+ */
+---
+
+<Base title="Registrazione" description="Registrazione all’area riservata di Esperia." noIndex>
+  <AreaInLavorazione
+    titolo="Registrazione"
+    testo="La creazione di un account non è ancora attiva. Sarà possibile registrarsi, commentare gli articoli e gestire il proprio profilo in una prossima versione del portale."
+  />
+</Base>

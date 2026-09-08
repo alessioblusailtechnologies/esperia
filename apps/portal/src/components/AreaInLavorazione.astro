@@ -1,0 +1,54 @@
+---
+interface Props {
+  titolo: string
+  testo: string
+}
+
+const { titolo, testo } = Astro.props
+---
+
+<!--
+  Blocco per le aree della community non ancora realizzate (RF-C-01, RF-C-02).
+
+  La testata rimanda a /accedi e /registrati da sempre, ma quelle pagine non
+  esistono ancora: senza questi segnaposto il portale porta a due 404, nella
+  dimostrazione come in produzione. Dire che una parte e' in lavorazione e'
+  un'informazione; una pagina non trovata e' un difetto.
+
+  Vanno sostituite dalle pagine vere quando si affronta la sezione community.
+-->
+<section class="lavorazione">
+  <p class="filo-sezione eyebrow">Area riservata</p>
+  <h1 class="lavorazione__titolo">{titolo}</h1>
+  <p class="lavorazione__testo">{testo}</p>
+  <p class="lavorazione__azioni">
+    <a href="/" class="pastiglia">Torna alla home</a>
+  </p>
+</section>
+
+<style>
+  .lavorazione {
+    padding: clamp(36px, 5vw, 72px) var(--padding-laterale) clamp(48px, 7vw, 96px);
+    max-width: 62ch;
+  }
+
+  .lavorazione__titolo {
+    font-family: var(--font-titoli);
+    font-size: clamp(30px, 4vw, 46px);
+    font-weight: var(--peso-medio);
+    letter-spacing: -0.6px;
+    line-height: var(--interlinea-titolo);
+    margin: var(--spazio-4) 0 0;
+  }
+
+  .lavorazione__testo {
+    font-size: clamp(15px, 1.3vw, 17px);
+    line-height: 1.6;
+    color: var(--colore-testo-tenue);
+    margin-top: var(--spazio-4);
+  }
+
+  .lavorazione__azioni {
+    margin-top: var(--spazio-6);
+  }
+</style>

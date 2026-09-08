@@ -1,0 +1,19 @@
+---
+import Base from '@/layouts/Base.astro'
+import AreaInLavorazione from '@/components/AreaInLavorazione.astro'
+
+/**
+ * Segnaposto dell'accesso alla community — RF-C-01.
+ *
+ * Il lato dati esiste gia' (Supabase Auth, trigger di creazione del profilo):
+ * manca questa pagina. Finche' non c'e', la testata e il blocco commenti
+ * porterebbero a una 404. Da sostituire con il modulo vero.
+ */
+---
+
+<Base title="Accesso" description="Accesso all’area riservata di Esperia." noIndex>
+  <AreaInLavorazione
+    titolo="Accesso"
+    testo="La sezione community è in lavorazione: la registrazione, l’accesso e il profilo utente saranno disponibili in una prossima versione. Nel frattempo tutti gli articoli sono consultabili liberamente."
+  />
+</Base>
