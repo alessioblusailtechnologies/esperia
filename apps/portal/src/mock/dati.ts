@@ -9,6 +9,7 @@ import type {
   Tag,
 } from '@/lib/types'
 import { ARTICOLI, AUTORI, CATEGORIE, IMPOSTAZIONI, PAGINE } from './contenuti'
+import { COPERTINE } from './copertine'
 
 /**
  * Costruisce le entita' che il portale si aspetta dall'API del CMS, a partire
@@ -73,7 +74,17 @@ const VARIANTI = {
   og: { width: 1200, height: 630 },
 } as const
 
-function media(slug: string, alt: string): Media {
+/**
+ * Immagine di copertina.
+ *
+ * Testo alternativo e crediti vengono da `copertine.ts`, generato dallo script
+ * che scarica le fotografie: l'attribuzione richiesta dalle licenze CC deve
+ * restare agganciata al file, non essere riscritta a mano qui.
+ */
+function media(slug: string): Media {
+  const dati = COPERTINE[slug]
+  if (!dati) throw new Error(`Copertina senza provenienza: ${slug}`)
+
   const sizes = Object.fromEntries(
     Object.entries(VARIANTI).map(([nome, dim]) => [
       nome,
@@ -84,8 +95,8 @@ function media(slug: string, alt: string): Media {
   return {
     id: slug,
     url: `/mock/media/${slug}.webp`,
-    alt,
-    credit: 'Composizione grafica dimostrativa',
+    alt: dati.alt,
+    credit: dati.credito,
     width: 1600,
     height: 900,
     mimeType: 'image/webp',
@@ -145,7 +156,7 @@ export const articoli: Article[] = ARTICOLI.map((a, i) => {
   if (!categoria) throw new Error(`Categoria sconosciuta nei contenuti mock: ${a.categoria}`)
 
   const pubblicatoIl = new Date(ADESSO - a.oreFa * 3_600_000).toISOString()
-  const copertina = a.copertina ? media(a.copertina, `Illustrazione per: ${a.titolo}`) : null
+  const copertina = a.copertina ? media(a.copertina) : null
 
   return {
     id: `art${String(i + 1).padStart(2, '0')}`,
@@ -192,7 +203,7 @@ const perSlugPagina = new Map(pagine.map((p) => [p.slug, p]))
 export const impostazioni: SiteSettings = {
   ...IMPOSTAZIONI,
   logo: null,
-  defaultOgImage: media('cop-01', 'Esperia'),
+  defaultOgImage: media('cop-01'),
   featuredArticles: articoliRecenti.filter((a) => a.featured).slice(0, 4),
   homeSections: [
     { category: perSlugCategoria.get('politica')!, title: 'Politica', limit: 4 },

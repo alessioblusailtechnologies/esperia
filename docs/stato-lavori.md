@@ -341,13 +341,17 @@ aggiunge `X-Robots-Tag: noindex`, e una fascia in cima a ogni pagina dichiara
 che si tratta di una dimostrazione. I testi citano istituzioni e ruoli, mai
 persone reali per nome.
 
-**Le immagini non sono fotografie.** Le quattro in `Design portale Esperia/
-uploads` non erano utilizzabili: tre ritraggono politici reali e identificabili,
-la quarta è lo screenshot del sito di qualcun altro. Una foto vera accanto a una
-notizia inventata la fa sembrare autentica. Al loro posto ci sono composizioni
-astratte generate nella palette del progetto. Se il Committente vuole fotografie
-nella dimostrazione deve fornirle con licenza d'uso: si sostituiscono i file in
-`public/mock/media/` mantenendo i nomi.
+**Le fotografie vengono da Wikimedia Commons**, unico archivio che dia insieme
+licenza verificabile e origine citabile via API. Autore e licenza sono nel campo
+crediti, mostrato sotto la foto nell'articolo: è lì che le licenze CC BY e
+CC BY-SA ottengono l'attribuzione che richiedono, e quella riga non va tolta dal
+design. Il criterio di scelta è sostanziale, non estetico: niente persone reali
+identificabili, niente marchi accostati a notizie che riguardano altri, niente
+scritte che smentiscano il pezzo; e se non esiste una foto adatta, l'articolo
+resta senza. Le quattro immagini in `Design portale Esperia/uploads` non erano
+utilizzabili — tre ritraggono politici reali, la quarta è lo screenshot del sito
+di qualcun altro. Per sostituirle con materiale del Committente si rimpiazzano i
+file in `public/mock/media/` mantenendo i nomi e si aggiorna `copertine.ts`.
 
 Differenze note rispetto al portale vero (ricerca, impaginazione, commenti) e
 trappole incontrate: **[`apps/portal/src/mock/README.md`](../apps/portal/src/mock/README.md)**.

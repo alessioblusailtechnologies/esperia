@@ -43,24 +43,41 @@ in revisione non sarebbero difetti veri.
 | `dati.ts` | Costruisce le entità di `lib/types.ts` — Lexical, date, varianti immagine |
 | `api.ts` | Finta API REST di Payload: instrada `/api/articles`, `/api/ricerca`, … |
 | `ricerca-cliente.js` | Filtro della ricerca nel browser, iniettato come testo solo in modalità mock |
-| `../../public/mock/media/` | Copertine generate, nelle quattro varianti che produrrebbe Payload |
-| `../../scripts/genera-copertine.mjs` | Le rigenera (non gira in build: i file sono versionati) |
+| `copertine.ts` | **Generato:** testo alternativo, crediti e provenienza di ogni fotografia |
+| `../../public/mock/media/` | Le copertine, nelle quattro varianti che produrrebbe Payload |
+| `../../scripts/scarica-copertine.mjs` | Le riscarica da Commons (non gira in build: i file sono versionati) |
 
-## Perché le immagini sono astratte e non fotografie
+## Le fotografie: quali sì e quali no
 
-La cartella `Design portale Esperia/uploads` contiene quattro immagini, ma non
-sono utilizzabili qui: tre ritraggono politici reali e identificabili, la quarta
-è lo screenshot dell'interfaccia di un altro sito.
+Le copertine sono fotografie vere, prese da **Wikimedia Commons** — l'unico
+archivio che dia insieme licenza verificabile e origine citabile via API.
+Autore e licenza finiscono nel campo crediti, che il design mostra sotto la
+foto nella pagina articolo: **è lì che le licenze CC BY e CC BY-SA ottengono
+l'attribuzione che richiedono, quindi quella riga non va tolta.**
 
-Accostare la fotografia di una persona vera a un articolo inventato, su un sito
-pubblicamente raggiungibile, produce una notizia falsa credibile. Le copertine
-sono quindi composizioni geometriche generate nella palette del progetto, tinte
-per categoria: riempiono gli stessi slot, con le stesse proporzioni e lo stesso
-comportamento LCP, senza affermare nulla su nessuno.
+Il criterio di scelta non è estetico ma sostanziale. Gli articoli sono
+inventati e il sito è pubblicamente raggiungibile, quindi:
 
-**Se il Committente vuole fotografie nella dimostrazione**, deve fornire
-immagini con licenza d'uso: si sostituiscono i file in `public/mock/media/`
-mantenendo i nomi, e non serve toccare il codice.
+- **niente persone reali identificabili.** La fotografia di una persona vera
+  accanto a una notizia falsa la fa sembrare autentica. Le immagini mostrano
+  luoghi, edifici e infrastrutture; dove compaiono persone sono folle o figure
+  non riconoscibili, e nessun articolo dice alcunché su di loro;
+- **niente marchi fuori posto.** Uno stabilimento di un'azienda sopra una
+  notizia che ne riguarda un'altra è ugualmente ingannevole: per l'articolo su
+  Mirafiori c'è una foto di Mirafiori;
+- **niente scritte che smentiscano il pezzo.** Un mezzo dei vigili del fuoco
+  con su scritto «São Paulo» sotto una notizia su Modena è stato scartato per
+  questo;
+- **se non c'è una foto adatta, l'articolo resta senza.** È quello che succede
+  davvero alle notizie appena uscite, e il design lo gestisce.
+
+Le quattro immagini in `Design portale Esperia/uploads` non sono utilizzabili:
+tre ritraggono politici reali e identificabili, la quarta è lo screenshot
+dell'interfaccia di un altro sito.
+
+**Per sostituirle** con fotografie del Committente basta rimpiazzare i file in
+`public/mock/media/` mantenendo i nomi, e aggiornare `copertine.ts` con alt e
+crediti nuovi. Il codice non cambia.
 
 ## Le altre difese
 

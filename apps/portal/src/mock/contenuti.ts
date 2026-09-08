@@ -12,9 +12,13 @@
  *     articolo inventato attribuito a una persona vera e' una notizia falsa,
  *     e questo sito e' pubblicamente raggiungibile.
  *  2. Nessuna dichiarazione virgolettata attribuita a un individuo reale.
- *  3. Le immagini sono composizioni astratte generate (public/mock/media), non
- *     fotografie: una foto vera accanto a una notizia inventata la fa sembrare
- *     autentica. Vedi src/mock/README.md.
+ *  3. Le fotografie mostrano luoghi, edifici e infrastrutture. Mai una persona
+ *     reale identificabile: la sua immagine accanto a una notizia inventata la
+ *     farebbe sembrare autentica. Vale anche per i marchi — niente stabilimento
+ *     di un'azienda sopra una notizia che ne riguarda un'altra. Provenienza e
+ *     licenze in `copertine.ts`, criteri in `scripts/scarica-copertine.mjs`.
+ *  4. Un articolo senza fotografia adatta resta senza: e' quello che succede
+ *     davvero alle notizie appena uscite, e il design lo gestisce.
  *
  * Il resto — istituzioni, enti, imprese citate come soggetti economici — segue
  * il registro gia' usato da apps/cms/src/lib/seed-demo.ts, da cui i primi
@@ -260,7 +264,6 @@ export const ARTICOLI: ArticoloMock[] = [
     categoria: 'cronaca',
     tag: ['Incendio', 'Emilia-Romagna'],
     oreFa: 15,
-    copertina: 'cop-09',
     firma: 2,
     paragrafi: [
       'Le fiamme sono divampate poco dopo le cinque in un deposito di materiali plastici alla periferia del comune. Le squadre dei vigili del fuoco hanno lavorato per sei ore prima di dichiarare il rogo sotto controllo.',
@@ -274,6 +277,7 @@ export const ARTICOLI: ArticoloMock[] = [
     categoria: 'cronaca',
     tag: ['Trasporti', 'Roma'],
     oreFa: 26,
+    copertina: 'cop-09',
     firma: 2,
     paragrafi: [
       'Il tratto resterà chiuso per quattordici giorni a partire da lunedì, per consentire la sostituzione di un chilometro e mezzo di binari e il rifacimento di due scambi.',
