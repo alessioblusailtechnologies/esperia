@@ -337,11 +337,14 @@ portale che andrà online.
 
 **I contenuti sono inventati**, e il sito è pubblicamente raggiungibile. Le
 difese sono tre e vanno mantenute: `robots.txt` risponde `Disallow: /`, Render
-aggiunge `X-Robots-Tag: noindex`, e in cima a ogni pagina la barra dei titoli fa
-rientrare ogni quattro titoli l'avviso «Contenuti di esempio: non sono notizie»,
-composto in maiuscoletto per non essere scambiato per un titolo. Il piede
-dichiara comunque la versione dimostrativa. I testi citano istituzioni e ruoli,
-mai persone reali per nome.
+aggiunge `X-Robots-Tag: noindex`, e il piede — con le pagine di servizio —
+dichiara la versione dimostrativa. I testi citano istituzioni e ruoli, mai
+persone reali per nome, e le fotografie non ritraggono persone identificabili.
+
+La barra dei titoli sa intercalare un cartello «contenuti di esempio» ma non lo
+fa: la dimostrazione serve a far valutare il design, e un avviso ricorrente
+lavora contro quello scopo. Si riaccende passando `avviso` a `BarraTitoli` in
+`Base.astro`, se l'indirizzo dovesse circolare più del previsto.
 
 **Le fotografie vengono da Wikimedia Commons**, unico archivio che dia insieme
 licenza verificabile e origine citabile via API. Autore e licenza sono nel campo

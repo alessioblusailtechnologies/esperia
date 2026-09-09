@@ -171,13 +171,15 @@ const privacyPage = populated<Page>(settings.cookieBanner?.privacyPage)
       /*
        * Barra dei titoli del momento.
        *
-       * Nella versione dimostrativa porta anche l'avvertimento: il sito e'
-       * pubblicamente raggiungibile e gli articoli sono inventati, quindi chi
-       * ci arriva deve poterlo capire. Non e' piu' una pastiglia fissa ma una
-       * voce che rientra nella sequenza ogni quattro titoli — meno invadente,
-       * e comunque ricorrente. Il resto delle difese non cambia: robots.txt
-       * risponde Disallow, Render aggiunge X-Robots-Tag e il piede dichiara
-       * la versione dimostrativa.
+       * La barra NON porta piu' l'avvertimento sui contenuti finti: la
+       * dimostrazione serve a far valutare il design, e un cartello che
+       * interrompe i titoli lavora contro quello scopo. A dichiarare la natura
+       * del sito restano robots.txt (`Disallow: /`), l'intestazione
+       * X-Robots-Tag aggiunta da Render, il piede e le pagine di servizio.
+       *
+       * Se l'indirizzo dovesse circolare piu' del previsto, il cartello si
+       * riaccende passando di nuovo `avviso` — il componente lo sa ancora fare
+       * e lo intercala ogni quattro titoli.
        *
        * Fuori dalla dimostrazione la barra e' pronta ma spenta: mostrarla nel
        * portale vero e' una scelta di design da concordare col Committente, non
@@ -185,11 +187,7 @@ const privacyPage = populated<Page>(settings.cookieBanner?.privacyPage)
        * la condizione e passare un'etichetta tipo "Ultim'ora".
        */
       MOCK && (
-        <BarraTitoli
-          titoli={titoli}
-          etichetta="In evidenza"
-          avviso="Contenuti di esempio: non sono notizie."
-        />
+        <BarraTitoli titoli={titoli} etichetta="In evidenza" />
       )
     }
 
