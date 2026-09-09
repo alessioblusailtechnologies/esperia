@@ -140,6 +140,20 @@ export async function getArticles(opts: ArticleQuery = {}): Promise<Paginated<Ar
   return get<Paginated<Article>>(`/api/articles${buildQuery(params)}`)
 }
 
+/**
+ * Titoli per la barra scorrevole della testata.
+ *
+ * Passa dalla cache di processo perche' la barra compare su OGNI pagina: senza,
+ * ogni richiesta pagherebbe un giro in piu' verso il CMS per ripetere gli stessi
+ * otto titoli (RNF-01). La invalida /api/revalidate insieme al resto.
+ */
+export async function getHeadlines(limit = 8): Promise<Article[]> {
+  return cached(`headlines-${limit}`, async () => {
+    const res = await getArticles({ limit })
+    return res.docs
+  })
+}
+
 export async function getArticleBySlug(slug: string): Promise<Article | null> {
   const res = await get<Paginated<Article>>(
     `/api/articles${buildQuery({
