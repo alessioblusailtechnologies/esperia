@@ -16,14 +16,46 @@ const percorso = Astro.url.pathname
  * Testata — dai design (Home v1).
  *
  * Il menu è un <nav> con una lista: la struttura semantica è quella che usano
- * screen reader e motori di ricerca (RNF-07, RF-P-07). Sotto i 760px il menu
- * orizzontale non ci sta e diventa un <details>, che si apre anche senza
- * JavaScript.
+ * screen reader e motori di ricerca (RNF-07, RF-P-07).
+ *
+ * Sotto i 760px il menu orizzontale non ci sta e passa al pulsante a tre linee,
+ * costruito con un <details>: il <summary> è il pulsante, l'attributo [open]
+ * apre il pannello. Non è una scelta di stile ma il modo di avere un menu
+ * mobile vero senza JavaScript, che sulle pagine del portale non gira (RNF-01).
  */
 ---
 
 <header class="testata">
   <div class="testata__barra">
+    <details class="menu-mobile">
+      <summary class="menu-mobile__apri">
+        <span class="menu-mobile__barre" aria-hidden="true"></span>
+        <span class="solo-lettori-schermo">Menu</span>
+      </summary>
+
+      <div class="menu-mobile__pannello">
+        <nav aria-label="Sezioni del giornale">
+          <ul>
+            {menu.map((c) => (
+              <li>
+                <a
+                  href={`/categoria/${c.slug}`}
+                  aria-current={percorso === `/categoria/${c.slug}` ? 'page' : undefined}
+                >
+                  {c.name}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </nav>
+
+        <div class="menu-mobile__accesso">
+          <a href="/accedi">Accedi</a>
+          <a href="/registrati">Registrati</a>
+        </div>
+      </div>
+    </details>
+
     <a href="/" class="testata__marchio" aria-label={`${settings.siteName} — vai alla home`}>
       {logo ? (
         <img src={logo} alt={settings.siteName} height="30" width="120" />
@@ -68,19 +100,13 @@ const percorso = Astro.url.pathname
     </div>
   </div>
 
-  <details class="testata__mobile">
-    <summary>Sezioni</summary>
-    <ul>
-      {menu.map((c) => (
-        <li><a href={`/categoria/${c.slug}`}>{c.name}</a></li>
-      ))}
-    </ul>
-  </details>
 </header>
 
 <style>
   .testata {
     border-bottom: 1px solid var(--colore-bordo);
+    /* Riferimento per il pannello del menu, che si apre sotto la barra. */
+    position: relative;
   }
 
   .testata__barra {
@@ -179,43 +205,168 @@ const percorso = Astro.url.pathname
     text-underline-offset: 3px;
   }
 
-  .testata__mobile {
+  /* -------------------------------------------------------------------------- */
+  /* Menu mobile                                                                */
+  /*                                                                            */
+  /* E' un <details>, non un pannello mosso da JavaScript: sulle pagine del      */
+  /* portale non ne gira, ed e' l'asse su cui si viene collaudati (RNF-01).      */
+  /* Il <summary> fa da pulsante, l'attributo [open] disegna la X e mostra il    */
+  /* pannello. Si chiude da se' navigando, perche' cambia pagina.                */
+  /* -------------------------------------------------------------------------- */
+
+  .menu-mobile {
     display: none;
   }
 
+  .menu-mobile__apri {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    margin-left: -9px; /* allinea le barre al bordo del testo, non del riquadro */
+    cursor: pointer;
+    color: var(--colore-inverso);
+    list-style: none;
+  }
+
+  /* Il triangolino nativo del <summary>, che qui sarebbe fuori posto. */
+  .menu-mobile__apri::-webkit-details-marker {
+    display: none;
+  }
+
+  .menu-mobile__apri:focus-visible {
+    outline: 2px solid var(--colore-focus);
+    outline-offset: 2px;
+    border-radius: var(--raggio-2);
+  }
+
+  .menu-mobile__barre,
+  .menu-mobile__barre::before,
+  .menu-mobile__barre::after {
+    width: 22px;
+    height: 2px;
+    background: currentColor;
+    border-radius: 2px;
+  }
+
+  .menu-mobile__barre {
+    position: relative;
+  }
+
+  .menu-mobile__barre::before,
+  .menu-mobile__barre::after {
+    content: '';
+    position: absolute;
+    left: 0;
+  }
+
+  .menu-mobile__barre::before {
+    top: -7px;
+  }
+
+  .menu-mobile__barre::after {
+    top: 7px;
+  }
+
+  /* Aperto: la barra centrale sparisce e le altre due diventano una croce. */
+  .menu-mobile[open] .menu-mobile__barre {
+    background: transparent;
+  }
+
+  .menu-mobile[open] .menu-mobile__barre::before,
+  .menu-mobile[open] .menu-mobile__barre::after {
+    top: 0;
+  }
+
+  .menu-mobile[open] .menu-mobile__barre::before {
+    transform: rotate(45deg);
+  }
+
+  .menu-mobile[open] .menu-mobile__barre::after {
+    transform: rotate(-45deg);
+  }
+
+  .menu-mobile__pannello {
+    position: absolute;
+    inset-inline: 0;
+    top: 100%;
+    z-index: 30;
+    background: var(--colore-fondo);
+    border-top: 1px solid var(--colore-bordo);
+    border-bottom: 1px solid var(--colore-bordo-forte);
+    box-shadow: 0 16px 28px rgb(33 29 24 / 0.10);
+    padding: var(--spazio-2) var(--padding-laterale) var(--spazio-6);
+  }
+
+  .menu-mobile__pannello ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  /* Voci grandi: si toccano col pollice, non si mirano. */
+  .menu-mobile__pannello nav a {
+    display: block;
+    padding: 15px 0;
+    border-bottom: 1px solid var(--colore-bordo);
+    font-family: var(--font-titoli);
+    font-size: 22px;
+    font-weight: var(--peso-medio);
+    letter-spacing: -0.3px;
+    color: var(--colore-testo);
+  }
+
+  .menu-mobile__pannello nav a[aria-current='page'] {
+    color: var(--colore-accento);
+  }
+
+  .menu-mobile__accesso {
+    display: flex;
+    gap: var(--spazio-5);
+    padding-top: var(--spazio-5);
+    font-size: 14px;
+    font-weight: var(--peso-medio);
+  }
+
+  .menu-mobile__accesso a {
+    text-decoration: underline;
+    text-decoration-color: var(--colore-bordo-forte);
+    text-underline-offset: 3px;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .menu-mobile__barre,
+    .menu-mobile__barre::before,
+    .menu-mobile__barre::after {
+      transition:
+        transform 0.18s ease,
+        top 0.18s ease,
+        background-color 0.18s ease;
+    }
+  }
+
   @media (max-width: 760px) {
-    .testata__nav {
+    .menu-mobile {
+      display: block;
+      order: -1;
+      flex-shrink: 0;
+    }
+
+    /* Il menu orizzontale e i collegamenti d'accesso vivono nel pannello. */
+    .testata__nav,
+    .testata__accesso {
       display: none;
     }
 
-    .testata__ricerca {
+    .testata__marchio {
       flex: 1;
+    }
+
+    .testata__ricerca {
+      /* Larghezza piena: manda la ricerca a capo sotto marchio e menu. */
+      flex: 1 0 100%;
       order: 3;
-    }
-
-    .testata__mobile {
-      display: block;
-      border-top: 1px solid var(--colore-bordo);
-      padding: var(--spazio-4) var(--padding-laterale);
-    }
-
-    .testata__mobile summary {
-      cursor: pointer;
-      font-size: var(--testo-eyebrow);
-      font-weight: var(--peso-forte);
-      letter-spacing: var(--spaziatura-eyebrow);
-      text-transform: uppercase;
-      color: var(--colore-testo-meta);
-    }
-
-    .testata__mobile ul {
-      list-style: none;
-      margin: var(--spazio-4) 0 0;
-      padding: 0;
-      display: grid;
-      gap: var(--spazio-4);
-      font-size: 14px;
-      font-weight: var(--peso-medio);
     }
   }
 </style>

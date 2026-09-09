@@ -3,7 +3,7 @@ import Base from '@/layouts/Base.astro'
 import ArticleCard from '@/components/ArticleCard.astro'
 import { getArticles, getCategories, getSiteSettings, CmsUnavailableError } from '@/lib/payload'
 import { populated, populatedList } from '@/lib/types'
-import type { Article, Category } from '@/lib/types'
+import type { Article, Category, Tag } from '@/lib/types'
 
 /**
  * Homepage — RF-P-01. Impaginazione dai design (Home v1).
@@ -17,6 +17,7 @@ const settings = await getSiteSettings()
 let apertura: Article | null = null
 let secondari: Article[] = []
 let ultime: Article[] = []
+let argomenti: Tag[] = []
 let cmsOffline = false
 
 try {
@@ -49,6 +50,30 @@ try {
   }
 
   ultime = recenti.docs.filter((a) => !scelti.has(a.id)).slice(0, 8)
+
+  /*
+   * Argomenti del momento — i tag che ricorrono negli articoli recenti.
+   *
+   * Non è una lista redazionale da mantenere a mano: si ricava da ciò che la
+   * redazione ha appena pubblicato, quindi si aggiorna da sé. Il peso somma
+   * quante volte un tag compare e quanto sono recenti gli articoli che lo
+   * portano, così un argomento di stamattina batte uno di tre giorni fa che
+   * ricorre altrettanto.
+   */
+  const pesi = new Map<string, { tag: Tag; peso: number }>()
+  recenti.docs.forEach((a, i) => {
+    const freschezza = (recenti.docs.length - i) / recenti.docs.length
+    for (const t of populatedList<Tag>(a.tags)) {
+      const voce = pesi.get(t.id) ?? { tag: t, peso: 0 }
+      voce.peso += 1 + freschezza
+      pesi.set(t.id, voce)
+    }
+  })
+
+  argomenti = [...pesi.values()]
+    .sort((x, y) => y.peso - x.peso)
+    .slice(0, 7)
+    .map((v) => v.tag)
 } catch (err) {
   if (err instanceof CmsUnavailableError) {
     cmsOffline = true
@@ -109,7 +134,25 @@ if (!cmsOffline) {
     <>
       {apertura && (
         <section class="blocco blocco--evidenza" aria-labelledby="t-evidenza">
-          <h1 id="t-evidenza" class="filo-sezione eyebrow">Articoli in evidenza</h1>
+          {/*
+            Il titolo resta, ma solo per screen reader e motori: la home deve
+            avere un h1 (RF-P-07, RNF-07). Al suo posto si vede cio' di cui si
+            sta parlando, che a un lettore dice piu' della parola "evidenza".
+          */}
+          <h1 id="t-evidenza" class="solo-lettori-schermo">Articoli in evidenza</h1>
+
+          {argomenti.length > 0 && (
+            <nav class="argomenti" aria-label="Argomenti del momento">
+              <span class="argomenti__etichetta eyebrow" aria-hidden="true">Di cosa si parla</span>
+              <ul>
+                {argomenti.map((t) => (
+                  <li>
+                    <a class="pastiglia" href={`/tag/${t.slug}`}>{t.name}</a>
+                  </li>
+                ))}
+              </ul>
+            </nav>
+          )}
 
           <ArticleCard article={apertura} variante="apertura" prioritaria livelloTitolo={2} />
 
@@ -171,6 +214,64 @@ if (!cmsOffline) {
 
   .blocco--evidenza {
     padding-bottom: 0;
+  }
+
+  /* -------------------------------------------------------------------------- */
+  /* Argomenti del momento                                                      */
+  /*                                                                            */
+  /* Prende il posto del titoletto con il filo: la riga di apertura della home  */
+  /* dice di cosa si sta parlando invece di annunciare una sezione. Ogni voce   */
+  /* porta al tag corrispondente.                                               */
+  /* -------------------------------------------------------------------------- */
+
+  .argomenti {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding-bottom: var(--spazio-5);
+  }
+
+  .argomenti__etichetta {
+    flex-shrink: 0;
+  }
+
+  .argomenti ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    min-width: 0;
+  }
+
+  @media (max-width: 760px) {
+    .argomenti {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 10px;
+    }
+
+    /*
+     * Su schermo stretto sette pastiglie occuperebbero tre righe. Scorrono in
+     * orizzontale, e sconfinano nel padding laterale per far vedere che c'e'
+     * altro oltre il bordo.
+     */
+    .argomenti ul {
+      flex-wrap: nowrap;
+      overflow-x: auto;
+      scrollbar-width: none;
+      margin-inline: calc(var(--padding-laterale) * -1);
+      padding-inline: var(--padding-laterale);
+    }
+
+    .argomenti ul::-webkit-scrollbar {
+      display: none;
+    }
+
+    .argomenti li {
+      flex-shrink: 0;
+    }
   }
 
   .griglia-secondari {
