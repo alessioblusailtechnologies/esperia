@@ -87,9 +87,10 @@ Non basta scegliere bene le immagini: gli articoli restano inventati.
   esclude esplicitamente la modalità mock, altrimenti un dominio dall'aria
   definitiva verrebbe considerato produzione e indicizzato;
 - `render.yaml` aggiunge `X-Robots-Tag: noindex, nofollow`;
-- in cima a ogni pagina la barra dei titoli porta la pastiglia fissa
-  «Dimostrazione» e, nella sequenza che scorre, l'avviso che i contenuti sono
-  di esempio (`BarraTitoli.astro`, montata da `Base.astro` sotto `MOCK`);
+- in cima a ogni pagina la barra dei titoli fa rientrare ogni quattro titoli
+  l'avviso «Contenuti di esempio: non sono notizie», composto in maiuscoletto
+  per non essere scambiato per un titolo (`BarraTitoli.astro`, montata da
+  `Base.astro` sotto `MOCK`);
 - i testi citano istituzioni e ruoli, **mai persone reali per nome**, e non
   contengono dichiarazioni virgolettate attribuite a individui reali.
 

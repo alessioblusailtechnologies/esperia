@@ -27,6 +27,22 @@ const voci = titoli.map((a) => ({
 }))
 
 /*
+ * L'avviso non sta solo in testa: rientra ogni quattro titoli.
+ *
+ * Con una sola comparsa per giro un lettore poteva restare a lungo sulla
+ * pagina senza vederlo mai. Ripetendolo si incontra piu' spesso, che e' il
+ * punto: qui gli articoli sono inventati e il sito e' pubblico.
+ */
+const OGNI = 4
+
+const elementi: Array<{ avviso: string } | (typeof voci)[number]> = []
+voci.forEach((v, i) => {
+  if (avviso && i % OGNI === 0) elementi.push({ avviso })
+  elementi.push(v)
+})
+if (avviso && elementi.length === voci.length) elementi.unshift({ avviso })
+
+/*
  * Barra dei titoli del momento.
  *
  * SCORRIMENTO SENZA JAVASCRIPT. L'animazione e' CSS: la sequenza e' scritta due
@@ -49,17 +65,18 @@ const voci = titoli.map((a) => ({
       <div class="barra-titoli__pista">
         {[false, true].map((copia) => (
           <ul class="barra-titoli__sequenza" aria-hidden={copia ? 'true' : undefined}>
-            {avviso && (
-              <li class="barra-titoli__avviso">{avviso}</li>
+            {elementi.map((e) =>
+              'avviso' in e ? (
+                <li class="barra-titoli__avviso">{e.avviso}</li>
+              ) : (
+                <li>
+                  <a href={e.href}>
+                    {e.sezione && <span class="barra-titoli__sezione">{e.sezione}</span>}
+                    {e.titolo}
+                  </a>
+                </li>
+              ),
             )}
-            {voci.map((v) => (
-              <li>
-                <a href={v.href}>
-                  {v.sezione && <span class="barra-titoli__sezione">{v.sezione}</span>}
-                  {v.titolo}
-                </a>
-              </li>
-            ))}
           </ul>
         ))}
       </div>
@@ -157,8 +174,17 @@ const voci = titoli.map((a) => ({
     color: var(--colore-testo-meta);
   }
 
+  /*
+   * L'avviso deve leggersi come un cartello, non come un titolo: maiuscoletto
+   * spaziato, cioe' l'opposto della composizione dei titoli accanto. Senza
+   * questo si confonderebbe con le notizie, che e' esattamente cio' che deve
+   * evitare.
+   */
   .barra-titoli__avviso {
-    font-weight: var(--peso-medio);
+    font-size: 10px;
+    font-weight: var(--peso-forte);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
     color: var(--colore-accento-scuro);
   }
 
