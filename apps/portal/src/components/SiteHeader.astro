@@ -228,6 +228,17 @@ const percorso = Astro.url.pathname
     cursor: pointer;
     color: var(--colore-inverso);
     list-style: none;
+    /*
+     * Alzato di 3px, e non e' un capriccio.
+     *
+     * `align-items: center` allinea i RIQUADRI, ma l'occhio allinea il pulsante
+     * alla parola "Esperia", cioe' alla fascia fra l'altezza delle maiuscole e
+     * la linea di base. La discesa della "p" allunga il riquadro del marchio
+     * verso il basso e ne sposta il centro sotto quella fascia: centrando i
+     * riquadri il pulsante finisce basso di circa meta' discesa (~2,5px a 23px
+     * di corpo). Misurato, non stimato.
+     */
+    transform: translateY(-3px);
   }
 
   /* Il triangolino nativo del <summary>, che qui sarebbe fuori posto. */
@@ -347,6 +358,11 @@ const percorso = Astro.url.pathname
   }
 
   @media (max-width: 760px) {
+    .testata__barra {
+      gap: 10px;
+      padding-block: 12px;
+    }
+
     .menu-mobile {
       display: block;
       order: -1;
@@ -360,13 +376,24 @@ const percorso = Astro.url.pathname
     }
 
     .testata__marchio {
-      flex: 1;
+      flex: 0 0 auto;
+      font-size: 23px;
     }
 
+    /*
+     * Sulla stessa riga di menu e marchio, a occupare lo spazio che avanza.
+     * Prima andava a capo da sola: lasciava un vuoto a destra del marchio e si
+     * portava via una riga intera di altezza, che su un telefono e' contenuto
+     * in meno sopra la piega.
+     */
     .testata__ricerca {
-      /* Larghezza piena: manda la ricerca a capo sotto marchio e menu. */
-      flex: 1 0 100%;
-      order: 3;
+      flex: 1 1 auto;
+      min-width: 0;
+      padding-inline: 12px;
+    }
+
+    .testata__ricerca input {
+      min-width: 0;
     }
   }
 </style>
