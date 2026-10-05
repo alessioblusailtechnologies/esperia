@@ -277,28 +277,21 @@ Verificato in esecuzione contro un Postgres reale:
 
 ## 5. Da completare
 
-In ordine di dipendenza, non di importanza:
+Lo stato puntuale, con cosa è provato e cosa no, è in
+[stato-lavori.md §4](stato-lavori.md). In sintesi:
 
-1. **Ingestione fonti e ranking hot topic** (RF-AI-01/02) — è il pezzo mancante
-   più grosso. La collection, la configurazione della rilevanza e tutta
-   l'interfaccia ci sono e funzionano; manca il job periodico che interroga le
-   fonti, raggruppa le notizie in cluster e calcola il punteggio. Dipende dalla
-   scelta dei provider (§6).
-2. **Pagine di autenticazione della community** (RF-C-01/02/07) — registrazione,
-   accesso, profilo, richiesta di cancellazione. L'isola dei commenti già vi
-   rimanda.
-3. **Assistenza all'editing** (RF-AI-06) — riscrittura, sintesi, titoli
-   alternativi e suggerimenti SEO *dentro* l'editor. Diverso dalla generazione
-   da zero, che è fatta: qui si lavora su un testo esistente.
-4. **Reazioni sugli articoli** (RF-C-04) — sui commenti funzionano; sulla
-   pagina articolo l'interfaccia è da fare.
-5. **Regole anti-spam automatiche** (RF-C-06) — le colonne `auto_flagged` e
-   `auto_flag_reason` esistono e la coda le mostra; le regole che le
-   valorizzano no.
-6. **Immagini assistite** (RF-AI-07) — configurazione pronta, provider da
-   scegliere al kick-off.
-7. **Statistiche di consultazione** (RF-B-14) — integrazione analytics
+1. **Adattatori delle fonti a pagamento** (RF-AI-01) — il rilevamento degli hot
+   topic gira con i feed RSS / Atom; NewsAPI, GDELT e SerpAPI aspettano la
+   scelta delle fonti (§6).
+2. **Prove con i servizi veri** — area utente su un progetto Supabase,
+   assistente all'editing con una chiave Anthropic, immagini con una chiave
+   Gemini. Il codice c'è; le prove fatte finora usano un Supabase locale e
+   risposte simulate.
+3. **Reazioni sugli articoli** (RF-C-04) — sui commenti funzionano; sulla
+   pagina articolo manca il design, da concordare.
+4. **Statistiche di consultazione** (RF-B-14) — integrazione analytics
    configurabile, cruscotto no.
+5. **Newsletter** (RF-C-09) — non iniziata.
 
 ---
 
@@ -307,7 +300,7 @@ In ordine di dipendenza, non di importanza:
 | Tema | Perché va deciso presto |
 |---|---|
 | **Hosting** | Determina se conviene un adapter specifico. Finora tutto è portabile: Astro `standalone`, CMS `output: standalone`, Postgres puro. |
-| **Fonti news** | NewsAPI, GDELT e SerpAPI hanno costi e limiti molto diversi e cambiano il disegno dell'ingestione. Sono a carico del Committente (V-02). |
+| **Fonti news** | I feed RSS funzionano già; NewsAPI, GDELT e SerpAPI hanno costi e limiti molto diversi. Sono a carico del Committente (V-02). |
 | **Region dei dati** | Supabase e storage in UE per RNF-04. |
 | **Testi legali** | Privacy e cookie policy sono forniti dal Committente (RNF-04); i contenitori esistono già. |
 | **Priorità Should/Could** | Con V-01 a due mesi, l'analisi stessa prevede di consolidarle in kick-off. Vale la pena usarla. |

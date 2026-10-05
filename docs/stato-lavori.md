@@ -41,6 +41,8 @@ cp apps/portal/.env.example apps/portal/.env
 pnpm dev:cms                       # 1° avvio: crea lo schema `payload`
 psql "$DATABASE_URI" -f supabase/migrations/0001_community.sql
 psql "$DATABASE_URI" -f supabase/migrations/0002_search_index.sql   # DOPO il punto sopra
+psql "$DATABASE_URI" -f supabase/migrations/0003_cancellazione_account.sql
+psql "$DATABASE_URI" -f supabase/migrations/0004_antispam.sql
 
 pnpm --filter @esperia/cms seed        # amministratore, categorie, pagine legali
 pnpm --filter @esperia/cms seed:demo   # contenuti finti (MAI in produzione)
@@ -52,6 +54,18 @@ Credenziali del seed: `admin@esperia.local` / `esperia-cambiami-subito`.
 
 > **L'ordine delle migrazioni conta.** `0002` legge `payload.articles`, che
 > esiste solo dopo il primo avvio del CMS. Eseguirla prima fallisce.
+
+### Impostazioni del progetto Supabase per l'area utente
+
+Nel pannello di Supabase, sezione Authentication:
+
+- **URL Configuration**: *Site URL* uguale a `PUBLIC_SITE_URL`, e fra i
+  *Redirect URLs* `<sito>/accedi` e `<sito>/nuova-password` (o `<sito>/**`).
+  Senza, i link di conferma e di recupero nelle email portano alla home.
+- **Policies**: lunghezza minima della password **8**, come il portale. Il
+  controllo del portale da solo non basta: Supabase si chiama anche direttamente.
+- **Email**: conferma dell'indirizzo attiva, e un SMTP vero prima del collaudo.
+  Quello predefinito di Supabase invia pochissime email l'ora.
 
 ### Provare la community in locale senza Supabase
 
@@ -75,6 +89,7 @@ comandi, non l'abbiamo resa uno script perché non serve in produzione.
 | Feed RSS generale e per categoria | ✅ |
 | Banner cookie con consensi granulari; embed di terze parti caricati solo dopo consenso | ✅ |
 | Commenti con risposte a un livello, "mi piace", segnalazioni | ✅ |
+| Area utente: registrazione, accesso, recupero password, profilo, cancellazione account | ✅ codice; da provare con un Supabase vero (§4.2) |
 | Design consegnati (Home, Articolo, Listing, Ricerca v1) | ✅ |
 | Versione dimostrativa statica, senza CMS né database (`MOCK=1`) | ✅ |
 
@@ -90,6 +105,9 @@ comandi, non l'abbiamo resa uno script perché non serve in produzione.
 | Hot topic: elenco con filtri, rilevanza, fonti, "genera bozza" | ✅ |
 | Rilevamento hot topic: lettura fonti RSS / Atom, raggruppamento, punteggio, decadimento | ✅ (§4.1) |
 | Genera da brief con accettazione elemento per elemento | ✅ |
+| Assistente AI nell'editor: riscrivi, sintetizza, titoli alternativi, suggerimenti SEO | ✅ codice; da provare con una chiave API (§4.3) |
+| Immagini assistite con Google Gemini: proposte, scelta, copertina con dicitura | ✅ codice; da provare con una chiave Gemini (§4.3) |
+| Termini anti-spam gestiti in Impostazioni portale → Community | ✅ (§4.4) |
 | Registro operazioni immutabile | ✅ |
 | Design consegnati (Pagine backoffice) | ✅ — vedi il limite dichiarato in [architettura §2.8](architettura.md) |
 
@@ -158,36 +176,117 @@ fonte non ancora supportato.
 
 ### 4.2 Pagine di accesso della community — RF-C-01, RF-C-02, RF-C-07
 
-Da fare in `apps/portal/src/pages/`: `accedi`, `registrati`, `profilo`.
-L'isola dei commenti già vi rimanda con il parametro `?ritorno=`.
+**Scritte, non ancora provate con un Supabase vero.** Cinque pagine in
+`apps/portal/src/pages/` (`accedi`, `registrati`, `recupera-password`,
+`nuova-password`, `profilo`), ognuna con un'isola in
+`components/islands/account/` che parla direttamente con Supabase Auth, come
+fanno i commenti. La cornice comune è `components/AreaUtente.astro`. I design
+non comprendono queste schermate: sono composte con i token e gli elementi già
+presenti nel portale.
 
-Tutto il lato dati esiste: Supabase Auth con verifica email e reset password,
-il trigger che crea il profilo alla registrazione (legge anche `full_name` e
-`avatar_url` dei provider social, quindi RF-C-08 è quasi gratis), e le funzioni
-`request_account_deletion()` e `anonymize_user()`.
+- **Registrazione:** nome pubblico, email, password di almeno 8 caratteri,
+  consenso all'informativa. Il nome viaggia nei metadati e lo legge il trigger
+  `handle_new_user`. Il messaggio dopo l'invio è lo stesso anche per un'email già
+  registrata, così non si scopre chi è iscritto.
+- **Accesso:** chi ha già una sessione viene portato subito a destinazione. Il
+  link di conferma email riporta su `/accedi`, che apre la sessione e prosegue.
+  `?ritorno=` accetta solo percorsi interni (niente redirect verso altri siti).
+- **Profilo:** nome e biografia, cambio password, uscita, avviso se la
+  moderazione ha sospeso i commenti.
+- **Cancellazione (RF-C-07):** il pulsante chiama `request_account_deletion()`
+  e chiude la sessione. Il job `anonimizza-account` del CMS gira ogni ora ed
+  esegue `anonymize_user()` con la chiave di servizio. Al lettore promettiamo
+  "entro 24 ore". La migrazione `0003` rende esplicito il permesso di
+  esecuzione per `service_role`.
 
-Serve il modulo di richiesta cancellazione nel profilo, e un lavoro periodico
-che esegua l'anonimizzazione sulle richieste registrate.
+La testata resta uguale per tutti e senza JavaScript (RNF-01): continua a
+mostrare "Accedi / Registrati" anche a chi è già dentro, e `/accedi` lo
+rimanda al profilo.
+
+Nella versione dimostrativa le pagine dicono che l'area riservata non è
+collegata.
+
+**Resta da fare:** la prova completa dei flussi su un progetto Supabase
+(conferma email, recupero password, cancellazione eseguita dal job); il cambio
+email dal profilo; il login social (RF-C-08), per cui il trigger è già pronto.
 
 ### 4.3 Assistenza all'editing — RF-AI-06
 
-Diverso dalla generazione da zero, che è fatta: qui si lavora su un testo
-esistente dentro l'editor. Riscrittura, sintesi, titoli alternativi,
-suggerimenti SEO on-page.
+**Scritta seguendo il design (Editor v1, blocco "Assistente AI"), non ancora
+provata contro l'API.** Il pannello sta nella colonna laterale dell'editor
+articolo: quattro strumenti (Riscrivi, Sintetizza, Titoli alternativi,
+Suggerimenti SEO), proposta accanto al testo attuale, "Accetta e sostituisci" /
+"Rifiuta". Con l'AI spenta il pannello resta e dice perché (RNF-10).
 
-Il posto giusto è un componente React nella colonna laterale dell'editor
-(`admin.components` sul campo, o `beforeDocumentControls`). La logica riusa
-`lib/ai/genera.ts` cambiando prompt e schema di output.
+- Riscrivi e Sintetizza agiscono sulla selezione nel corpo, o sul primo
+  paragrafo se non c'è selezione. Usano il modello per i testi. Titoli e SEO
+  usano il modello di servizio.
+- "Accetta" scrive nell'editor aperto, non nel database: la modifica va riletta
+  e salvata come le altre, con le versioni di Payload a fare da rete. Se nel
+  frattempo il passaggio è cambiato, la proposta viene rifiutata invece di
+  sovrascrivere il lavoro del redattore. Questa logica (`components/assistente/corpo.ts`)
+  è provata su un editor Lexical senza interfaccia.
+- Il pannello raggiunge l'editor tramite una feature Lexical che non disegna
+  nulla (`PonteAssistenteFeature`): registra editor e selezione in
+  `ponteEditor.ts`, da cui il pannello li legge. Il pannello sta fuori
+  dall'albero React dell'editor e non può usare un contesto.
+- Ogni chiamata finisce nel registro consumi (`rewrite`, `summarize`,
+  `title_suggestions`, `seo_suggestions`).
+
+Corretto nello stesso giro: con Haiku scelto come modello per i testi, le bozze
+fallivano, perché Haiku 4.5 non accetta `effort` né il thinking adattivo.
+`parametriRagionamento()` in `lib/ai/client.ts` li passa solo ai modelli che li
+supportano.
+
+**Immagini assistite (RF-AI-07), stesso pannello, fornitore Google Gemini**
+(scelto dal Committente). Il redattore descrive l'immagine. Gemini genera le
+proposte (4 per impostazione, una richiesta e una fattura ciascuna; nessun piano
+gratuito per le immagini) e il redattore ne sceglie una come copertina.
+
+- Endpoint: Interactions API (`v1beta/interactions`), `store: false`, formato
+  16:9 a 1K (1376×768: Payload non crea la variante `hero` da 1600 px e il
+  portale usa l'originale, più largo della colonna dell'articolo). Ogni immagine
+  di Gemini porta il watermark invisibile SynthID.
+- La descrizione del redattore viaggia dentro una cornice fissa: niente persone
+  reali riconoscibili, niente scritte, loghi o marchi (`lib/ai/immagini.ts`).
+- Le proposte restano nel browser. Solo quella scelta entra nella media library
+  (`salvaCopertina`), con `aiGenerated` impostato dal sistema. Un hook su Media
+  rimette la dicitura nei crediti se qualcuno la toglie, e il campo non è
+  modificabile dai redattori. Provato su database vero.
+- Configurazione in Impostazioni AI → Immagini: provider, chiave cifrata (o
+  `GEMINI_API_KEY`), modello (Flash, Flash Lite, Pro), numero di proposte,
+  formato, listino per la stima dei costi nel registro consumi.
+- Il limite delle server action è alzato a 15 MB (`next.config.mjs`): la
+  copertina scelta torna al server in base64 e supera il limite predefinito di 1 MB.
+
+Attenzione al deploy: le opzioni del provider sono ora "Nessuno" e "Google
+Gemini". Un database in cui qualcuno avesse salvato OpenAI, Stability o
+Replicate va riportato a "Nessuno" prima, altrimenti l'allineamento dello
+schema fallisce.
+
+**Resta da fare:** la prova con chiavi vere, Anthropic per i testi e Gemini per
+le immagini. Le chiamate a Gemini sono provate con risposte simulate secondo la
+documentazione di Google, non contro il servizio.
 
 ### 4.4 Completamenti minori
 
 | Cosa | Dov'è già pronto | Cosa manca |
 |---|---|---|
-| Reazioni sugli articoli (RF-C-04) | tabella `reactions`, vista `reaction_counts`; funzionano sui commenti | interfaccia sulla pagina articolo |
-| Regole anti-spam (RF-C-06) | colonne `auto_flagged` / `auto_flag_reason`, la coda le mostra | le regole che le valorizzano |
-| Immagini assistite (RF-AI-07) | configurazione provider, dicitura obbligatoria | integrazione col provider |
+| Reazioni sugli articoli (RF-C-04) | tabella `reactions`, vista `reaction_counts`; funzionano sui commenti | **una decisione di design**: la pagina Articolo v1 non le prevede, e aggiungerle vorrebbe dire inventare un pezzo di pagina |
 | Statistiche (RF-B-14) | integrazione analytics configurabile | cruscotto in backoffice |
 | Newsletter (RF-C-09) | — | tutto |
+
+**Regole anti-spam (RF-C-06): fatte.** Un trigger in `0004_antispam.sql`
+segnala in coda, senza bloccarli: troppi link, link da un account nato da meno
+di un giorno, testo già inviato, raffiche, tutto maiuscolo, caratteri ripetuti,
+termini scelti dalla redazione. Rifiuta solo oltre 10 commenti in 10 minuti
+(`PT429`, HTTP 429, con un messaggio dedicato nel portale). I termini si
+gestiscono in Impostazioni portale → Community: il campo è leggibile solo dalla
+redazione e il salvataggio li sincronizza su Supabase prima di registrarli.
+Provato regola per regola sul Supabase locale.
+
+Nello stesso giro il pannello di segnalazione ha ricevuto la "Nota per la
+moderazione (facoltativa)" che il design prevedeva e che mancava.
 
 ### 4.5 Prima del collaudo
 
@@ -291,8 +390,9 @@ apps/cms/src/
   hooks/             enforceWorkflow ← il gate di RF-B-05 · searchIndex · revalidatePortal · auditLog
   fields/            slug, SEO, campo cifrato
   endpoints/         search (FTS con ranking) · generaBozza (REST)
-  jobs/              rilevaHotTopic ← il job periodico, solo pianificazione
-  lib/ai/            client (chiavi, degrado) · genera (prompt e schema) · creaBozza
+  jobs/              rilevaHotTopic · anonimizzaAccount — i job periodici
+  lib/ai/            client (chiavi, degrado) · genera (prompt e schema) · creaBozza · assistenza (RF-AI-06) · immagini (RF-AI-07, Gemini)
+  components/assistente/  pannello dell'editor, ponte verso Lexical, azioni
   lib/fonti/         un adattatore per tipo di fonte (per ora RSS / Atom)
   lib/hotTopic/      testo · cluster · punteggio (logica pura) · rileva (il giro) · prova
   lib/supabase.ts    ⚠ confine col mondo community: sola chiave di servizio, solo server
@@ -304,12 +404,15 @@ apps/portal/src/
   lib/types.ts       il contratto HTTP col CMS, scritto a mano di proposito
   lib/payload.ts     lettura dal CMS, con cache di processo e degrado
   lib/lexical-render.ts   ⚠ punto di sanificazione: qui si previene la XSS stored
+  lib/account.ts     area utente: ritorno sicuro, messaggi d'errore di Supabase Auth
   middleware.ts      redirect, manutenzione, cache, header di sicurezza
-  components/islands/     le uniche parti che arrivano al browser
+  components/islands/     le uniche parti che arrivano al browser (account/ = area utente)
 
 supabase/migrations/
   0001_community.sql community + RLS + trigger
   0002_search_index.sql   schema `ricerca` — DOPO il primo avvio del CMS
+  0003_cancellazione_account.sql   permesso del job di cancellazione (RF-C-07)
+  0004_antispam.sql   regole anti-spam e termini della redazione (RF-C-06)
 
 packages/shared/     ruoli, workflow, stati, tipi community — usato da entrambe le app
 ```
@@ -379,7 +482,6 @@ file in `public/mock/media/` mantenendo i nomi e si aggiorna `copertine.ts`.
 Differenze note rispetto al portale vero (ricerca, impaginazione, commenti) e
 trappole incontrate: **[`apps/portal/src/mock/README.md`](../apps/portal/src/mock/README.md)**.
 
-Nel farlo sono state chiuse due lacune che riguardano anche il portale reale:
-`/accedi` e `/registrati` erano collegate dalla testata ma non esistevano, e
-portavano a due 404; ora ci sono due segnaposto che dichiarano la lavorazione in
-corso, da sostituire con le pagine vere quando si affronta il §4.2.
+Le pagine dell'area utente (§4.2) esistono anche qui, ma senza Supabase non
+hanno nulla a cui collegarsi: al posto del modulo dicono che nella versione
+dimostrativa l'area riservata non è collegata.

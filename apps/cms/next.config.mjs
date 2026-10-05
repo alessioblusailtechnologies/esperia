@@ -10,6 +10,14 @@ const nextConfig = {
   // fileURLToPath e non URL.pathname: su Windows quest'ultimo produce
   // "/C:/..." e il tracer di Next non riesce a risolverlo.
   outputFileTracingRoot: fileURLToPath(new URL('../../', import.meta.url)),
+  experimental: {
+    serverActions: {
+      // Il limite predefinito e' 1 MB: la copertina generata scelta nel pannello
+      // dell'assistente (RF-AI-07) torna al server in base64 e lo supera. 15 MB
+      // e' lo stesso tetto dei caricamenti nella media library.
+      bodySizeLimit: '15mb',
+    },
+  },
   images: {
     remotePatterns: [
       ...(process.env.S3_PUBLIC_URL

@@ -231,20 +231,86 @@ export const AiSettings: GlobalConfig = {
             {
               name: 'imageProvider',
               type: 'select',
-              defaultValue: 'nessuno',
+              defaultValue: 'gemini',
               label: 'Provider immagini',
+              // Scelto col Committente: Gemini (Google). "Nessuno" resta perche' e'
+              // il valore gia' salvato nei database esistenti: toglierlo dalle
+              // opzioni romperebbe l'allineamento dello schema (verificato).
               options: [
                 { value: 'nessuno', label: 'Nessuno' },
-                { value: 'openai', label: 'OpenAI Images' },
-                { value: 'stability', label: 'Stability AI' },
-                { value: 'replicate', label: 'Replicate' },
+                { value: 'gemini', label: 'Google Gemini' },
               ],
               admin: { condition: (data) => Boolean(data?.imagesEnabled) },
             },
             encryptedText({
               name: 'imageApiKey',
-              label: 'Chiave API del provider immagini',
+              label: 'Chiave API Gemini',
+              description:
+                'Chiave di Google AI Studio intestata al Committente, su un progetto con fatturazione attiva: per le immagini non esiste un piano gratuito. Cifrata prima del salvataggio. In mancanza si usa la variabile GEMINI_API_KEY.',
             }),
+            {
+              name: 'imageModel',
+              type: 'select',
+              defaultValue: 'gemini-3.1-flash-image',
+              label: 'Modello',
+              options: [
+                {
+                  value: 'gemini-3.1-flash-image',
+                  label: 'Gemini 3.1 Flash Image — equilibrato (consigliato)',
+                },
+                {
+                  value: 'gemini-3.1-flash-lite-image',
+                  label: 'Gemini 3.1 Flash Lite Image — economico',
+                },
+                { value: 'gemini-3-pro-image', label: 'Gemini 3 Pro Image — qualità massima' },
+              ],
+              admin: { condition: (data) => Boolean(data?.imagesEnabled) },
+            },
+            {
+              name: 'imageCount',
+              type: 'number',
+              defaultValue: 4,
+              min: 1,
+              max: 4,
+              label: 'Proposte per richiesta',
+              admin: {
+                condition: (data) => Boolean(data?.imagesEnabled),
+                description:
+                  'Ogni proposta è un’immagine generata e fatturata a parte: quattro proposte costano quattro immagini.',
+              },
+            },
+            {
+              name: 'imageAspectRatio',
+              type: 'select',
+              defaultValue: '16:9',
+              label: 'Formato',
+              options: [
+                { value: '16:9', label: '16:9 — come la copertina dell’articolo' },
+                { value: '3:2', label: '3:2 — fotografico' },
+                { value: '4:3', label: '4:3' },
+                { value: '1:1', label: '1:1 — quadrato' },
+              ],
+              admin: { condition: (data) => Boolean(data?.imagesEnabled) },
+            },
+            {
+              // Solo per la stima interna (RF-AI-10): fa fede la fattura di Google.
+              name: 'imagePricing',
+              type: 'array',
+              label: 'Listino immagini per la stima dei costi',
+              admin: {
+                condition: (data) => Boolean(data?.imagesEnabled),
+                description: 'Prezzo in USD per immagine a risoluzione 1K.',
+              },
+              defaultValue: [
+                { model: 'gemini-3.1-flash-image', perImage: 0.067 },
+                { model: 'gemini-3.1-flash-lite-image', perImage: 0.0336 },
+                { model: 'gemini-3-pro-image', perImage: 0.134 },
+              ],
+              fields: [
+                { name: 'model', type: 'text', required: true, label: 'Modello' },
+                { name: 'perImage', type: 'number', required: true, label: 'USD per immagine' },
+              ],
+            },
             {
               name: 'imageDisclaimer',
               type: 'text',

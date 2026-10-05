@@ -27,6 +27,7 @@ import { revalidateArticle, revalidateArticleOnDelete } from '@/hooks/revalidate
 import { auditChange, auditDelete } from '@/hooks/auditLog'
 import { indicizzaArticolo, rimuoviDaIndice } from '@/hooks/searchIndex'
 import { estimateReadingMinutes, lexicalToPlainText } from '@/lib/lexical'
+import { PonteAssistenteFeature } from '@/components/assistente/ponteEditorFeature.server'
 
 const previewUrl = (slug: unknown): string => {
   const base = process.env.PORTAL_URL ?? 'http://localhost:4321'
@@ -226,6 +227,8 @@ export const Articles: CollectionConfig = {
                   FixedToolbarFeature(),
                   HeadingFeature({ enabledHeadingSizes: ['h2', 'h3', 'h4'] }),
                   HorizontalRuleFeature(),
+                  // Espone editor e selezione al pannello "Assistente AI" (RF-AI-06).
+                  PonteAssistenteFeature(),
                   UploadFeature({
                     collections: {
                       media: {
@@ -357,6 +360,19 @@ export const Articles: CollectionConfig = {
           ],
         },
       ],
+    },
+
+    /* ------------------------------------------------------------------ */
+    /* Assistente AI nella colonna laterale — RF-AI-06, dai design        */
+    /* ------------------------------------------------------------------ */
+    {
+      // Campo di sola interfaccia: non salva nulla, ospita il pannello.
+      name: 'assistenteAi',
+      type: 'ui',
+      admin: {
+        position: 'sidebar',
+        components: { Field: '@/components/assistente/PannelloAssistente#PannelloAssistente' },
+      },
     },
 
     /* ------------------------------------------------------------------ */

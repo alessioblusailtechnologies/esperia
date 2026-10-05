@@ -127,6 +127,7 @@ export interface Config {
   jobs: {
     tasks: {
       'rileva-hot-topic': TaskRilevaHotTopic;
+      'anonimizza-account': TaskAnonimizzaAccount;
       schedulePublish: TaskSchedulePublish;
       inline: {
         input: unknown;
@@ -737,7 +738,7 @@ export interface PayloadJob {
     | {
         executedAt: string;
         completedAt: string;
-        taskSlug: 'inline' | 'rileva-hot-topic' | 'schedulePublish';
+        taskSlug: 'inline' | 'rileva-hot-topic' | 'anonimizza-account' | 'schedulePublish';
         taskID: string;
         input?:
           | {
@@ -770,7 +771,7 @@ export interface PayloadJob {
         id?: string | null;
       }[]
     | null;
-  taskSlug?: ('inline' | 'rileva-hot-topic' | 'schedulePublish') | null;
+  taskSlug?: ('inline' | 'rileva-hot-topic' | 'anonimizza-account' | 'schedulePublish') | null;
   queue?: string | null;
   waitUntil?: string | null;
   processing?: boolean | null;
@@ -1330,6 +1331,10 @@ export interface SiteSetting {
     siteId?: string | null;
     scriptUrl?: string | null;
   };
+  /**
+   * Un commento che contiene uno di questi termini, come parola intera e senza badare ad accenti e maiuscole, arriva in moderazione con il segnale "Segnalato in automatico". Non viene bloccato: decide comunque la redazione (RF-C-06).
+   */
+  moderationTerms?: string[] | null;
   maintenanceMode?: boolean | null;
   maintenanceMessage?: string | null;
   updatedAt?: string | null;
@@ -1403,11 +1408,27 @@ export interface AiSetting {
   minScore?: number | null;
   maxTopicsPerRun?: number | null;
   imagesEnabled?: boolean | null;
-  imageProvider?: ('nessuno' | 'openai' | 'stability' | 'replicate') | null;
+  imageProvider?: 'gemini' | null;
   /**
-   * La chiave viene cifrata prima del salvataggio. Lasciare la maschera invariata per non modificarla.
+   * Chiave di Google AI Studio intestata al Committente, su un progetto con fatturazione attiva: per le immagini non esiste un piano gratuito. Cifrata prima del salvataggio. In mancanza si usa la variabile GEMINI_API_KEY.
    */
   imageApiKey?: string | null;
+  imageModel?: ('gemini-3.1-flash-image' | 'gemini-3.1-flash-lite-image' | 'gemini-3-pro-image') | null;
+  /**
+   * Ogni proposta è un’immagine generata e fatturata a parte: quattro proposte costano quattro immagini.
+   */
+  imageCount?: number | null;
+  imageAspectRatio?: ('16:9' | '3:2' | '4:3' | '1:1') | null;
+  /**
+   * Prezzo in USD per immagine a risoluzione 1K.
+   */
+  imagePricing?:
+    | {
+        model: string;
+        perImage: number;
+        id?: string | null;
+      }[]
+    | null;
   /**
    * Inserita nei crediti dell’immagine. Serve a non spacciare per fotografia ciò che non lo è.
    */
@@ -1479,6 +1500,7 @@ export interface SiteSettingsSelect<T extends boolean = true> {
         siteId?: T;
         scriptUrl?: T;
       };
+  moderationTerms?: T;
   maintenanceMode?: T;
   maintenanceMessage?: T;
   updatedAt?: T;
@@ -1516,6 +1538,16 @@ export interface AiSettingsSelect<T extends boolean = true> {
   imagesEnabled?: T;
   imageProvider?: T;
   imageApiKey?: T;
+  imageModel?: T;
+  imageCount?: T;
+  imageAspectRatio?: T;
+  imagePricing?:
+    | T
+    | {
+        model?: T;
+        perImage?: T;
+        id?: T;
+      };
   imageDisclaimer?: T;
   updatedAt?: T;
   createdAt?: T;
@@ -1546,6 +1578,14 @@ export interface CollectionsWidget {
  * via the `definition` "TaskRileva-hot-topic".
  */
 export interface TaskRilevaHotTopic {
+  input?: unknown;
+  output?: unknown;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TaskAnonimizza-account".
+ */
+export interface TaskAnonimizzaAccount {
   input?: unknown;
   output?: unknown;
 }

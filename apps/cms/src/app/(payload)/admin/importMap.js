@@ -4,6 +4,7 @@ import { RscEntryLexicalField as RscEntryLexicalField_44fe37237e0ebf4470c9990d8c
 import { LexicalDiffComponent as LexicalDiffComponent_44fe37237e0ebf4470c9990d8cb7b07e } from '@payloadcms/richtext-lexical/rsc'
 import { BlocksFeatureClient as BlocksFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { UploadFeatureClient as UploadFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
+import { PonteEditorFeatureClient as PonteEditorFeatureClient_7a68aee4ef5b6b9508eb5bd90efdcdd4 } from '@/components/assistente/PonteEditorFeature'
 import { HorizontalRuleFeatureClient as HorizontalRuleFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { HeadingFeatureClient as HeadingFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { FixedToolbarFeatureClient as FixedToolbarFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
@@ -24,6 +25,7 @@ import { LinkFeatureClient as LinkFeatureClient_e70f5e05f09f93e00b997edb1ef0c864
 import { RelationshipFeatureClient as RelationshipFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { BlockquoteFeatureClient as BlockquoteFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { InlineToolbarFeatureClient as InlineToolbarFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
+import { PannelloAssistente as PannelloAssistente_cecaaf1e7e1a4ed03e5c1626d829c36e } from '@/components/assistente/PannelloAssistente'
 import { NavLaterale as NavLaterale_de2a0ee0c6be975314796bb42af8f8ae } from '@/components/nav/NavLaterale'
 import { Icona as Icona_d216cb1d0a1719f968f43929b4881650 } from '@/components/Marchio'
 import { Logo as Logo_d216cb1d0a1719f968f43929b4881650 } from '@/components/Marchio'
@@ -41,6 +43,7 @@ export const importMap = {
   "@payloadcms/richtext-lexical/rsc#LexicalDiffComponent": LexicalDiffComponent_44fe37237e0ebf4470c9990d8cb7b07e,
   "@payloadcms/richtext-lexical/client#BlocksFeatureClient": BlocksFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "@payloadcms/richtext-lexical/client#UploadFeatureClient": UploadFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
+  "@/components/assistente/PonteEditorFeature#PonteEditorFeatureClient": PonteEditorFeatureClient_7a68aee4ef5b6b9508eb5bd90efdcdd4,
   "@payloadcms/richtext-lexical/client#HorizontalRuleFeatureClient": HorizontalRuleFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "@payloadcms/richtext-lexical/client#HeadingFeatureClient": HeadingFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "@payloadcms/richtext-lexical/client#FixedToolbarFeatureClient": FixedToolbarFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
@@ -61,6 +64,7 @@ export const importMap = {
   "@payloadcms/richtext-lexical/client#RelationshipFeatureClient": RelationshipFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "@payloadcms/richtext-lexical/client#BlockquoteFeatureClient": BlockquoteFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "@payloadcms/richtext-lexical/client#InlineToolbarFeatureClient": InlineToolbarFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
+  "@/components/assistente/PannelloAssistente#PannelloAssistente": PannelloAssistente_cecaaf1e7e1a4ed03e5c1626d829c36e,
   "@/components/nav/NavLaterale#NavLaterale": NavLaterale_de2a0ee0c6be975314796bb42af8f8ae,
   "@/components/Marchio#Icona": Icona_d216cb1d0a1719f968f43929b4881650,
   "@/components/Marchio#Logo": Logo_d216cb1d0a1719f968f43929b4881650,

@@ -15,6 +15,30 @@ export const Media: CollectionConfig = {
     group: 'Contenuti',
     defaultColumns: ['filename', 'alt', 'mimeType', 'filesize'],
   },
+  hooks: {
+    beforeChange: [
+      /*
+       * RF-AI-07: un'immagine generata porta sempre la dicitura nei crediti, che
+       * il portale mostra sotto la foto. Si rimette anche se qualcuno la toglie
+       * modificando i crediti: e' cio' che impedisce di spacciarla per fotografia.
+       */
+      async ({ data, originalDoc, req }) => {
+        const generata = data.aiGenerated ?? originalDoc?.aiGenerated
+        if (!generata) return data
+
+        const g = (await req.payload
+          .findGlobal({ slug: 'ai-settings', overrideAccess: true, depth: 0 })
+          .catch(() => ({}))) as { imageDisclaimer?: string }
+        const dicitura = g.imageDisclaimer || 'Immagine generata con intelligenza artificiale'
+
+        const crediti: string = (data.credit ?? originalDoc?.credit ?? '').trim()
+        if (!crediti.toLowerCase().includes(dicitura.toLowerCase())) {
+          data.credit = crediti ? `${crediti} · ${dicitura}` : dicitura
+        }
+        return data
+      },
+    ],
+  },
   access: {
     read: anyone, // i file pubblicati devono essere raggiungibili dal portale
     create: authenticated,
@@ -65,7 +89,11 @@ export const Media: CollectionConfig = {
       type: 'checkbox',
       defaultValue: false,
       label: 'Immagine generata da AI',
+      // Lo imposta solo il modulo AI (con overrideAccess): toglierlo a mano
+      // permetterebbe di far passare un'immagine generata per una fotografia.
+      access: { create: () => false, update: () => false },
       admin: {
+        readOnly: true,
         position: 'sidebar',
         description: 'Impostato automaticamente quando l’immagine arriva dal modulo AI (RF-AI-07).',
       },

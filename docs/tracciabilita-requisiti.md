@@ -39,13 +39,13 @@ di collaudo.
 
 | ID | Requisito | Pri. | Dove | Stato |
 |---|---|---|---|---|
-| RF-C-01 | Registrazione e login | Must | Supabase Auth, trigger `handle_new_user`; segnaposto in `portal/src/pages/accedi.astro` | 🟡 modulo di accesso da fare |
-| RF-C-02 | Profilo utente | Must | tabella `profiles` + RLS; segnaposto in `portal/src/pages/registrati.astro` | 🟡 pagina profilo da fare |
+| RF-C-01 | Registrazione e login | Must | Supabase Auth, trigger `handle_new_user`; pagine `accedi`, `registrati`, `recupera-password`, `nuova-password` con isole in `components/islands/account/` | 🟡 implementato, **non ancora provato su un progetto Supabase** |
+| RF-C-02 | Profilo utente | Must | tabella `profiles` + RLS; pagina `profilo` (nome, biografia, password) | 🟡 implementato, non ancora provato su Supabase |
 | RF-C-03 | Commenti con risposte a 1 livello | Must | `islands/CommentsSection.tsx`, trigger `enforce_comment_depth` | ✅ |
-| RF-C-04 | Reazioni | Should | tabella `reactions`; "Mi piace" sui commenti nell'isola | ✅ sui commenti; 🟡 sugli articoli |
-| RF-C-05 | Segnalazione contenuti | Must | tabella `reports`, azione nell'isola commenti | ✅ |
-| RF-C-06 | Moderazione automatica | Should | colonne `auto_flagged` / `auto_flag_reason` | 🟡 regole da implementare |
-| RF-C-07 | Cancellazione account | Must | `request_account_deletion()`, `anonymize_user()` | 🟡 pulsante nel profilo da fare |
+| RF-C-04 | Reazioni | Should | tabella `reactions`; "Mi piace" sui commenti nell'isola | ✅ sui commenti; 🟡 sugli articoli: manca nel design, da decidere col Committente |
+| RF-C-05 | Segnalazione contenuti | Must | tabella `reports`, azione nell'isola commenti con nota facoltativa per la moderazione | ✅ |
+| RF-C-06 | Moderazione automatica | Should | trigger `regole_antispam` (0004), termini in Impostazioni portale → Community | ✅ |
+| RF-C-07 | Cancellazione account | Must | `request_account_deletion()` dal profilo; job `anonimizza-account` (CMS) che esegue `anonymize_user()`; migrazione `0003` | 🟡 implementato, non ancora provato su Supabase |
 | RF-C-08 | Login social | Could | il trigger legge già `full_name` e `avatar_url` dal provider | 🟡 |
 | RF-C-09 | Newsletter | Could | — | ⬜ |
 
@@ -94,8 +94,8 @@ dall'interfaccia.
 | RF-AI-03 | Configurazione rilevanza | Should | global `ai-settings`, scheda "Linea editoriale" | ✅ |
 | RF-AI-04 | Generazione da hot topic | Must | vista Hot topic + `azioniAi.ts` + `PannelloProposta` | ✅ |
 | RF-AI-05 | Generazione da brief | Must | vista Genera da brief + `azioniAi.ts` | ✅ |
-| RF-AI-06 | Assistenza all'editing | Should | — | ⬜ |
-| RF-AI-07 | Immagini assistite | Should | configurazione provider + dicitura obbligatoria | 🟡 |
+| RF-AI-06 | Assistenza all'editing | Should | pannello in `components/assistente/`, `lib/ai/assistenza.ts` | 🟡 implementato, **non ancora provato con una chiave API** |
+| RF-AI-07 | Immagini assistite | Should | Google Gemini in `lib/ai/immagini.ts`; sezione immagini del pannello dell'editor; dicitura imposta da hook su Media | 🟡 implementato, **non ancora provato con una chiave Gemini** |
 | RF-AI-08 | Stato bozza obbligatorio | Must | `enforceWorkflow` + endpoint senza percorsi di pubblicazione | ✅ |
 | RF-AI-09 | Configurazione provider | Must | `fields/encryptedText.ts`, AES-256-GCM, solo Amministratore | ✅ |
 | RF-AI-10 | Visibilità consumi | Should | collection `ai-usage`, sola lettura, con costo stimato | ✅ |

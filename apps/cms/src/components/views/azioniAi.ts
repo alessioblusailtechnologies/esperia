@@ -1,14 +1,13 @@
 'use server'
 
-import { headers as intestazioni } from 'next/headers'
 import { revalidatePath } from 'next/cache'
 import { getPayload } from 'payload'
-import { roleAtLeast, type StaffRole } from '@esperia/shared'
 
 import config from '@/payload.config'
 import { generaBozza, type BozzaGenerata } from '@/lib/ai/genera'
 import { creaBozzaDaProposta } from '@/lib/ai/creaBozza'
 import { leggiConfigurazione } from '@/lib/ai/client'
+import { redattoreCorrente } from '@/lib/sessioneRedazione'
 
 /**
  * Azioni dell'assistente per il backoffice — RF-AI-04, RF-AI-05, RF-AI-08.
@@ -23,23 +22,6 @@ import { leggiConfigurazione } from '@/lib/ai/client'
  */
 
 type Esito<T> = { ok: true; dati: T } | { ok: false; messaggio: string }
-
-async function redattoreCorrente(): Promise<
-  { ok: true; utente: { id: string; role?: StaffRole } } | { ok: false; messaggio: string }
-> {
-  const payload = await getPayload({ config })
-  const { user } = await payload.auth({ headers: await intestazioni() })
-
-  if (!user) return { ok: false, messaggio: 'Sessione scaduta. Rientra nel backoffice.' }
-
-  const staff = user as unknown as { id: string; role?: StaffRole; active?: boolean }
-  if (staff.active === false) return { ok: false, messaggio: 'Account disattivato.' }
-  if (!roleAtLeast(staff.role, 'redattore')) {
-    return { ok: false, messaggio: 'Permessi insufficienti.' }
-  }
-
-  return { ok: true, utente: staff }
-}
 
 const PARAGRAFI_PER_LUNGHEZZA: Record<string, number> = {
   breve: 4,

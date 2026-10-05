@@ -129,6 +129,21 @@ export async function ottieniClient(
   return { ok: true, client: new Anthropic({ apiKey }), config }
 }
 
+/**
+ * Parametri di ragionamento compatibili con il modello scelto.
+ *
+ * Opus 5 e Sonnet 5 accettano il thinking adattivo e `effort`; Haiku 4.5 no,
+ * e con quei parametri risponde 400. Il modello lo sceglie l'Amministratore in
+ * Impostazioni AI, quindi la richiesta deve adattarsi a qualunque scelta.
+ */
+export function parametriRagionamento(
+  model: string,
+  effort: ConfigurazioneAi['effort'],
+): { thinking?: { type: 'adaptive' }; effort?: ConfigurazioneAi['effort'] } {
+  if (model.startsWith('claude-haiku')) return {}
+  return { thinking: { type: 'adaptive' }, effort }
+}
+
 /** Stima del costo di una chiamata, per il registro consumi — RF-AI-10. */
 export function stimaCostoEur(
   config: ConfigurazioneAi,

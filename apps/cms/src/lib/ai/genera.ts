@@ -3,7 +3,13 @@ import { zodOutputFormat } from '@anthropic-ai/sdk/helpers/zod'
 import { z } from 'zod'
 import type { Payload } from 'payload'
 import type { AiOperation } from '@esperia/shared'
-import { ottieniClient, stimaCostoEur, type ConfigurazioneAi, type EsitoAi } from './client'
+import {
+  ottieniClient,
+  parametriRagionamento,
+  stimaCostoEur,
+  type ConfigurazioneAi,
+  type EsitoAi,
+} from './client'
 
 /**
  * Generazione assistita di bozze — RF-AI-04, RF-AI-05, RF-AI-08.
@@ -42,7 +48,7 @@ export type BozzaGenerata = z.infer<typeof SchemaBozza>
 /* Prompt                                                                     */
 /* -------------------------------------------------------------------------- */
 
-function istruzioniDiSistema(config: ConfigurazioneAi): string {
+export function istruzioniDiSistema(config: ConfigurazioneAi): string {
   const parti = [
     'Sei un assistente di redazione per una testata giornalistica italiana.',
     'Scrivi bozze che un redattore umano rivedrà, verificherà e firmerà.',
@@ -76,7 +82,7 @@ function istruzioniDiSistema(config: ConfigurazioneAi): string {
 /* Registro consumi — RF-AI-10                                                */
 /* -------------------------------------------------------------------------- */
 
-interface DatiConsumo {
+export interface DatiConsumo {
   operation: AiOperation
   model: string
   inputTokens: number
@@ -88,7 +94,7 @@ interface DatiConsumo {
   articleId?: string | null
 }
 
-async function registraConsumo(
+export async function registraConsumo(
   payload: Payload,
   config: ConfigurazioneAi,
   d: DatiConsumo,
@@ -154,6 +160,7 @@ export async function generaBozza(
 
   const { client, config } = accesso
   const model = config.textModel
+  const ragionamento = parametriRagionamento(model, config.effort)
   const avvio = Date.now()
 
   const fonti = (richiesta.fonti ?? [])
@@ -173,9 +180,9 @@ export async function generaBozza(
     const risposta = await client.messages.parse({
       model,
       max_tokens: 16000,
-      thinking: { type: 'adaptive' },
+      ...(ragionamento.thinking ? { thinking: ragionamento.thinking } : {}),
       output_config: {
-        effort: config.effort,
+        ...(ragionamento.effort ? { effort: ragionamento.effort } : {}),
         format: zodOutputFormat(SchemaBozza),
       },
       system: istruzioniDiSistema(config),
