@@ -25,6 +25,18 @@ export interface CommunityProfile {
   createdAt: string
 }
 
+/** Gli stessi vincoli dei check in 0001_community.sql: qui servono a dirlo prima dell'invio. */
+export const DISPLAY_NAME_MIN_LENGTH = 2
+export const DISPLAY_NAME_MAX_LENGTH = 50
+export const BIO_MAX_LENGTH = 500
+
+/**
+ * Supabase ne accetta 6 per impostazione predefinita: il minimo vero va alzato
+ * anche nel progetto (Authentication → Policies), altrimenti questo controllo
+ * vale solo per chi passa dal portale.
+ */
+export const PASSWORD_MIN_LENGTH = 8
+
 /* -------------------------------------------------------------------------- */
 /* Commenti — RF-C-03                                                         */
 /* -------------------------------------------------------------------------- */
@@ -104,6 +116,9 @@ export const REPORT_REASON_LABELS: Record<ReportReason, string> = {
   fuori_tema: 'Fuori tema',
   altro: 'Altro',
 }
+
+/** Lo stesso limite del check su reports.note in 0001_community.sql. */
+export const REPORT_NOTE_MAX_LENGTH = 1000
 
 export const REPORT_STATUSES = ['aperta', 'accolta', 'respinta'] as const
 export type ReportStatus = (typeof REPORT_STATUSES)[number]

@@ -1,6 +1,7 @@
 import type { GlobalConfig } from 'payload'
-import { anyone, isAdmin, isEditor } from '@/access'
+import { anyone, isAdmin, isEditor, isEditorField } from '@/access'
 import { revalidateAll } from '@/hooks/revalidatePortal'
+import { communityConfigurata, sincronizzaTerminiModerazione } from '@/lib/supabase'
 
 /**
  * Configurazione del portale pubblico.
@@ -15,6 +16,29 @@ export const SiteSettings: GlobalConfig = {
     update: isEditor,
   },
   hooks: {
+    beforeChange: [
+      /*
+       * I termini anti-spam valgono solo se arrivano a Supabase, dove li legge il
+       * trigger dei commenti (RF-C-06). Si sincronizza PRIMA di salvare: se la
+       * community non risponde, il salvataggio fallisce con un messaggio, invece
+       * di mostrare in backoffice un elenco che il database non sta applicando.
+       */
+      async ({ data, originalDoc }) => {
+        const nuovi: string[] = data?.moderationTerms ?? []
+        const vecchi: string[] = originalDoc?.moderationTerms ?? []
+        if (JSON.stringify(nuovi) === JSON.stringify(vecchi)) return data
+        if (!communityConfigurata()) return data
+
+        try {
+          await sincronizzaTerminiModerazione(nuovi)
+        } catch (err) {
+          throw new Error(
+            `Termini da segnalare non aggiornati nella community: ${(err as Error).message}`,
+          )
+        }
+        return data
+      },
+    ],
     afterChange: [
       async ({ doc, req }) => {
         await revalidateAll({ doc, req } as never)
@@ -220,6 +244,24 @@ export const SiteSettings: GlobalConfig = {
                   },
                 },
               ],
+            },
+          ],
+        },
+        {
+          label: 'Community',
+          fields: [
+            {
+              name: 'moderationTerms',
+              type: 'text',
+              hasMany: true,
+              label: 'Termini da segnalare nei commenti',
+              // Le impostazioni sono leggibili da chiunque (le scarica il portale):
+              // un elenco pubblico sarebbe un manuale per aggirarlo.
+              access: { read: isEditorField },
+              admin: {
+                description:
+                  'Un commento che contiene uno di questi termini, come parola intera e senza badare ad accenti e maiuscole, arriva in moderazione con il segnale "Segnalato in automatico". Non viene bloccato: decide comunque la redazione (RF-C-06).',
+              },
             },
           ],
         },

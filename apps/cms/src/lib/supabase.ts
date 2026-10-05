@@ -277,3 +277,69 @@ export async function sbloccaUtente(userId: string): Promise<void> {
 
   if (error) throw new Error(`Sblocco utente fallito: ${error.message}`)
 }
+
+/* -------------------------------------------------------------------------- */
+/* Cancellazione account — RF-C-07                                            */
+/* -------------------------------------------------------------------------- */
+
+/** Utenti che hanno chiesto la cancellazione dal profilo, dai meno recenti. */
+export async function richiesteCancellazione(limite = 50): Promise<string[]> {
+  const db = supabase()
+  if (!db) return []
+
+  const { data, error } = await db
+    .from('profiles')
+    .select('id')
+    .not('deletion_requested_at', 'is', null)
+    .order('deletion_requested_at', { ascending: true })
+    .limit(limite)
+
+  if (error) throw new Error(`Lettura richieste di cancellazione fallita: ${error.message}`)
+  return (data ?? []).map((r) => String((r as { id: string }).id))
+}
+
+/**
+ * Esegue la cancellazione: `anonymize_user` stacca l'autore dai commenti,
+ * toglie reazioni e segnalazioni ed elimina profilo e utente di auth. La
+ * funzione e' eseguibile solo con la chiave di servizio (0003).
+ */
+export async function anonimizzaUtente(userId: string): Promise<void> {
+  const db = supabase()
+  if (!db) throw new Error('Community non configurata.')
+
+  const { error } = await db.rpc('anonymize_user', { target: userId })
+  if (error) throw new Error(error.message)
+}
+
+/* -------------------------------------------------------------------------- */
+/* Termini anti-spam — RF-C-06                                                */
+/* -------------------------------------------------------------------------- */
+
+/**
+ * Allinea `public.moderation_terms` all'elenco salvato nelle Impostazioni
+ * portale. Il trigger anti-spam (0004) li legge a ogni commento.
+ */
+export async function sincronizzaTerminiModerazione(termini: string[]): Promise<void> {
+  const db = supabase()
+  if (!db) throw new Error('Community non configurata.')
+
+  const voluti = [...new Set(termini.map((t) => t.trim()).filter((t) => t.length >= 2))]
+
+  const { data, error } = await db.from('moderation_terms').select('term')
+  if (error) throw new Error(error.message)
+
+  const presenti = (data ?? []).map((r) => String((r as { term: string }).term))
+  const daTogliere = presenti.filter((t) => !voluti.includes(t))
+  const daAggiungere = voluti.filter((t) => !presenti.includes(t))
+
+  if (daTogliere.length > 0) {
+    const { error: e } = await db.from('moderation_terms').delete().in('term', daTogliere)
+    if (e) throw new Error(e.message)
+  }
+  if (daAggiungere.length > 0) {
+    const { error: e } = await db
+      .from('moderation_terms')
+      .insert(daAggiungere.map((term) => ({ term })))
+    if (e) throw new Error(e.message)
+  }
+}

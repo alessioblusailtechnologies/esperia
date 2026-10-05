@@ -1,19 +1,31 @@
 ---
 import Base from '@/layouts/Base.astro'
-import AreaInLavorazione from '@/components/AreaInLavorazione.astro'
+import AreaUtente from '@/components/AreaUtente.astro'
+import Accesso from '@/components/islands/account/Accesso.tsx'
+import { MOCK } from '@/lib/modalita'
 
 /**
- * Segnaposto dell'accesso alla community — RF-C-01.
+ * Accesso alla community — RF-C-01.
  *
- * Il lato dati esiste gia' (Supabase Auth, trigger di creazione del profilo):
- * manca questa pagina. Finche' non c'e', la testata e il blocco commenti
- * porterebbero a una 404. Da sostituire con il modulo vero.
+ * Il modulo e' un'isola: la sessione vive nel browser, gestita da Supabase
+ * Auth. La pagina resta fuori dalla cache (middleware.ts).
  */
 ---
 
-<Base title="Accesso" description="Accesso all’area riservata di Esperia." noIndex>
-  <AreaInLavorazione
-    titolo="Accesso"
-    testo="La sezione community è in lavorazione: la registrazione, l’accesso e il profilo utente saranno disponibili in una prossima versione. Nel frattempo tutti gli articoli sono consultabili liberamente."
-  />
+<Base title="Accedi" description="Accesso all’area riservata di Esperia." noIndex>
+  <AreaUtente
+    titolo="Accedi"
+    sottotitolo="Entra con l’email e la password del tuo account per commentare gli articoli."
+  >
+    {
+      MOCK ? (
+        <p class="riquadro">
+          Nella versione dimostrativa l’area riservata non è collegata: registrazione, accesso e
+          profilo funzionano nel portale vero, con la community attiva.
+        </p>
+      ) : (
+        <Accesso client:load />
+      )
+    }
+  </AreaUtente>
 </Base>

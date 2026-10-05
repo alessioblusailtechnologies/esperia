@@ -1,19 +1,18 @@
 ---
 import Base from '@/layouts/Base.astro'
 import AreaUtente from '@/components/AreaUtente.astro'
-import Registrazione from '@/components/islands/account/Registrazione.tsx'
+import Profilo from '@/components/islands/account/Profilo.tsx'
 import { MOCK } from '@/lib/modalita'
 
 /**
- * Registrazione alla community — RF-C-01.
+ * Profilo dell'utente — RF-C-02, RF-C-07.
+ *
+ * Senza sessione l'isola rimanda ad /accedi, che poi riporta qui.
  */
 ---
 
-<Base title="Registrati" description="Registrazione all’area riservata di Esperia." noIndex>
-  <AreaUtente
-    titolo="Registrati"
-    sottotitolo="Con un account puoi commentare gli articoli e partecipare alle discussioni."
-  >
+<Base title="Il tuo profilo" description="Profilo personale nell’area riservata di Esperia." noIndex>
+  <AreaUtente titolo="Il tuo profilo">
     {
       MOCK ? (
         <p class="riquadro">
@@ -21,7 +20,7 @@ import { MOCK } from '@/lib/modalita'
           profilo funzionano nel portale vero, con la community attiva.
         </p>
       ) : (
-        <Registrazione client:load />
+        <Profilo client:load />
       )
     }
   </AreaUtente>

@@ -25,6 +25,7 @@ import { generaBozzaEndpoint } from '@/endpoints/generaBozza'
 import { SiteSettings } from '@/globals/SiteSettings'
 import { AiSettings } from '@/globals/AiSettings'
 import { rilevaHotTopicTask } from '@/jobs/rilevaHotTopic'
+import { anonimizzaAccountTask } from '@/jobs/anonimizzaAccount'
 
 const dirname = path.dirname(fileURLToPath(import.meta.url))
 
@@ -144,7 +145,7 @@ export default buildConfig({
   // delle fonti (RF-AI-01). In produzione si puo' spostare su un worker separato
   // disattivando autoRun e chiamando /api/payload-jobs/run da un cron esterno.
   jobs: {
-    tasks: [rilevaHotTopicTask],
+    tasks: [rilevaHotTopicTask, anonimizzaAccountTask],
     autoRun: [
       {
         cron: '* * * * *',

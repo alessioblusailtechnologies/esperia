@@ -4,6 +4,7 @@ import { getSupabase, type CommentoConAutore } from '@/lib/supabase'
 import {
   COMMENT_MAX_LENGTH,
   COMMENT_MIN_LENGTH,
+  REPORT_NOTE_MAX_LENGTH,
   REPORT_REASONS,
   REPORT_REASON_LABELS,
   type ReportReason,
@@ -123,6 +124,7 @@ export default function CommentsSection({ articleId, articleSlug, dimostrazione 
 
   const [segnala, setSegnala] = useState<CommentoConAutore | null>(null)
   const [motivo, setMotivo] = useState<ReportReason | null>(null)
+  const [nota, setNota] = useState('')
   const [segnalazioneInviata, setSegnalazioneInviata] = useState(false)
 
   /* ---------------------------------------------------------------------- */
@@ -240,10 +242,13 @@ export default function CommentsSection({ articleId, articleSlug, dimostrazione 
 
     if (error) {
       // Il messaggio del database sarebbe incomprensibile per un lettore.
+      // PT429 è il limite di frequenza della migrazione 0004 (RF-C-06).
       setErrore(
-        error.code === '42501' || error.message.includes('is_banned')
-          ? 'Non è possibile pubblicare commenti con questo account.'
-          : 'Invio non riuscito. Riprova fra poco.',
+        error.code === 'PT429'
+          ? 'Hai inviato molti commenti in pochi minuti. Riprova fra qualche minuto.'
+          : error.code === '42501' || error.message.includes('is_banned')
+            ? 'Non è possibile pubblicare commenti con questo account.'
+            : 'Invio non riuscito. Riprova fra poco.',
       )
       return
     }
@@ -288,7 +293,13 @@ export default function CommentsSection({ articleId, articleSlug, dimostrazione 
 
     const { error } = await supabase
       .from('reports')
-      .insert({ comment_id: segnala.id, reporter_id: utente.id, reason: motivo, status: 'aperta' })
+      .insert({
+        comment_id: segnala.id,
+        reporter_id: utente.id,
+        reason: motivo,
+        note: nota.trim() || null,
+        status: 'aperta',
+      })
 
     // 23505 = segnalazione già inviata da questo utente: per lui è comunque un successo.
     if (error && error.code !== '23505') {
@@ -302,6 +313,7 @@ export default function CommentsSection({ articleId, articleSlug, dimostrazione 
   function chiudiSegnalazione() {
     setSegnala(null)
     setMotivo(null)
+    setNota('')
     setSegnalazioneInviata(false)
   }
 
@@ -320,8 +332,8 @@ export default function CommentsSection({ articleId, articleSlug, dimostrazione 
     return (
       <>
         <p class="riquadro">
-          Discussione di esempio. Per scrivere serve l’accesso: le pagine di registrazione e
-          login fanno parte del lavoro ancora da completare.
+          Discussione di esempio. Per scrivere serve l’accesso, che nella versione
+          dimostrativa non è collegato.
         </p>
 
         {COMMENTI_DIMOSTRATIVI.filter((c) => c.parent_id === null).map((c) => (
@@ -511,6 +523,19 @@ export default function CommentsSection({ articleId, articleSlug, dimostrazione 
                     </label>
                   ))}
                 </fieldset>
+
+                <div class="segnalazione__nota">
+                  <label class="segnalazione__etichetta" for="nota-segnalazione">
+                    Nota per la moderazione (facoltativa)
+                  </label>
+                  <textarea
+                    id="nota-segnalazione"
+                    value={nota}
+                    maxLength={REPORT_NOTE_MAX_LENGTH}
+                    placeholder="Aggiungi un dettaglio utile alla verifica"
+                    onInput={(e) => setNota((e.target as HTMLTextAreaElement).value)}
+                  />
+                </div>
 
                 <div class="segnalazione__azioni">
                   <button type="button" class="segnalazione__annulla" onClick={chiudiSegnalazione}>
@@ -708,6 +733,22 @@ const stili = `
   }
   .segnalazione__motivo:last-child { border-bottom: 1px solid var(--colore-bordo); }
   .segnalazione__motivo input { accent-color: var(--colore-accento); }
+  .segnalazione__nota { display: flex; flex-direction: column; gap: 7px; }
+  .segnalazione__etichetta {
+    font-size: var(--testo-xs); font-weight: var(--peso-forte);
+    letter-spacing: 1px; text-transform: uppercase;
+    color: var(--colore-testo-meta);
+  }
+  .segnalazione__nota textarea {
+    border: 1px solid var(--colore-bordo-medio);
+    border-radius: 10px;
+    background: var(--colore-superficie-chiara);
+    resize: vertical;
+    font-family: var(--font-testo); font-size: 13px; line-height: 1.6;
+    color: var(--colore-testo);
+    min-height: 70px; padding: 12px 14px;
+  }
+  .segnalazione__nota textarea:focus { border-color: var(--colore-testo-meta); }
   .segnalazione__azioni { display: flex; gap: 10px; flex-wrap: wrap; justify-content: flex-end; }
   .segnalazione__annulla {
     font: inherit; font-size: 13px; font-weight: var(--peso-forte);

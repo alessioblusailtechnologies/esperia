@@ -45,7 +45,15 @@ const POLITICHE: Array<{ quando: RegExp; sMaxAge: number }> = [
 ]
 
 /** Rotte che non devono MAI finire in una cache condivisa. */
-const MAI_IN_CACHE = [/^\/ricerca/, /^\/api\//, /^\/accedi/, /^\/registrati/, /^\/profilo/]
+const MAI_IN_CACHE = [
+  /^\/ricerca/,
+  /^\/api\//,
+  /^\/accedi/,
+  /^\/registrati/,
+  /^\/profilo/,
+  /^\/recupera-password/,
+  /^\/nuova-password/,
+]
 
 function politicaCache(percorso: string, anteprima: boolean): string {
   if (anteprima || MAI_IN_CACHE.some((r) => r.test(percorso))) {

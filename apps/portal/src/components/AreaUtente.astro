@@ -1,0 +1,221 @@
+---
+interface Props {
+  titolo: string
+  sottotitolo?: string
+}
+
+const { titolo, sottotitolo } = Astro.props
+---
+
+<!--
+  Cornice delle pagine dell'area utente — RF-C-01, RF-C-02, RF-C-07.
+
+  I design consegnati non comprendono queste schermate: la testata vi rimanda
+  ma non le disegna. Sono costruite con gli elementi gia' presenti nel portale
+  (titoletto di sezione, campi con il bordo dei commenti, pulsante pieno a
+  pastiglia, riquadri di esito) e con i soli token di tokens.css, cosi' una
+  revisione della grafica le raggiunge come il resto del sito.
+
+  Gli stili sono globali, sotto `.area-utente`, perche' il modulo lo disegna
+  un'isola Preact: gli stili con ambito di Astro non arriverebbero al suo markup.
+-->
+<section class="area-utente">
+  <p class="filo-sezione eyebrow">Area riservata</p>
+  <h1 class="area-utente__titolo">{titolo}</h1>
+  {sottotitolo && <p class="area-utente__sottotitolo">{sottotitolo}</p>}
+  <slot />
+</section>
+
+<style is:global>
+  .area-utente {
+    padding: clamp(36px, 5vw, 72px) var(--padding-laterale) clamp(48px, 7vw, 96px);
+    max-width: calc(460px + 2 * var(--padding-laterale));
+  }
+
+  .area-utente__titolo {
+    font-family: var(--font-titoli);
+    font-size: clamp(30px, 4vw, 46px);
+    font-weight: var(--peso-medio);
+    letter-spacing: -0.6px;
+    line-height: var(--interlinea-titolo);
+    margin: var(--spazio-4) 0 0;
+  }
+
+  .area-utente__sottotitolo {
+    font-size: var(--testo-md);
+    line-height: 1.55;
+    color: var(--colore-testo-tenue);
+    margin-top: var(--spazio-4);
+  }
+
+  /* --- Modulo ------------------------------------------------------------ */
+
+  .area-utente .modulo {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spazio-5);
+    margin-top: var(--spazio-7);
+  }
+
+  .area-utente .modulo + .modulo {
+    border-top: 1px solid var(--colore-bordo);
+    padding-top: var(--spazio-7);
+  }
+
+  .area-utente .modulo__titolo {
+    font-family: var(--font-titoli);
+    font-size: 22px;
+    font-weight: var(--peso-forte);
+  }
+
+  .area-utente .modulo__testo {
+    font-size: var(--testo-base);
+    line-height: 1.6;
+    color: var(--colore-testo-tenue);
+  }
+
+  .area-utente .campo {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spazio-2);
+  }
+
+  .area-utente .campo__etichetta {
+    font-size: var(--testo-sm);
+    font-weight: var(--peso-forte);
+  }
+
+  .area-utente .campo__aiuto {
+    font-size: var(--testo-xs);
+    color: var(--colore-testo-meta);
+    line-height: 1.45;
+  }
+
+  .area-utente .campo input,
+  .area-utente .campo textarea {
+    font-family: var(--font-testo);
+    font-size: var(--testo-base);
+    color: var(--colore-testo);
+    background: var(--colore-superficie-chiara);
+    border: 1px solid var(--colore-bordo-medio);
+    border-radius: var(--raggio-md);
+    padding: 12px 14px;
+    width: 100%;
+  }
+
+  .area-utente .campo textarea {
+    min-height: 96px;
+    resize: vertical;
+    line-height: 1.55;
+  }
+
+  .area-utente .campo input:focus,
+  .area-utente .campo textarea:focus {
+    border-color: var(--colore-testo-meta);
+  }
+
+  .area-utente .campo input[readonly] {
+    background: var(--colore-superficie);
+    color: var(--colore-testo-tenue);
+  }
+
+  .area-utente .consenso {
+    display: flex;
+    gap: var(--spazio-3);
+    align-items: flex-start;
+    font-size: var(--testo-sm);
+    line-height: 1.5;
+    color: var(--colore-testo-tenue);
+  }
+
+  .area-utente .consenso input {
+    margin-top: 3px;
+    accent-color: var(--colore-accento);
+  }
+
+  .area-utente .consenso a,
+  .area-utente .modulo__link a,
+  .area-utente .modulo__testo a {
+    color: var(--colore-accento);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  .area-utente .modulo__azioni {
+    display: flex;
+    gap: var(--spazio-3);
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  .area-utente .modulo__link {
+    font-size: var(--testo-sm);
+    color: var(--colore-testo-meta);
+  }
+
+  .area-utente .bottone {
+    font: inherit;
+    font-size: 13px;
+    font-weight: var(--peso-forte);
+    background: var(--colore-inverso);
+    color: var(--colore-testo-inverso);
+    border: 0;
+    border-radius: var(--raggio-pill);
+    padding: 12px 24px;
+    cursor: pointer;
+  }
+
+  .area-utente .bottone:hover:not(:disabled) {
+    background: var(--colore-inverso-hover);
+  }
+
+  .area-utente .bottone:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
+
+  .area-utente .bottone--secondario {
+    background: none;
+    color: var(--colore-testo);
+    border: 1px solid var(--colore-bordo-forte);
+  }
+
+  .area-utente .bottone--secondario:hover:not(:disabled) {
+    background: var(--colore-superficie);
+  }
+
+  .area-utente .bottone--pericolo {
+    background: var(--colore-accento);
+  }
+
+  .area-utente .bottone--pericolo:hover:not(:disabled) {
+    background: var(--colore-accento-scuro);
+  }
+
+  /* --- Esiti ------------------------------------------------------------- */
+
+  .area-utente .riquadro {
+    font-size: var(--testo-base);
+    line-height: 1.55;
+    color: var(--colore-testo-tenue);
+    padding: 16px 18px;
+    background: var(--colore-superficie);
+    border-radius: var(--raggio-md);
+  }
+
+  .area-utente .riquadro--ok {
+    border-left: 3px solid var(--colore-successo);
+  }
+
+  .area-utente .riquadro--errore {
+    border-left: 3px solid var(--colore-errore);
+  }
+
+  .area-utente .riquadro--attenzione {
+    border-left: 3px solid var(--colore-attenzione);
+  }
+
+  .area-utente .riquadro strong {
+    color: var(--colore-testo);
+  }
+</style>
