@@ -13,9 +13,12 @@ import './VerificaAi.scss'
  * Compare solo sugli articoli nati da una bozza AI. Dice da dove viene il
  * testo e mostra i punti che il modello ha segnalato scrivendolo: cifre da
  * confermare, fonti mancanti, dichiarazioni da cercare. Chi firma li spunta
- * uno a uno e conferma di aver riletto: solo allora «Invia in revisione» si
- * accende. La stessa regola vale lato server (enforceWorkflow), quindi il
- * riquadro è la spiegazione del vincolo, non il vincolo.
+ * man mano che li verifica.
+ *
+ * È un aiuto, non un vincolo: «Invia in revisione» funziona sempre. Se restano
+ * punti aperti chiede una conferma, e l'Editor li ritrova qui quando apre il
+ * pezzo per approvarlo. Il controllo umano richiesto (HITL) è quella
+ * approvazione, già imposta dal workflow (RF-B-05).
  */
 
 interface Punto {
@@ -46,6 +49,7 @@ export function VerificaAi() {
   const stato = useField<string>({ path: 'editorialStatus' })
 
   const [mostraAppunti, setMostraAppunti] = useState(false)
+  const [conferma, setConferma] = useState(false)
 
   if (!origine || !ORIGINI[origine]) return null
 
@@ -54,7 +58,16 @@ export function VerificaAi() {
   const firmato = riletto.value === true
   const pronto = chiusi === lista.length && firmato
   const inBozza = (stato.value ?? 'bozza') === 'bozza'
-  const daFare = lista.length - chiusi + (firmato ? 0 : 1)
+  const aperti = lista.length - chiusi
+
+  function invia() {
+    if (!pronto && !conferma) {
+      setConferma(true)
+      return
+    }
+    setConferma(false)
+    stato.setValue('in_revisione')
+  }
 
   function commuta(i: number) {
     punti.setValue(lista.map((p, j) => (j === i ? { ...p, fatto: !p.fatto } : p)))
@@ -116,25 +129,51 @@ export function VerificaAi() {
 
       {inBozza ? (
         <>
-          <button
-            type="button"
-            className="verifica-ai__invia"
-            disabled={!pronto}
-            onClick={() => stato.setValue('in_revisione')}
-          >
-            <Icona nome="invia" dimensione={15} />
-            {pronto ? 'Invia in revisione' : `Invia in revisione · ${daFare} da fare`}
-          </button>
+          {conferma ? (
+            <div className="verifica-ai__conferma" role="alertdialog" aria-label="Conferma invio">
+              <p>
+                {aperti > 0
+                  ? `Restano ${aperti} ${aperti === 1 ? 'punto da verificare' : 'punti da verificare'}`
+                  : 'Non hai ancora confermato di aver riletto il testo'}
+                . L’Editor li vedrà in questo riquadro quando apre il pezzo.
+              </p>
+              <div className="verifica-ai__conferma-azioni">
+                <button type="button" className="verifica-ai__invia" onClick={invia}>
+                  Invia comunque
+                </button>
+                <button
+                  type="button"
+                  className="verifica-ai__annulla"
+                  onClick={() => setConferma(false)}
+                >
+                  Annulla
+                </button>
+              </div>
+            </div>
+          ) : (
+            <button type="button" className="verifica-ai__invia" onClick={invia}>
+              <Icona nome="invia" dimensione={15} />
+              Invia in revisione
+            </button>
+          )}
           <p className="verifica-ai__nota">
             {pronto
-              ? 'Lo stato passa a «In revisione» e si salva da solo in pochi secondi.'
-              : 'La lista l’ha preparata l’AI mentre scriveva: segnala cosa non ha trovato nelle fonti. Finché non è chiusa la bozza resta tua.'}
+              ? 'Tutto verificato. Lo stato passa a «In revisione» e si salva da solo in pochi secondi.'
+              : 'La lista l’ha preparata l’AI mentre scriveva: segnala cosa non ha trovato nelle fonti. È un promemoria, l’approvazione spetta all’Editor.'}
           </p>
         </>
-      ) : (
+      ) : pronto ? (
         <p className="verifica-ai__nota verifica-ai__nota--ok">
           <Icona nome="spunta" dimensione={14} tratto={2.4} />
-          Verificata e firmata: la bozza è passata alla revisione.
+          Verificata e firmata da chi l’ha scritta.
+        </p>
+      ) : (
+        <p className="verifica-ai__nota verifica-ai__nota--aperta">
+          Inviata in revisione con{' '}
+          {aperti > 0
+            ? `${aperti} ${aperti === 1 ? 'punto aperto' : 'punti aperti'}`
+            : 'la rilettura non confermata'}
+          : controllali prima di approvare.
         </p>
       )}
     </section>

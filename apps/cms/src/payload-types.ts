@@ -254,7 +254,7 @@ export interface Article {
       | boolean
       | null;
     /**
-     * Si spunta dal riquadro «Prima di inviare». Senza, una bozza AI non passa In revisione e quindi non raggiunge il portale.
+     * Si spunta dal riquadro «Prima di inviare». È un promemoria per chi firma: l’approvazione resta dell’Editor.
      */
     humanReviewed?: boolean | null;
   };

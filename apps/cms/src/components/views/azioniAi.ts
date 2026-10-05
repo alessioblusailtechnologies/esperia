@@ -20,8 +20,8 @@ import { redattoreCorrente } from '@/lib/sessioneRedazione'
  * Prima c'era una pagina intermedia con la proposta da «accettare» campo per
  * campo, ma l'accettazione non aveva effetto e il testo andava corretto due
  * volte. La revisione umana ora sta dove si scrive: i punti da verificare
- * viaggiano con l'articolo e bloccano l'invio in revisione finché non sono
- * chiusi (hook enforceWorkflow).
+ * viaggiano con l'articolo come promemoria, e l'approvazione resta all'Editor
+ * nel workflow (HITL).
  *
  * Come per la moderazione, ogni azione verifica sessione e ruolo per conto
  * proprio: una server action è un endpoint pubblico a tutti gli effetti.

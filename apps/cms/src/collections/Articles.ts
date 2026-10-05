@@ -125,7 +125,8 @@ export const Articles: CollectionConfig = {
     {
       // Campo di sola interfaccia, in cima alla colonna: compare solo sugli
       // articoli nati da una bozza AI e lavora su `ai.checks` e
-      // `ai.humanReviewed`.
+      // `ai.humanReviewed`. È un aiuto, non un vincolo: il controllo umano
+      // richiesto (HITL) è l'approvazione dell'Editor nel workflow.
       name: 'verificaAi',
       type: 'ui',
       admin: {
@@ -411,7 +412,7 @@ export const Articles: CollectionConfig = {
                   admin: {
                     readOnly: true,
                     description:
-                      'Si spunta dal riquadro «Prima di inviare». Senza, una bozza AI non passa In revisione e quindi non raggiunge il portale.',
+                      'Si spunta dal riquadro «Prima di inviare». È un promemoria per chi firma: l’approvazione resta dell’Editor.',
                   },
                 },
               ],

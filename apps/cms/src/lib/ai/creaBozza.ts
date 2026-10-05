@@ -147,8 +147,8 @@ export async function creaBozzaDaProposta(
         generatedAt: new Date().toISOString(),
         brief: o.brief ?? undefined,
         // I punti da verificare viaggiano con l'articolo: diventano la lista
-        // «Prima di inviare» nell'editor e bloccano l'invio in revisione
-        // finché non sono chiusi (enforceWorkflow).
+        // «Prima di inviare» nell'editor, un promemoria per chi firma e per
+        // l'Editor che approva.
         checks: puntiDaVerificare(proposta),
         humanReviewed: false,
       },
