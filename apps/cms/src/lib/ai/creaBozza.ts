@@ -63,6 +63,14 @@ async function risolviTag(payload: Payload, nomi: string[]): Promise<string[]> {
   return ids
 }
 
+/** La lista «Prima di inviare» come la salva l'articolo (campo `ai.checks`). */
+export function puntiDaVerificare(proposta: BozzaGenerata): Array<{ testo: string; fatto: boolean }> {
+  return (proposta.puntiDaVerificare ?? [])
+    .map((testo) => testo.trim())
+    .filter(Boolean)
+    .map((testo) => ({ testo, fatto: false }))
+}
+
 async function categoriaPredefinita(payload: Payload): Promise<string | null> {
   const res = await payload.find({
     collection: 'categories',
@@ -138,6 +146,10 @@ export async function creaBozzaDaProposta(
         model: o.modello ?? undefined,
         generatedAt: new Date().toISOString(),
         brief: o.brief ?? undefined,
+        // I punti da verificare viaggiano con l'articolo: diventano la lista
+        // «Prima di inviare» nell'editor e bloccano l'invio in revisione
+        // finché non sono chiusi (enforceWorkflow).
+        checks: puntiDaVerificare(proposta),
         humanReviewed: false,
       },
     } as never,

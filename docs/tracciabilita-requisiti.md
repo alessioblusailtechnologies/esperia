@@ -93,7 +93,7 @@ dall'interfaccia.
 | RF-AI-02 | Individuazione hot topic | Must | collection `hot-topics`; vista con filtri, rilevanza e fonti; raggruppamento e punteggio in `lib/hotTopic/` | ✅ |
 | RF-AI-03 | Configurazione rilevanza | Should | global `ai-settings`, scheda "Linea editoriale" | ✅ |
 | RF-AI-04 | Generazione da hot topic | Must | vista Hot topic + `azioniAi.ts` + `PannelloProposta` | ✅ |
-| RF-AI-05 | Generazione da brief | Must | vista Genera da brief + `azioniAi.ts` | ✅ |
+| RF-AI-05 | Generazione da brief | Must | `nav/NuovoArticolo.tsx` + `azioniAi.ts`; verifica in `verifica/VerificaAi.tsx` e `enforceWorkflow` | ✅ |
 | RF-AI-06 | Assistenza all'editing | Should | pannello in `components/assistente/`, `lib/ai/assistenza.ts` | ✅ provato con l'API vera |
 | RF-AI-07 | Immagini assistite | Should | Google Gemini in `lib/ai/immagini.ts`; sezione immagini del pannello dell'editor; dicitura imposta da hook su Media | ✅ provato con Gemini vero |
 | RF-AI-08 | Stato bozza obbligatorio | Must | `enforceWorkflow` + endpoint senza percorsi di pubblicazione | ✅ |

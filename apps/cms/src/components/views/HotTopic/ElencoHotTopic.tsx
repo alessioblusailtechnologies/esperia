@@ -2,8 +2,9 @@
 
 import { useMemo, useState, useTransition } from 'react'
 
-import { PannelloProposta } from '../PannelloProposta'
-import { proponiDaHotTopic, scartaHotTopic, type Proposta } from '../azioniAi'
+import { Icona } from '@/components/Icona'
+import { apriNuovoArticolo } from '@/components/nav/costanti'
+import { scartaHotTopic } from '../azioniAi'
 
 export interface ArgomentoVista {
   id: string
@@ -59,10 +60,6 @@ export function ElencoHotTopic({
   const [scartati, setScartati] = useState<Set<string>>(new Set())
   const [messaggio, setMessaggio] = useState<{ tipo: 'ok' | 'errore'; testo: string } | null>(null)
 
-  const [inGenerazione, setInGenerazione] = useState<string | null>(null)
-  const [proposta, setProposta] = useState<{ argomento: ArgomentoVista; dati: Proposta } | null>(
-    null,
-  )
   const [inCorso, avvia] = useTransition()
 
   const visibili = useMemo(() => {
@@ -80,15 +77,10 @@ export function ElencoHotTopic({
     })
   }, [argomenti, ambito, finestra, scartati])
 
+  // La bozza si chiede dalla stessa finestra di «Nuovo articolo», con
+  // l'argomento già scelto: un solo modo di far scrivere l'AI in tutto il backoffice.
   function genera(a: ArgomentoVista) {
-    setInGenerazione(a.id)
-    setMessaggio(null)
-    avvia(async () => {
-      const esito = await proponiDaHotTopic(a.id)
-      setInGenerazione(null)
-      if (esito.ok) setProposta({ argomento: a, dati: esito.dati })
-      else setMessaggio({ tipo: 'errore', testo: esito.messaggio })
-    })
+    apriNuovoArticolo({ passo: 'argomento', hotTopicId: a.id })
   }
 
   function scarta(a: ArgomentoVista) {
@@ -107,22 +99,6 @@ export function ElencoHotTopic({
         setMessaggio({ tipo: 'errore', testo: esito.messaggio })
       }
     })
-  }
-
-  /* --- Pannello della proposta generata ---------------------------------- */
-  if (proposta) {
-    return (
-      <div className="ai-vista__corpo">
-        <PannelloProposta
-          proposta={proposta.dati}
-          categorie={categorie}
-          categoriaIniziale={proposta.argomento.categoriaSuggerita?.id ?? null}
-          hotTopicId={proposta.argomento.id}
-          origine={`Argomento: ${proposta.argomento.titolo}`}
-          onChiudi={() => setProposta(null)}
-        />
-      </div>
-    )
   }
 
   return (
@@ -249,11 +225,12 @@ export function ElencoHotTopic({
             <div className="argomento__azioni">
               <button
                 type="button"
-                className="azione azione--primaria"
+                className="azione azione--ai"
                 disabled={inCorso}
                 onClick={() => genera(a)}
               >
-                {inGenerazione === a.id ? 'Sto scrivendo…' : 'Genera bozza'}
+                <Icona nome="ai" dimensione={15} />
+                Scrivi bozza con AI
               </button>
               <a className="azione" href={`/admin/collections/hot-topics/${a.id}`}>
                 Approfondisci
@@ -267,7 +244,8 @@ export function ElencoHotTopic({
                 Ignora
               </button>
               <span className="argomento__nota">
-                La bozza generata resta da revisionare: non raggiunge il portale da sola.
+                La bozza si apre a tuo nome, con l’elenco di cosa verificare. Non raggiunge il
+                portale da sola.
               </span>
             </div>
           </article>

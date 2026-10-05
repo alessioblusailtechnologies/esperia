@@ -244,8 +244,17 @@ export interface Article {
      * RF-AI-05.
      */
     brief?: string | null;
+    checks?:
+      | {
+          [k: string]: unknown;
+        }
+      | unknown[]
+      | string
+      | number
+      | boolean
+      | null;
     /**
-     * Spuntato al passaggio in In revisione. Nessun contenuto AI raggiunge il portale senza questo passaggio (RF-AI-08).
+     * Si spunta dal riquadro «Prima di inviare». Senza, una bozza AI non passa In revisione e quindi non raggiunge il portale (RF-AI-08).
      */
     humanReviewed?: boolean | null;
   };
@@ -920,6 +929,7 @@ export interface ArticlesSelect<T extends boolean = true> {
         model?: T;
         generatedAt?: T;
         brief?: T;
+        checks?: T;
         humanReviewed?: T;
       };
   searchText?: T;

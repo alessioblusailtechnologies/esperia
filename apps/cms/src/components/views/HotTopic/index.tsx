@@ -1,14 +1,19 @@
 import type { AdminViewServerProps } from 'payload'
 import { DefaultTemplate } from '@payloadcms/next/templates'
 
+import { Icona } from '@/components/Icona'
 import { leggiConfigurazione } from '@/lib/ai/client'
 import { ElencoHotTopic, type ArgomentoVista } from './ElencoHotTopic'
 
 import '../ai.scss'
 
 /**
- * Hot topic proposti dall'assistente — RF-AI-02, impaginazione dai design
+ * Hot topic rilevati dalle fonti — RF-AI-02, impaginazione dai design
  * (Hot Topic v1).
+ *
+ * La rilevazione non usa l'AI: raggruppa gli articoli delle fonti RSS e dà un
+ * punteggio a ciascun argomento (lib/hotTopic). L'AI entra solo se dalla
+ * scheda si chiede una bozza, e la testata lo dice in chiaro.
  *
  * La vista esiste anche quando l'AI è spenta: in quel caso mostra lo stato di
  * indisponibilità previsto dai design invece di sparire dal menu. È la forma
@@ -82,13 +87,18 @@ async function ContenutoHotTopic({ initPageResult }: AdminViewServerProps) {
 
   return (
     <div className="ai-vista">
-      <div className="ai-principio">
-        <span className="ai-principio__etichetta">Assistente AI</span>
-        <span className="ai-principio__testo">
-          L’AI propone, la redazione decide: ogni argomento resta un suggerimento e ogni testo
-          generato entra nel flusso come bozza da revisionare.
+      <header className="ai-intestazione">
+        <h1>Hot topic</h1>
+        <p>Argomenti che più testate stanno coprendo nelle ultime ore.</p>
+      </header>
+      <p className="ai-principio">
+        <Icona nome="info" />
+        <span>
+          <b>Come nascono:</b> raggruppiamo gli articoli delle fonti RSS e diamo un punteggio a
+          ciascun argomento. <b>Qui l’AI non interviene.</b> Entra in gioco solo se scegli
+          «Scrivi bozza con AI», e scrive usando soltanto gli articoli raccolti.
         </span>
-      </div>
+      </p>
 
       {!conf.enabled ? (
         <div className="ai-vista__corpo">

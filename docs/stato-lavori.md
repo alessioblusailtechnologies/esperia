@@ -117,7 +117,7 @@ comandi, non l'abbiamo resa uno script perché non serve in produzione.
 | Coda di moderazione: approva/rifiuta/elimina, blocco utente, azioni di gruppo | ✅ |
 | Hot topic: elenco con filtri, rilevanza, fonti, "genera bozza" | ✅ |
 | Rilevamento hot topic: lettura fonti RSS / Atom, raggruppamento, punteggio, decadimento | ✅ (§4.1) |
-| Genera da brief con accettazione elemento per elemento | ✅ |
+| Bozza AI da appunti o hot topic, dalla finestra «Nuovo articolo»: si apre subito nell'editor con la lista «Prima di inviare», che blocca il passaggio In revisione finché non è chiusa | ✅ |
 | Assistente AI nell'editor: riscrivi, sintetizza, titoli alternativi, suggerimenti SEO | ✅ provato con l'API Anthropic vera (§4.3) |
 | Immagini assistite con Google Gemini: proposte, scelta, copertina con dicitura | ✅ provato con Gemini vero (§4.3) |
 | Termini anti-spam gestiti in Impostazioni portale → Community | ✅ (§4.4) |

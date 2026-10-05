@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600;6..72,700;6..72,800&family=IBM+Plex+Mono:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600;6..72,700;6..72,800&display=swap');
 
 /* =============================================================================
    Tema del backoffice Esperia
@@ -52,16 +52,19 @@
   --theme-border-color: #e0d9c8;
 
   /* --- Tipografia --------------------------------------------------------- */
-  --font-body: Archivo, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  /* L'interfaccia è in Geist; Newsreader, il carattere della testata, resta
+     solo dove si scrive l'articolo (titolo e corpo nell'editor) e nel marchio. */
+  --font-body: Geist, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   --font-serif: Newsreader, Georgia, 'Times New Roman', serif;
-  --font-mono: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+  --font-mono: 'Geist Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
 
   /* --- Forma -------------------------------------------------------------- */
   --style-radius-s: 6px;
   --style-radius-m: 8px;
   --style-radius-l: 12px;
 
-  --nav-width: 230px;
+  --nav-width: 264px;
+  --ease-esperia: cubic-bezier(0.2, 0, 0.2, 1);
 
   /* --- Token propri di Esperia -------------------------------------------- */
   --esperia-accento: #1d5c63;
@@ -76,6 +79,22 @@
   --esperia-scuro: #211d18;
   --esperia-scuro-filo: #3a352c;
   --esperia-scuro-tenue: #a49b8b;
+  --esperia-verde: #2f7d4f;
+
+  /* La cornice scura che contiene la navigazione. */
+  --esperia-cornice: #211d18;
+  --esperia-cornice-filo: #3a352c;
+  --esperia-cornice-testo: #cdc4b2;
+  --esperia-cornice-tenue: #8a8378;
+  --esperia-cornice-tenue-chiaro: #a49b8b;
+  --esperia-cornice-sopra: rgba(255, 253, 248, 0.06);
+  --esperia-cornice-attiva: rgba(255, 253, 248, 0.1);
+
+  /* Il segno dell'AI: oro, sempre e solo per ciò che il modello ha scritto o
+     propone. Nessun altro elemento dell'interfaccia usa questo colore. */
+  --esperia-ai: #e8b04b;
+  --esperia-ai-tinta: #fbf0d9;
+  --esperia-ai-testo: #855a0c;
 
   /* Stati editoriali — usati dalla pastiglia e dai riquadri di riepilogo. */
   --stato-bozza-bg: #f3e6c9;
@@ -91,20 +110,37 @@
 }
 
 /* -----------------------------------------------------------------------------
-   Titoli in Newsreader, come nel resto della testata.
+   Titoli dell'interfaccia in Geist, stretti come in Moonbrand Studio.
    -------------------------------------------------------------------------- */
 .payload__nav-group__toggle {
   text-transform: none;
+}
+
+body {
+  font-family: var(--font-body);
 }
 
 h1,
 h2,
 h3,
 .doc-header__title,
-.collection-list__header h1,
-.step-nav__last {
+.collection-list__header h1 {
+  font-family: var(--font-body);
+  font-weight: 600;
+  letter-spacing: -0.025em;
+}
+
+/* Nell'editor dell'articolo il titolo si scrive nel carattere della testata. */
+.collection-edit--articles .doc-header__title,
+.collection-edit--articles #field-title {
   font-family: var(--font-serif);
   letter-spacing: -0.3px;
+}
+
+.collection-edit--articles #field-title {
+  font-size: 26px;
+  font-weight: 700;
+  line-height: 1.2;
 }
 
 /* -----------------------------------------------------------------------------
@@ -189,8 +225,7 @@ h3,
 /* Il titolo dell'articolo in elenco è il riferimento visivo della riga. */
 .table td:first-of-type .cell-title,
 .row-1 .cell-title {
-  font-family: var(--font-serif);
-  font-size: 15.5px;
+  font-size: 14.5px;
   font-weight: 600;
 }
 
@@ -213,37 +248,61 @@ h3,
 }
 
 /* -----------------------------------------------------------------------------
-   Innesti sull'ossatura dell'admin.
+   Cornice dell'admin — struttura da Moonbrand Studio.
 
-   Payload posiziona il pulsante di chiusura della navigazione in alto a
-   sinistra, dove i design mettono il marchio: sovrapposti, il primo copriva la
-   "E" di Esperia. Lo spostiamo a destra della colonna e lo ricoloriamo per il
-   fondo scuro.
+   La colonna della navigazione è una cornice scura; la pagina è un pannello
+   chiaro staccato di 8px dai bordi, con gli angoli arrotondati. Larghezza
+   della colonna: 264px estesa, 72px compressa o su tablet, nessuna sul
+   telefono (lì la barra è un menu sopra la pagina).
+
+   Payload apre e chiude la propria nav con le classi --nav-open: le
+   ignoriamo sopra i 768px, perché Payload la chiude su ogni schermo sotto i
+   1440px e la barra sparirebbe a ogni caricamento. Lo stato compresso lo
+   decide la barra stessa (classe .nav-esperia--compatta, ricordata in un
+   cookie).
    -------------------------------------------------------------------------- */
+.template-default {
+  --larghezza-nav: var(--nav-width);
 
-/* Il contenitore del pulsante e statico: spostarlo con left/right non ha
-   effetto. Allarghiamo invece il suo involucro alla larghezza della colonna
-   e lo spingiamo a destra con flex. */
+  grid-template-columns: var(--larghezza-nav) minmax(0, 1fr);
+  background: var(--esperia-cornice);
+}
+
+.template-default:has(.nav-esperia--compatta) {
+  --larghezza-nav: 72px;
+}
+
+.template-default__wrap {
+  min-height: calc(100vh - 16px);
+  margin: 8px 8px 8px 0;
+  border-radius: 16px;
+  overflow: clip;
+  background: var(--theme-bg);
+}
+
+/* Il pulsante di Payload in alto a sinistra: la barra ha il suo. */
 .template-default__nav-toggler-wrapper {
-  width: var(--nav-width);
-  display: flex;
-  justify-content: flex-end;
-  padding-right: 14px;
-  box-sizing: border-box;
+  display: none;
 }
 
-.template-default__nav-toggler-container {
-  left: auto;
+@media (min-width: 769px) and (max-width: 1024px) {
+  .template-default {
+    --larghezza-nav: 72px;
+  }
 }
 
-.template-default__nav-toggler .hamburger__close-icon,
-.template-default__nav-toggler .hamburger__line {
-  color: var(--esperia-scuro-tenue);
-}
+@media (max-width: 768px) {
+  .template-default,
+  .template-default--nav-open,
+  .template-default--nav-hydrated.template-default--nav-open {
+    grid-template-columns: minmax(0, 1fr);
+  }
 
-.template-default__nav-toggler:hover .hamburger__close-icon,
-.template-default__nav-toggler:hover .hamburger__line {
-  color: #faf7f0;
+  .template-default__wrap {
+    min-height: 100vh;
+    margin: 0;
+    border-radius: 0;
+  }
 }
 
 /* Il marchio sta gia' nella colonna di navigazione: ripeterlo come icona
@@ -253,15 +312,21 @@ h3,
   display: none;
 }
 
-/* La barra superiore riprende il fondo dei design. */
+/* La barra superiore riprende il fondo del pannello. */
 .app-header {
-  background: var(--esperia-pannello);
+  background: var(--theme-bg);
   border-bottom: 1px solid var(--theme-border-color);
 }
 
-/* Le briciole di navigazione sono il titolo della schermata: in Newsreader,
-   come nei design (Barra Superiore v1). */
+/* Le briciole di navigazione dicono dove si è, come in Moonbrand Studio. */
 .step-nav {
-  font-family: var(--font-serif);
-  font-size: 17px;
+  font-family: var(--font-body);
+  font-size: 14px;
+}
+
+/* Il primo anello delle briciole porta a /admin, che oggi rimanda agli
+   articoli (la Scrivania è sospesa): lo togliamo insieme alla sua barra. */
+.step-nav__home,
+.step-nav__home + span {
+  display: none;
 }

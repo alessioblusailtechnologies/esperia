@@ -1,3 +1,4 @@
+import { VerificaAi as VerificaAi_203753434beab4c83f59efea63afd73a } from '@/components/verifica/VerificaAi'
 import { CellaStato as CellaStato_29396452c01c85f32df0cb67d28bba77 } from '@/components/CellaStato'
 import { RscEntryLexicalCell as RscEntryLexicalCell_44fe37237e0ebf4470c9990d8cb7b07e } from '@payloadcms/richtext-lexical/rsc'
 import { RscEntryLexicalField as RscEntryLexicalField_44fe37237e0ebf4470c9990d8cb7b07e } from '@payloadcms/richtext-lexical/rsc'
@@ -29,14 +30,14 @@ import { PannelloAssistente as PannelloAssistente_cecaaf1e7e1a4ed03e5c1626d829c3
 import { NavLaterale as NavLaterale_de2a0ee0c6be975314796bb42af8f8ae } from '@/components/nav/NavLaterale'
 import { Icona as Icona_d216cb1d0a1719f968f43929b4881650 } from '@/components/Marchio'
 import { Logo as Logo_d216cb1d0a1719f968f43929b4881650 } from '@/components/Marchio'
-import { Dashboard as Dashboard_0ecc9696265ef3bb606ca8a0bb24afaf } from '@/components/views/Dashboard'
+import { Ingresso as Ingresso_c4d6142fd5e10d282d2db4a8e405561d } from '@/components/views/Ingresso'
 import { Moderazione as Moderazione_4f385e014eea52a45755062becb7858e } from '@/components/views/Moderazione'
 import { HotTopic as HotTopic_dd8a841c29fb5e60ed1e866c597146f2 } from '@/components/views/HotTopic'
-import { GeneraDaBrief as GeneraDaBrief_9905a47f9fa86d39138547b927d248b7 } from '@/components/views/GeneraDaBrief'
 import { CollectionCards as CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1 } from '@payloadcms/next/rsc'
 
 /** @type import('payload').ImportMap */
 export const importMap = {
+  "@/components/verifica/VerificaAi#VerificaAi": VerificaAi_203753434beab4c83f59efea63afd73a,
   "@/components/CellaStato#CellaStato": CellaStato_29396452c01c85f32df0cb67d28bba77,
   "@payloadcms/richtext-lexical/rsc#RscEntryLexicalCell": RscEntryLexicalCell_44fe37237e0ebf4470c9990d8cb7b07e,
   "@payloadcms/richtext-lexical/rsc#RscEntryLexicalField": RscEntryLexicalField_44fe37237e0ebf4470c9990d8cb7b07e,
@@ -68,9 +69,8 @@ export const importMap = {
   "@/components/nav/NavLaterale#NavLaterale": NavLaterale_de2a0ee0c6be975314796bb42af8f8ae,
   "@/components/Marchio#Icona": Icona_d216cb1d0a1719f968f43929b4881650,
   "@/components/Marchio#Logo": Logo_d216cb1d0a1719f968f43929b4881650,
-  "@/components/views/Dashboard#Dashboard": Dashboard_0ecc9696265ef3bb606ca8a0bb24afaf,
+  "@/components/views/Ingresso#Ingresso": Ingresso_c4d6142fd5e10d282d2db4a8e405561d,
   "@/components/views/Moderazione#Moderazione": Moderazione_4f385e014eea52a45755062becb7858e,
   "@/components/views/HotTopic#HotTopic": HotTopic_dd8a841c29fb5e60ed1e866c597146f2,
-  "@/components/views/GeneraDaBrief#GeneraDaBrief": GeneraDaBrief_9905a47f9fa86d39138547b927d248b7,
   "@payloadcms/next/rsc#CollectionCards": CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1
 }

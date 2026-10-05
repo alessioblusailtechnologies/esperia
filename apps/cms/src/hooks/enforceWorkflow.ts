@@ -30,6 +30,30 @@ export const enforceWorkflow: CollectionBeforeChangeHook = async ({
     }
   }
 
+  // 1b. Una bozza scritta dall'AI passa In revisione solo quando chi la firma
+  //     ha chiuso i punti da verificare e dichiarato di averla riletta —
+  //     RF-AI-08. È il controllo umano reso un vincolo, non un'avvertenza.
+  if (operation === 'update' && previousStatus === 'bozza' && nextStatus === 'in_revisione') {
+    const ai = { ...(originalDoc?.ai ?? {}), ...(data.ai ?? {}) } as {
+      origin?: string | null
+      checks?: unknown
+      humanReviewed?: boolean | null
+    }
+    if (ai.origin === 'brief' || ai.origin === 'hot_topic') {
+      const aperti = Array.isArray(ai.checks)
+        ? ai.checks.filter((c) => !(c as { fatto?: boolean })?.fatto).length
+        : 0
+      if (aperti > 0 || !ai.humanReviewed) {
+        throw new APIError(
+          aperti > 0
+            ? `Restano ${aperti} punti da verificare: chiudili nel riquadro «Prima di inviare» prima di passare In revisione.`
+            : 'Conferma di aver riletto il testo nel riquadro «Prima di inviare» prima di passare In revisione.',
+          400,
+        )
+      }
+    }
+  }
+
   // 2. Un articolo generato dall'AI nasce sempre in bozza — RF-AI-08.
   if (operation === 'create' && data.ai?.origin && data.ai.origin !== 'manuale') {
     data.editorialStatus = 'bozza'

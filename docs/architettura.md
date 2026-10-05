@@ -166,7 +166,7 @@ stata la stessa domanda: *Payload lo fa gia'?*
 |---|---|
 | Elenco articoli, editor, media library, categorie e tag, utenti, impostazioni | **Ri-tematizzate.** Payload deriva tutti i colori da una scala `--color-base-*`: ridefinirla con i toni della testata rifa' l'aspetto di ogni vista, campo e modale senza toccarne il comportamento |
 | Navigazione laterale, marchio, dashboard, pastiglia di stato | **Sostituite** con componenti nostri: sono gli elementi che i design ridisegnano davvero |
-| Moderazione, Hot topic, Genera da brief | **Costruite da zero:** in Payload non esistono |
+| Moderazione, Hot topic, finestra «Nuovo articolo» | **Costruite da zero:** in Payload non esistono |
 
 Riscrivere elenco ed editor per farli combaciare al pixel avrebbe voluto dire
 rifare versioni, bozze, autosalvataggio, permessi per campo e validazioni —

@@ -1,144 +1,481 @@
-/* Navigazione laterale — dai design (Nav Laterale v1). */
+/* =============================================================================
+   Barra laterale — struttura da Moonbrand Studio, palette Esperia.
+
+   La barra fa da cornice scura: la pagina è un pannello chiaro staccato di
+   8px dai bordi (vedi .template-default__wrap in custom.scss). Estesa misura
+   264px, compressa 72px; sul tablet è sempre compressa, sul telefono diventa
+   un menu che entra da sinistra.
+   ============================================================================= */
 
 .nav-esperia {
-  width: var(--nav-width, 230px);
-  flex-shrink: 0;
-  background: var(--esperia-scuro);
-  color: #faf7f0;
-  display: flex;
-  flex-direction: column;
-  padding: 22px 0;
   position: sticky;
   top: 0;
-  height: 100vh;
-  box-sizing: border-box;
-  font-family: var(--font-body);
-}
-
-.nav-esperia__testata {
-  padding: 0 22px 18px;
-  border-bottom: 1px solid var(--esperia-scuro-filo);
+  z-index: 30;
   display: flex;
   flex-direction: column;
-  gap: 3px;
+  gap: 6px;
+  width: var(--larghezza-nav);
+  height: 100vh;
+  height: 100dvh;
+  padding: 14px 12px;
+  box-sizing: border-box;
+  overflow: hidden;
+  background: var(--esperia-cornice);
+  color: var(--esperia-cornice-testo);
+  font-family: var(--font-body);
+  transition: width 200ms var(--ease-esperia);
+
+  a {
+    text-decoration: none;
+  }
+
+  ul {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+}
+
+/* ----------------------------------------------------------------- testa */
+
+.nav-esperia__testa {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  min-height: 40px;
+  padding: 2px 4px 6px 6px;
 }
 
 .nav-esperia__marchio {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  min-width: 0;
+  color: #faf7f0;
+  white-space: nowrap;
+}
+
+/* Il marchio resta nel carattere della testata: è un logo, non testo. */
+.nav-esperia__nome,
+.nav-esperia__monogramma {
   font-family: var(--font-serif);
-  font-size: 22px;
+  font-size: 23px;
   font-weight: 800;
   letter-spacing: -0.5px;
-  line-height: 1.1;
+  line-height: 1;
+}
+
+.nav-esperia__monogramma {
+  display: none;
 }
 
 .nav-esperia__sottotitolo {
-  font-size: 9.5px;
-  font-weight: 700;
-  letter-spacing: 2px;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
   text-transform: uppercase;
   color: var(--esperia-accento-chiaro);
 }
 
-.nav-esperia__voci {
-  flex: 1;
-  padding: 16px 12px;
-  overflow-y: auto;
-}
-
-.nav-esperia__voci ul {
-  list-style: none;
-  margin: 0;
+.nav-esperia__tasto {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 30px;
+  height: 30px;
   padding: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--esperia-cornice-tenue);
+  cursor: pointer;
+  transition:
+    background-color 120ms var(--ease-esperia),
+    color 120ms var(--ease-esperia);
+
+  &:hover {
+    background: var(--esperia-cornice-sopra);
+    color: #faf7f0;
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--esperia-accento-chiaro);
+    outline-offset: 1px;
+  }
 }
 
-.nav-esperia__voce {
+.nav-esperia__chiudi-menu {
+  display: none;
+}
+
+/* ------------------------------------------------------- nuovo articolo */
+
+.nav-esperia__nuovo {
   display: flex;
   align-items: center;
-  gap: 9px;
-  font-size: 12.5px;
-  font-weight: 600;
-  padding: 9px 12px;
-  border-radius: 8px;
-  color: var(--esperia-scuro-tenue);
-  text-decoration: none;
-}
-
-.nav-esperia__voce:hover {
-  background: var(--esperia-scuro-filo);
-  color: #faf7f0;
-}
-
-.nav-esperia__voce--attiva {
+  justify-content: center;
+  gap: 8px;
+  flex: none;
+  height: 40px;
+  margin-top: 4px;
+  border: 0;
+  border-radius: 10px;
   background: var(--esperia-accento);
-  color: #faf7f0;
+  color: #fff;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background-color 120ms var(--ease-esperia);
+
+  &:hover {
+    background: var(--esperia-accento-scuro);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--esperia-accento-chiaro);
+    outline-offset: 2px;
+  }
+}
+
+/* ---------------------------------------------------------------- voci */
+
+.nav-esperia__voci {
+  flex: 1;
+  min-height: 0;
+  margin-top: 8px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--esperia-cornice-filo) transparent;
+}
+
+.nav-esperia__gruppo {
+  display: flex;
+  flex-direction: column;
+  padding-block: 8px;
+
+  &.chiuso ul {
+    display: none;
+  }
+}
+
+.nav-esperia__titolo-gruppo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 0;
+  padding: 0 12px 6px;
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--esperia-cornice-tenue);
+  white-space: nowrap;
+}
+
+.nav-esperia__titolo-gruppo--tasto {
+  width: 100%;
+  border: 0;
+  background: none;
+  font-family: inherit;
+  cursor: pointer;
+
+  &:hover {
+    color: var(--esperia-cornice-testo);
+  }
+
+  .icona {
+    transition: transform 160ms var(--ease-esperia);
+  }
+
+  &[aria-expanded='false'] .icona {
+    transform: rotate(-90deg);
+  }
+}
+
+.nav-esperia__voce,
+.nav-esperia__bozza {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  height: 36px;
+  padding: 0 10px 0 12px;
+  border-radius: 10px;
+  color: var(--esperia-cornice-testo);
+  font-size: 14px;
+  font-weight: 500;
+  white-space: nowrap;
+  transition:
+    background-color 120ms var(--ease-esperia),
+    color 120ms var(--ease-esperia);
+
+  &:hover {
+    background: var(--esperia-cornice-sopra);
+    color: #faf7f0;
+  }
+
+  &[aria-current='page'] {
+    background: var(--esperia-cornice-attiva);
+    color: #faf7f0;
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--esperia-accento-chiaro);
+    outline-offset: -2px;
+  }
+}
+
+.nav-esperia__bozza {
+  height: 32px;
+  gap: 10px;
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--esperia-cornice-tenue-chiaro);
 }
 
 .nav-esperia__etichetta {
   flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .nav-esperia__conteggio {
-  font-size: 10px;
-  font-weight: 700;
-  color: #6b6459;
+  display: inline-grid;
+  place-items: center;
+  min-width: 22px;
+  height: 20px;
+  padding: 0 6px;
+  border-radius: 999px;
+  background: var(--esperia-cornice-sopra);
+  color: var(--esperia-cornice-testo);
+  font-size: 11.5px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
 }
 
-.nav-esperia__voce--attiva .nav-esperia__conteggio {
-  color: var(--esperia-accento-tenue);
+.nav-esperia__conteggio--evidenza {
+  background: var(--esperia-accento-chiaro);
+  color: var(--esperia-cornice);
+}
+
+.nav-esperia__punto {
+  flex: none;
+  width: 7px;
+  height: 7px;
+  margin: 0 5px;
+  border-radius: 50%;
+  background: var(--esperia-cornice-tenue);
+}
+
+.nav-esperia__punto--in_revisione {
+  background: var(--esperia-ai);
+}
+
+/* ---------------------------------------------------------------- piede */
+
+.nav-esperia__piede {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding-top: 8px;
+  border-top: 1px solid var(--esperia-cornice-filo);
+}
+
+.nav-esperia__spesa {
+  font-size: 13px;
+}
+
+.nav-esperia__anello {
+  flex: none;
+
+  .traccia {
+    stroke: var(--esperia-cornice-filo);
+  }
+
+  .riempimento {
+    stroke: var(--esperia-ai);
+    stroke-linecap: round;
+    transition: stroke-dasharray 600ms var(--ease-esperia);
+  }
+
+  .riempimento.alto {
+    stroke: #ef8a80;
+  }
 }
 
 .nav-esperia__utente {
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 16px 22px 0;
-  border-top: 1px solid var(--esperia-scuro-filo);
-  margin-top: auto;
+  padding: 8px 4px 2px 6px;
 }
 
-.nav-esperia__avatar {
+.nav-esperia__iniziali {
+  display: grid;
+  flex: none;
+  place-items: center;
   width: 30px;
   height: 30px;
-  flex: 0 0 30px;
   border-radius: 50%;
-  background: repeating-linear-gradient(45deg, #4a443a 0 4px, #3a352c 4px 8px);
+  background: var(--esperia-accento);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 600;
 }
 
 .nav-esperia__dati {
   display: flex;
+  flex: 1;
   flex-direction: column;
-  gap: 1px;
   min-width: 0;
+  line-height: 1.3;
 }
 
-.nav-esperia__nome,
+.nav-esperia__persona,
 .nav-esperia__ruolo {
-  white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-.nav-esperia__nome {
-  font-size: 12px;
-  font-weight: 700;
+.nav-esperia__persona {
+  color: #faf7f0;
+  font-size: 13px;
+  font-weight: 500;
 }
 
 .nav-esperia__ruolo {
-  font-size: 10px;
-  color: var(--esperia-scuro-tenue);
+  color: var(--esperia-cornice-tenue);
+  font-size: 12px;
 }
 
-/* Sotto i 1024px l'admin di Payload passa alla nav a scomparsa: la nostra
-   diventa a piena larghezza dentro quel pannello invece di restare una
-   colonna stretta e alta. */
-@media (max-width: 1024px) {
+.nav-esperia__velo {
+  display: none;
+}
+
+/* ------------------------------------------------------------ compressa */
+
+@mixin compatta {
+  .nav-esperia__nome,
+  .nav-esperia__sottotitolo,
+  .nav-esperia__nuovo span,
+  .nav-esperia__etichetta,
+  .nav-esperia__conteggio,
+  .nav-esperia__titolo-gruppo,
+  .nav-esperia__bozze,
+  .nav-esperia__dati,
+  .nav-esperia__esci {
+    display: none;
+  }
+
+  .nav-esperia__monogramma {
+    display: inline;
+  }
+
+  .nav-esperia__testa {
+    flex-direction: column;
+    gap: 10px;
+    padding-inline: 0;
+  }
+
+  .nav-esperia__nuovo,
+  .nav-esperia__voce {
+    justify-content: center;
+    width: 48px;
+    padding: 0;
+  }
+
+  /* I gruppi chiusi si aprono: senza etichette non c'è niente da cliccare per riaprirli. */
+  .nav-esperia__gruppo.chiuso ul {
+    display: flex;
+  }
+
+  .nav-esperia__gruppo + .nav-esperia__gruppo {
+    border-top: 1px solid var(--esperia-cornice-filo);
+  }
+
+  .nav-esperia__utente {
+    justify-content: center;
+    width: 48px;
+    padding-inline: 0;
+  }
+
+  /* Il numero diventa un punto sull'icona: la coda resta visibile. */
+  .nav-esperia__voce {
+    position: relative;
+  }
+
+  .nav-esperia__voce:has(.nav-esperia__conteggio)::after {
+    content: '';
+    position: absolute;
+    top: 7px;
+    right: 9px;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--esperia-accento-chiaro);
+  }
+}
+
+@media (min-width: 769px) {
+  .nav-esperia--compatta {
+    @include compatta;
+  }
+}
+
+/* Tablet: sempre compressa, e il pulsante per espanderla non serve. */
+@media (min-width: 769px) and (max-width: 1024px) {
   .nav-esperia {
-    width: 100%;
-    height: auto;
-    min-height: 100vh;
-    position: static;
+    @include compatta;
+  }
+
+  .nav-esperia__comprimi {
+    display: none;
+  }
+}
+
+/* Telefono: la barra è un menu aperto dal pulsante nella barra in alto. */
+@media (max-width: 768px) {
+  .nav-esperia {
+    position: fixed;
+    inset: 0 auto 0 0;
+    z-index: calc(var(--z-modal, 100) + 1);
+    width: min(300px, 86vw);
+    transform: translateX(-100%);
+    transition: transform 220ms var(--ease-esperia);
+  }
+
+  .template-default--nav-open .nav-esperia {
+    transform: none;
+    box-shadow: 0 18px 48px rgba(0, 0, 0, 0.4);
+  }
+
+  .nav-esperia__comprimi {
+    display: none;
+  }
+
+  .nav-esperia__chiudi-menu {
+    display: grid;
+  }
+
+  .nav-esperia__velo {
+    position: fixed;
+    inset: 0;
+    z-index: var(--z-modal, 100);
+    display: block;
+    background: rgba(22, 19, 15, 0.55);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nav-esperia,
+  .nav-esperia * {
+    transition: none !important;
   }
 }

@@ -65,8 +65,9 @@ export default buildConfig({
      * Personalizzazioni dell'interfaccia — dai design (Pagine backoffice).
      *
      * Sostituiamo cio' che i design ridisegnano davvero (navigazione,
-     * dashboard) e aggiungiamo le tre schermate che in Payload non esistono
-     * (moderazione della community e i due strumenti dell'assistente).
+     * dashboard) e aggiungiamo le due schermate che in Payload non esistono
+     * (moderazione della community e hot topic). Le bozze AI nascono dalla
+     * finestra «Nuovo articolo» della navigazione, non da una vista propria.
      * Elenchi, editor, media library e gestione utenti restano quelli di
      * Payload, ri-tematizzati: sono esattamente le funzioni per cui lo
      * abbiamo scelto e riscriverle vorrebbe dire buttare via versioni,
@@ -79,8 +80,9 @@ export default buildConfig({
         Icon: '@/components/Marchio#Icona',
       },
       views: {
+        // La Scrivania (views/Dashboard) è sospesa: /admin porta agli articoli.
         dashboard: {
-          Component: '@/components/views/Dashboard#Dashboard',
+          Component: '@/components/views/Ingresso#Ingresso',
         },
         moderazione: {
           Component: '@/components/views/Moderazione#Moderazione',
@@ -90,12 +92,7 @@ export default buildConfig({
         hotTopic: {
           Component: '@/components/views/HotTopic#HotTopic',
           path: '/hot-topic',
-          meta: { title: 'Hot topic AI' },
-        },
-        generaDaBrief: {
-          Component: '@/components/views/GeneraDaBrief#GeneraDaBrief',
-          path: '/genera-da-brief',
-          meta: { title: 'Genera da brief' },
+          meta: { title: 'Hot topic' },
         },
       },
     },

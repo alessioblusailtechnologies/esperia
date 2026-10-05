@@ -1,0 +1,522 @@
+/* Finestra «Nuovo articolo». L'oro segna le partenze che passano dall'AI. */
+
+.nuovo__velo {
+  position: fixed;
+  inset: 0;
+  z-index: calc(var(--z-modal, 100) + 10);
+  background: rgba(22, 19, 15, 0.55);
+  animation: nuovo-velo 160ms var(--ease-esperia);
+}
+
+.nuovo {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  z-index: calc(var(--z-modal, 100) + 11);
+  display: flex;
+  flex-direction: column;
+  width: min(640px, calc(100vw - 32px));
+  max-height: calc(100dvh - 48px);
+  overflow-y: auto;
+  border-radius: 22px;
+  background: var(--esperia-pannello);
+  box-shadow: 0 24px 64px rgba(22, 19, 15, 0.28);
+  color: var(--theme-text);
+  font-family: var(--font-body);
+  font-size: 14px;
+  transform: translate(-50%, -50%);
+  animation: nuovo-entra 180ms var(--ease-esperia);
+  outline: 0;
+}
+
+@keyframes nuovo-velo {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes nuovo-entra {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -48%) scale(0.98);
+  }
+}
+
+.nuovo__testa {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 22px 24px 4px;
+
+  h2 {
+    margin: 4px 0 0;
+    font-family: var(--font-body);
+    font-size: 22px;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+  }
+}
+
+.nuovo__etichetta {
+  margin: 0;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-base-650);
+}
+
+.nuovo__chiudi {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  margin: -4px -8px 0 0;
+  border: 0;
+  border-radius: 999px;
+  background: none;
+  color: var(--theme-text);
+  cursor: pointer;
+
+  &:hover {
+    background: var(--esperia-superficie);
+  }
+}
+
+.nuovo__corpo {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 14px 24px 24px;
+}
+
+.nuovo__piede {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+  padding: 0 24px 22px;
+}
+
+.nuovo__errore {
+  margin: 10px 24px 0;
+  padding: 10px 14px;
+  border-radius: 12px;
+  background: #fbe9e7;
+  color: var(--esperia-rosso);
+  font-size: 13px;
+}
+
+.nuovo__avviso {
+  margin: 0;
+  padding: 10px 14px;
+  border-radius: 12px;
+  background: var(--esperia-superficie);
+  color: var(--color-base-750);
+  font-size: 13px;
+}
+
+/* ------------------------------------------------------------ partenze */
+
+.nuovo__opzione {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  width: 100%;
+  padding: 16px;
+  border: 1.5px solid var(--theme-border-color);
+  border-radius: 16px;
+  background: var(--theme-input-bg);
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+  transition: border-color 120ms var(--ease-esperia);
+
+  &:hover:not(:disabled) {
+    border-color: var(--theme-text);
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--esperia-accento);
+    outline-offset: 2px;
+  }
+}
+
+.nuovo__opzione-icona {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: var(--esperia-superficie);
+  color: var(--theme-text);
+}
+
+.nuovo__opzione-icona--ai {
+  background: var(--esperia-ai-tinta);
+  color: var(--esperia-ai-testo);
+}
+
+.nuovo__opzione-testi {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+
+  b {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    font-size: 15px;
+    font-weight: 600;
+  }
+
+  > span {
+    color: var(--color-base-700);
+    font-size: 13px;
+    line-height: 1.5;
+  }
+}
+
+/* --------------------------------------------------------------- campi */
+
+.nuovo__campo {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+
+  > .nuovo__etichetta {
+    font-size: 11px;
+  }
+}
+
+.nuovo__griglia {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr);
+  gap: 12px;
+}
+
+.nuovo__testo,
+.nuovo__select {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 12px 14px;
+  border: 1.5px solid var(--theme-border-color);
+  border-radius: 14px;
+  outline: 0;
+  background: var(--theme-input-bg);
+  color: var(--theme-text);
+  font: inherit;
+
+  &:focus {
+    border-color: var(--theme-text);
+  }
+}
+
+.nuovo__select {
+  min-height: 40px;
+  padding-block: 8px;
+}
+
+.nuovo__testo {
+  min-height: 140px;
+  line-height: 1.55;
+  resize: vertical;
+}
+
+.nuovo__testo--breve {
+  min-height: 72px;
+}
+
+.nuovo__aiuto {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--color-base-650);
+}
+
+.nuovo__segmenti {
+  display: flex;
+  padding: 3px;
+  border-radius: 999px;
+  background: var(--esperia-superficie);
+
+  button {
+    flex: 1;
+    min-height: 34px;
+    border: 0;
+    border-radius: 999px;
+    background: none;
+    color: var(--color-base-700);
+    font: inherit;
+    font-size: 12.5px;
+    font-weight: 500;
+    white-space: nowrap;
+    cursor: pointer;
+
+    &[aria-pressed='true'] {
+      background: var(--theme-input-bg);
+      color: var(--theme-text);
+      box-shadow: 0 1px 3px rgba(33, 29, 24, 0.15);
+    }
+  }
+}
+
+.nuovo__pastiglie {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.nuovo__pastiglia {
+  min-height: 34px;
+  padding: 0 14px;
+  border: 1.5px solid var(--color-base-300);
+  border-radius: 999px;
+  background: var(--theme-input-bg);
+  color: var(--theme-text);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+
+  &:hover {
+    border-color: var(--theme-text);
+  }
+
+  &[aria-pressed='true'] {
+    border-color: var(--theme-text);
+    background: var(--theme-text);
+    color: var(--esperia-pannello);
+  }
+}
+
+.nuovo__argomenti {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.nuovo__argomento {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  width: 100%;
+  padding: 12px 14px;
+  border: 1.5px solid var(--theme-border-color);
+  border-radius: 14px;
+  background: var(--theme-input-bg);
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+
+  &[aria-checked='true'] {
+    border-color: var(--theme-text);
+  }
+
+  b {
+    display: block;
+    font-size: 14.5px;
+    font-weight: 600;
+    line-height: 1.35;
+  }
+
+  span span {
+    font-size: 12px;
+    color: var(--color-base-650);
+  }
+}
+
+.nuovo__radio {
+  flex: none;
+  width: 18px;
+  height: 18px;
+  margin-top: 1px;
+  border: 1.5px solid var(--color-base-400);
+  border-radius: 50%;
+  box-sizing: border-box;
+
+  [aria-checked='true'] > & {
+    border: 5px solid var(--theme-text);
+  }
+}
+
+/* ------------------------------------------------------ chi fa che cosa */
+
+.nuovo__ruoli {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.nuovo__ruolo {
+  padding: 12px 14px;
+  border-radius: 14px;
+  font-size: 12.5px;
+  line-height: 1.5;
+
+  b {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 4px;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+}
+
+.nuovo__ruolo--ai {
+  background: var(--esperia-ai-tinta);
+  color: var(--esperia-ai-testo);
+}
+
+.nuovo__ruolo--tu {
+  background: #e3f1f2;
+  color: var(--esperia-accento);
+}
+
+/* ------------------------------------------------------------- pulsanti */
+
+.nuovo__pulsante {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 40px;
+  padding: 0 18px;
+  border: 1.5px solid transparent;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--theme-text);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+
+  &:hover:not(:disabled) {
+    background: var(--esperia-superficie);
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+}
+
+.nuovo__pulsante--ai {
+  background: var(--esperia-ai);
+  color: #2b1d04;
+
+  &:hover:not(:disabled) {
+    background: #edbd63;
+  }
+}
+
+/* ---------------------------------------------------------------- lavoro */
+
+.nuovo__fasi {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin: 4px 0;
+  padding: 0;
+  list-style: none;
+
+  li {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: var(--color-base-500);
+  }
+
+  li.in-corso {
+    color: var(--theme-text);
+    font-weight: 500;
+  }
+
+  li.fatta {
+    color: var(--color-base-700);
+  }
+}
+
+.nuovo__fase-segno {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border: 1.5px solid var(--color-base-300);
+  border-radius: 50%;
+  box-sizing: border-box;
+
+  .in-corso & {
+    border-color: var(--esperia-ai);
+    border-right-color: transparent;
+    animation: nuovo-gira 800ms linear infinite;
+  }
+
+  .fatta & {
+    border-color: var(--esperia-verde);
+    background: var(--esperia-verde);
+    color: #fff;
+  }
+}
+
+@keyframes nuovo-gira {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.nuovo__fase-chi {
+  margin-left: auto;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+/* Il segno «AI» in linea con un titolo, lo stesso in tutto il backoffice. */
+.segno-ai {
+  display: inline-flex;
+  align-items: center;
+  height: 20px;
+  padding: 0 8px;
+  border-radius: 999px;
+  background: var(--esperia-ai-tinta);
+  color: var(--esperia-ai-testo);
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+@media (max-width: 600px) {
+  .nuovo__griglia,
+  .nuovo__ruoli {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nuovo,
+  .nuovo__velo,
+  .nuovo__fase-segno {
+    animation: none !important;
+  }
+}

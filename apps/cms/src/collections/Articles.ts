@@ -107,6 +107,21 @@ export const Articles: CollectionConfig = {
 
   fields: [
     /* ------------------------------------------------------------------ */
+    /* Bozza AI: cosa resta da verificare — RF-AI-08                      */
+    /* ------------------------------------------------------------------ */
+    {
+      // Campo di sola interfaccia, in cima alla colonna: compare solo sugli
+      // articoli nati da una bozza AI e lavora su `ai.checks` e
+      // `ai.humanReviewed`.
+      name: 'verificaAi',
+      type: 'ui',
+      admin: {
+        position: 'sidebar',
+        components: { Field: '@/components/verifica/VerificaAi#VerificaAi' },
+      },
+    },
+
+    /* ------------------------------------------------------------------ */
     /* Sidebar: stato, workflow, pubblicazione                            */
     /* ------------------------------------------------------------------ */
     slugField('title'),
@@ -346,13 +361,23 @@ export const Articles: CollectionConfig = {
                   admin: { readOnly: true, description: 'RF-AI-05.' },
                 },
                 {
+                  // I punti che l'AI ha segnalato scrivendo la bozza:
+                  // [{ testo, fatto }]. Si spuntano dal riquadro «Prima di
+                  // inviare» in cima alla colonna dell'editor.
+                  name: 'checks',
+                  type: 'json',
+                  label: 'Punti da verificare',
+                  admin: { hidden: true },
+                },
+                {
                   name: 'humanReviewed',
                   type: 'checkbox',
                   defaultValue: false,
-                  label: 'Revisionato da un redattore',
+                  label: 'Riletto e firmato da un redattore',
                   admin: {
+                    readOnly: true,
                     description:
-                      'Spuntato al passaggio in In revisione. Nessun contenuto AI raggiunge il portale senza questo passaggio (RF-AI-08).',
+                      'Si spunta dal riquadro «Prima di inviare». Senza, una bozza AI non passa In revisione e quindi non raggiunge il portale (RF-AI-08).',
                   },
                 },
               ],

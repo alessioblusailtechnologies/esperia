@@ -4,7 +4,7 @@ import { revalidatePath } from 'next/cache'
 import { getPayload } from 'payload'
 
 import config from '@/payload.config'
-import { generaBozza, type BozzaGenerata } from '@/lib/ai/genera'
+import { generaBozza } from '@/lib/ai/genera'
 import { creaBozzaDaProposta } from '@/lib/ai/creaBozza'
 import { leggiConfigurazione } from '@/lib/ai/client'
 import { redattoreCorrente } from '@/lib/sessioneRedazione'
@@ -12,13 +12,18 @@ import { redattoreCorrente } from '@/lib/sessioneRedazione'
 /**
  * Azioni dell'assistente per il backoffice — RF-AI-04, RF-AI-05, RF-AI-08.
  *
- * Il flusso e' in due tempi, come nei design: prima si CHIEDE una proposta e la
- * si legge, poi — se convince, e dopo averla eventualmente corretta — la si
- * porta in bozza. Fra i due passaggi non viene salvato nulla: e' quello che
- * rende reale la revisione umana invece di dichiararla.
+ * Il flusso è uno solo, quello della finestra «Nuovo articolo»: la redazione
+ * dice da dove partire (i propri appunti o un hot topic), l'AI scrive e la
+ * bozza si apre subito nell'editor, a nome di chi l'ha chiesta.
+ *
+ * Prima c'era una pagina intermedia con la proposta da «accettare» campo per
+ * campo, ma l'accettazione non aveva effetto e il testo andava corretto due
+ * volte. La revisione umana ora sta dove si scrive: i punti da verificare
+ * viaggiano con l'articolo e bloccano l'invio in revisione finché non sono
+ * chiusi (hook enforceWorkflow).
  *
  * Come per la moderazione, ogni azione verifica sessione e ruolo per conto
- * proprio: una server action e' un endpoint pubblico a tutti gli effetti.
+ * proprio: una server action è un endpoint pubblico a tutti gli effetti.
  */
 
 type Esito<T> = { ok: true; dati: T } | { ok: false; messaggio: string }
@@ -29,146 +34,168 @@ const PARAGRAFI_PER_LUNGHEZZA: Record<string, number> = {
   lunga: 12,
 }
 
-export interface Proposta extends BozzaGenerata {
-  /** Modello usato, per la tracciabilità sull'articolo (RF-AI-11). */
-  modello: string
+/* -------------------------------------------------------------------------- */
+/* Dati per la finestra «Nuovo articolo»                                      */
+/* -------------------------------------------------------------------------- */
+
+export interface ArgomentoBreve {
+  id: string
+  titolo: string
+  fonti: number
+  testate: string[]
+  categoriaId: string | null
 }
 
-/* -------------------------------------------------------------------------- */
-/* Proposta da brief — RF-AI-05                                               */
-/* -------------------------------------------------------------------------- */
-
-export async function proponiDaBrief(input: {
-  brief: string
-  lunghezza?: string
-  taglio?: string
-}): Promise<Esito<Proposta>> {
-  const sessione = await redattoreCorrente()
-  if (!sessione.ok) return sessione
-
-  const brief = input.brief.trim()
-  if (brief.length < 20) {
-    return {
-      ok: false,
-      messaggio: 'Il brief è troppo scarno: descrivi almeno il fatto e il contesto.',
-    }
-  }
-
-  const payload = await getPayload({ config })
-  const conf = await leggiConfigurazione(payload)
-
-  const contesto = [
-    brief,
-    input.taglio ? `\n\nTaglio richiesto: ${input.taglio}.` : '',
-  ].join('')
-
-  const esito = await generaBozza(
-    { payload, utenteId: sessione.utente.id },
-    { contesto, lunghezzaParagrafi: PARAGRAFI_PER_LUNGHEZZA[input.lunghezza ?? 'media'] ?? 7 },
-    'draft_from_brief',
-  )
-
-  if (!esito.ok) return { ok: false, messaggio: esito.messaggio }
-
-  return { ok: true, dati: { ...esito.dati, modello: conf.textModel } }
+export interface DatiNuovoArticolo {
+  aiAttiva: boolean
+  motivoAiSpenta: string | null
+  categorie: Array<{ id: string; nome: string }>
+  argomenti: ArgomentoBreve[]
 }
 
-/* -------------------------------------------------------------------------- */
-/* Proposta da hot topic — RF-AI-04                                           */
-/* -------------------------------------------------------------------------- */
-
-export async function proponiDaHotTopic(
-  hotTopicId: string,
-  indicazioni?: string,
-): Promise<Esito<Proposta>> {
+export async function datiNuovoArticolo(): Promise<Esito<DatiNuovoArticolo>> {
   const sessione = await redattoreCorrente()
   if (!sessione.ok) return sessione
 
   const payload = await getPayload({ config })
-
-  let topic: Record<string, any>
-  try {
-    topic = (await payload.findByID({
-      collection: 'hot-topics',
-      id: hotTopicId,
-      depth: 1,
-      overrideAccess: true,
-    })) as Record<string, any>
-  } catch {
-    return { ok: false, messaggio: 'Argomento non trovato.' }
-  }
-
   const conf = await leggiConfigurazione(payload)
 
-  const contesto = [
-    `Argomento: ${topic.title}`,
-    topic.summary ? `\nSintesi delle fonti: ${topic.summary}` : '',
-    Array.isArray(topic.keywords) && topic.keywords.length
-      ? `\nParole chiave ricorrenti: ${topic.keywords.join(', ')}`
-      : '',
-    indicazioni ? `\n\nIndicazioni del redattore: ${indicazioni}` : '',
-  ].join('')
-
-  const fonti = (topic.references ?? []).map((r: Record<string, any>) => ({
-    titolo: String(r.title ?? ''),
-    url: String(r.url ?? ''),
-    testata: r.publisher ? String(r.publisher) : undefined,
-  }))
-
-  const esito = await generaBozza(
-    { payload, utenteId: sessione.utente.id },
-    { contesto, fonti },
-    'draft_from_topic',
-  )
-
-  if (!esito.ok) return { ok: false, messaggio: esito.messaggio }
-
-  // L'argomento passa "in lavorazione": segnala agli altri che qualcuno ci sta
-  // già mettendo mano, così due redattori non scrivono lo stesso pezzo.
-  try {
-    await payload.update({
+  const [cats, topics] = await Promise.all([
+    payload.find({ collection: 'categories', limit: 50, sort: 'order', overrideAccess: true }),
+    payload.find({
       collection: 'hot-topics',
-      id: hotTopicId,
+      where: { status: { equals: 'nuovo' } },
+      sort: '-score',
+      limit: 8,
+      depth: 0,
       overrideAccess: true,
-      data: { status: 'in_lavorazione' } as never,
-    })
-  } catch {
-    /* non bloccante */
-  }
+    }),
+  ])
 
-  return { ok: true, dati: { ...esito.dati, modello: conf.textModel } }
+  return {
+    ok: true,
+    dati: {
+      aiAttiva: conf.enabled,
+      motivoAiSpenta: conf.enabled ? null : conf.disabledMessage,
+      categorie: cats.docs.map((c) => {
+        const x = c as unknown as { id: string; name: string }
+        return { id: String(x.id), nome: x.name }
+      }),
+      argomenti: topics.docs.map((d) => {
+        const t = d as unknown as {
+          id: string
+          title: string
+          suggestedCategory?: string | null
+          references?: Array<{ publisher?: string | null }> | null
+        }
+        const testate = [
+          ...new Set((t.references ?? []).map((r) => r.publisher).filter(Boolean) as string[]),
+        ]
+        return {
+          id: String(t.id),
+          titolo: t.title,
+          fonti: t.references?.length ?? 0,
+          testate,
+          categoriaId: t.suggestedCategory ? String(t.suggestedCategory) : null,
+        }
+      }),
+    },
+  }
 }
 
 /* -------------------------------------------------------------------------- */
-/* Dalla proposta alla bozza — RF-AI-08                                       */
+/* Bozza scritta dall'AI — RF-AI-04 (hot topic) e RF-AI-05 (appunti)          */
 /* -------------------------------------------------------------------------- */
 
-export async function portaInBozza(input: {
-  proposta: Proposta
+export interface RichiestaBozzaAi {
+  partenza: 'appunti' | 'hot_topic'
+  /** Gli appunti del redattore, o le indicazioni facoltative per un hot topic. */
+  testo?: string
+  hotTopicId?: string
   categoriaId?: string | null
-  hotTopicId?: string | null
-  brief?: string | null
-}): Promise<Esito<{ urlModifica: string }>> {
+  lunghezza?: string
+  taglio?: string | null
+}
+
+export async function scriviBozzaAi(
+  input: RichiestaBozzaAi,
+): Promise<Esito<{ urlModifica: string }>> {
   const sessione = await redattoreCorrente()
   if (!sessione.ok) return sessione
 
   const payload = await getPayload({ config })
+  const conf = await leggiConfigurazione(payload)
+  const testo = (input.testo ?? '').trim()
+  const taglio = input.taglio ? `\n\nTaglio richiesto: ${input.taglio}.` : ''
+  const lunghezzaParagrafi = PARAGRAFI_PER_LUNGHEZZA[input.lunghezza ?? 'media'] ?? 7
+
+  let contesto: string
+  let fonti: Array<{ titolo: string; url: string; testata?: string }> | undefined
+  let categoriaId = input.categoriaId ?? null
+
+  if (input.partenza === 'appunti') {
+    if (testo.length < 20) {
+      return {
+        ok: false,
+        messaggio: 'Gli appunti sono troppo scarni: scrivi almeno il fatto e il contesto.',
+      }
+    }
+    contesto = testo + taglio
+  } else {
+    if (!input.hotTopicId) return { ok: false, messaggio: 'Scegli un argomento.' }
+
+    let topic: Record<string, any>
+    try {
+      topic = (await payload.findByID({
+        collection: 'hot-topics',
+        id: input.hotTopicId,
+        depth: 0,
+        overrideAccess: true,
+      })) as Record<string, any>
+    } catch {
+      return { ok: false, messaggio: 'Argomento non trovato: forse è stato scartato.' }
+    }
+
+    contesto = [
+      `Argomento: ${topic.title}`,
+      topic.summary ? `\nSintesi delle fonti: ${topic.summary}` : '',
+      Array.isArray(topic.keywords) && topic.keywords.length
+        ? `\nParole chiave ricorrenti: ${topic.keywords.join(', ')}`
+        : '',
+      testo ? `\n\nIndicazioni del redattore: ${testo}` : '',
+      taglio,
+    ].join('')
+
+    fonti = (topic.references ?? []).map((r: Record<string, any>) => ({
+      titolo: String(r.title ?? ''),
+      url: String(r.url ?? ''),
+      testata: r.publisher ? String(r.publisher) : undefined,
+    }))
+
+    categoriaId ??= topic.suggestedCategory ? String(topic.suggestedCategory) : null
+  }
+
+  const esito = await generaBozza(
+    { payload, utenteId: sessione.utente.id },
+    { contesto, fonti, lunghezzaParagrafi },
+    input.partenza === 'appunti' ? 'draft_from_brief' : 'draft_from_topic',
+  )
+  if (!esito.ok) return { ok: false, messaggio: esito.messaggio }
 
   try {
-    const esito = await creaBozzaDaProposta({
+    const creato = await creaBozzaDaProposta({
       payload,
       utenteId: sessione.utente.id,
-      proposta: input.proposta,
-      categoriaId: input.categoriaId ?? null,
-      hotTopicId: input.hotTopicId ?? null,
-      brief: input.brief ?? null,
-      modello: input.proposta.modello,
+      proposta: esito.dati,
+      categoriaId,
+      hotTopicId: input.partenza === 'hot_topic' ? (input.hotTopicId ?? null) : null,
+      brief: testo || null,
+      modello: conf.textModel,
     })
-
-    if (!esito.ok) return esito
+    if (!creato.ok) return creato
 
     revalidatePath('/admin/hot-topic')
-    return { ok: true, dati: { urlModifica: esito.dati.urlModifica } }
+    return { ok: true, dati: { urlModifica: creato.dati.urlModifica } }
   } catch (err) {
     return { ok: false, messaggio: `Creazione della bozza fallita: ${(err as Error).message}` }
   }

@@ -1,6 +1,7 @@
 import type { Endpoint, PayloadRequest } from 'payload'
 import { slugify } from '@esperia/shared'
 import { bozzaInLexical, generaBozza } from '@/lib/ai/genera'
+import { puntiDaVerificare } from '@/lib/ai/creaBozza'
 
 /**
  * Genera una bozza d'articolo e la salva nel workflow — RF-AI-04, RF-AI-05, RF-AI-08.
@@ -174,6 +175,7 @@ export const generaBozzaEndpoint: Endpoint = {
           model: (config as Record<string, any>).textModel,
           generatedAt: new Date().toISOString(),
           brief: brief ?? undefined,
+          checks: puntiDaVerificare(bozza),
           humanReviewed: false,
         },
       },

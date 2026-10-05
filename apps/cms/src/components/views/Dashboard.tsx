@@ -3,6 +3,7 @@ import type { AdminViewServerProps } from 'payload'
 import { roleAtLeast, statoVisibile, type StaffRole } from '@esperia/shared'
 
 import { PastigliaStato } from '../PastigliaStato'
+import { PulsanteNuovoArticolo } from '../nav/PulsanteNuovoArticolo'
 import { contaModerazione } from '@/lib/supabase'
 
 import './Dashboard.scss'
@@ -164,9 +165,7 @@ export async function Dashboard({ initPageResult }: AdminViewServerProps) {
               : 'Ecco a che punto sono i tuoi pezzi.'}
           </p>
         </div>
-        <Link className="cruscotto__nuovo" href="/admin/collections/articles/create">
-          + Nuovo articolo
-        </Link>
+        <PulsanteNuovoArticolo className="cruscotto__nuovo">+ Nuovo articolo</PulsanteNuovoArticolo>
       </header>
 
       <div className="cruscotto__griglia">
