@@ -2,6 +2,7 @@ import type { AdminViewServerProps } from 'payload'
 import { DefaultTemplate } from '@payloadcms/next/templates'
 
 import { Icona } from '@/components/Icona'
+import { Briciole } from '../Briciole'
 import { leggiConfigurazione } from '@/lib/ai/client'
 import { ElencoHotTopic, type ArgomentoVista } from './ElencoHotTopic'
 
@@ -87,6 +88,7 @@ async function ContenutoHotTopic({ initPageResult }: AdminViewServerProps) {
 
   return (
     <div className="ai-vista">
+      <Briciole voci={[{ label: 'Hot topic' }]} />
       <header className="ai-intestazione">
         <h1>Hot topic</h1>
         <p>Argomenti che più testate stanno coprendo nelle ultime ore.</p>

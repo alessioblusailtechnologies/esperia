@@ -42,7 +42,7 @@ export const AiSettings: GlobalConfig = {
               label: 'Modulo AI attivo',
               admin: {
                 description:
-                  'Se disattivato, gli strumenti AI spariscono dal backoffice con un messaggio informativo e il resto della piattaforma continua a funzionare normalmente (RNF-10).',
+                  'Se disattivato, gli strumenti AI spariscono dal backoffice con un messaggio informativo e il resto della piattaforma continua a funzionare normalmente.',
               },
             },
             {
@@ -58,7 +58,7 @@ export const AiSettings: GlobalConfig = {
               label: 'Tetto di spesa mensile indicativo (EUR)',
               admin: {
                 description:
-                  'Superata questa soglia il backoffice mostra un avviso. Non blocca le chiamate: serve a rendere visibile il consumo (RF-AI-10).',
+                  'Superata questa soglia il backoffice mostra un avviso. Non blocca le chiamate: serve a rendere visibile il consumo.',
               },
             },
           ],
@@ -72,7 +72,7 @@ export const AiSettings: GlobalConfig = {
               name: 'anthropicApiKey',
               label: 'Chiave API Anthropic',
               description:
-                'Chiave intestata al Committente. Cifrata prima del salvataggio, mai restituita in chiaro (RF-AI-09).',
+                'Chiave intestata al Committente. Cifrata prima del salvataggio, mai restituita in chiaro.',
             }),
             {
               name: 'textModel',
@@ -226,7 +226,7 @@ export const AiSettings: GlobalConfig = {
               name: 'imagesEnabled',
               type: 'checkbox',
               defaultValue: false,
-              label: 'Generazione immagini attiva (RF-AI-07)',
+              label: 'Generazione immagini attiva',
             },
             {
               name: 'imageProvider',

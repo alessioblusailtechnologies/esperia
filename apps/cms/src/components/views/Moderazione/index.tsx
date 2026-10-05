@@ -9,6 +9,7 @@ import {
   type VoceModerazione,
 } from '@/lib/supabase'
 import { CodaModerazione } from './CodaModerazione'
+import { Briciole } from '../Briciole'
 
 import './Moderazione.scss'
 
@@ -172,6 +173,7 @@ export async function Moderazione(props: AdminViewServerProps) {
       user={initPageResult.req.user ?? undefined}
       visibleEntities={initPageResult.visibleEntities}
     >
+      <Briciole voci={[{ label: 'Moderazione' }]} />
       <ContenutoModerazione {...props} />
     </DefaultTemplate>
   )

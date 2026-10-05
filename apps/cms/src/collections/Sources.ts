@@ -92,7 +92,7 @@ export const Sources: CollectionConfig = {
       admin: {
         position: 'sidebar',
         description:
-          'Moltiplicatore applicato agli argomenti che arrivano da questa fonte (RF-AI-03). 1 = neutro.',
+          'Moltiplicatore applicato agli argomenti che arrivano da questa fonte. 1 = neutro.',
       },
     },
 

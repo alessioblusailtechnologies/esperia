@@ -1,0 +1,140 @@
+@import url('https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600;6..72,700;6..72,800&display=swap');
+
+/* =============================================================================
+   Token del tema
+   -----------------------------------------------------------------------------
+   Payload ricava i colori di ogni componente da una scala `--color-base-*`
+   (che ricalca nelle `--theme-elevation-*`) e i raggi da tre variabili.
+   Ridefinendole con i toni caldi di Esperia, anche le schermate che non
+   ritocchiamo una per una restano nello stesso linguaggio.
+   ============================================================================= */
+
+:root {
+  /* --- Scala calda: 0 è la scheda, 50 il pannello, poi i fili e il testo --- */
+  --color-base-0: #fffdf8;
+  --color-base-50: #faf7f0;
+  --color-base-100: #f1ebdd;
+  --color-base-150: #e6dfd1;
+  --color-base-200: #ddd5c5;
+  --color-base-250: #d3cab8;
+  --color-base-300: #cdc4b2;
+  --color-base-350: #c0b7a4;
+  --color-base-400: #b3ab98;
+  --color-base-450: #a49b8b;
+  --color-base-500: #968d7d;
+  --color-base-550: #8a8378;
+  --color-base-600: #7a7368;
+  --color-base-650: #6b6459;
+  --color-base-700: #5c554a;
+  --color-base-750: #4a443a;
+  --color-base-800: #3a352c;
+  --color-base-850: #2b261f;
+  --color-base-900: #211d18;
+  --color-base-950: #1a1713;
+  --color-base-1000: #16130f;
+
+  /* Successo ed errore nei toni della testata, non nell'azzurro di Payload. */
+  --color-success-100: #e2f1e7;
+  --color-success-150: #cfe7d7;
+  --color-success-200: #b8dcc4;
+  --color-success-500: #2f7d4f;
+  --color-success-600: #266a42;
+  --color-success-750: #1e5434;
+  --color-error-100: #fbe9e7;
+  --color-error-150: #f6d3cf;
+  --color-error-200: #f0bcb6;
+  --color-error-500: #b3261e;
+  --color-error-600: #9a2019;
+  --color-error-750: #7c1a14;
+  --color-warning-100: #fbf0d9;
+  --color-warning-500: #c98a12;
+  --color-warning-600: #855a0c;
+
+  /* --- Superfici, come in Moonbrand Studio --------------------------------- */
+  --theme-bg: #faf7f0;
+  --theme-input-bg: #fffdf8;
+  --theme-text: #211d18;
+  --theme-border-color: #e6dfd1;
+  --theme-overlay: rgba(22, 19, 15, 0.55);
+
+  --esperia-pannello: #faf7f0;
+  --esperia-scheda: #fffdf8;
+  --esperia-superficie: #f1ebdd;
+  --esperia-filo: #e6dfd1;
+  --esperia-filo-forte: #cdc4b2;
+  --esperia-testo: #211d18;
+  --esperia-testo-corpo: #6b6459;
+  --esperia-testo-tenue: #968d7d;
+
+  /* --- Tipografia ---------------------------------------------------------- */
+  /* L'interfaccia è in Geist; Newsreader, il carattere della testata, resta
+     solo dove si scrive l'articolo (titolo e corpo nell'editor) e nel marchio. */
+  --font-body: Geist, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-serif: Newsreader, Georgia, 'Times New Roman', serif;
+  --font-mono: 'Geist Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  /* --- Forma --------------------------------------------------------------- */
+  --style-radius-s: 8px;
+  --style-radius-m: 12px;
+  --style-radius-l: 16px;
+  --raggio-scheda: 18px;
+  --raggio-pillola: 999px;
+
+  --ombra-menu: 0 18px 48px rgba(33, 29, 24, 0.16);
+  --ombra-scheda: 0 1px 2px rgba(33, 29, 24, 0.04), 0 8px 24px -8px rgba(33, 29, 24, 0.08);
+
+  --nav-width: 264px;
+  --ease-esperia: cubic-bezier(0.2, 0, 0.2, 1);
+  --accessibility-outline: 2px solid var(--esperia-accento);
+
+  /* --- Accento e marchio --------------------------------------------------- */
+  /* Il backoffice usa il verde-petrolio, non il rosso del portale: separa a
+     colpo d'occhio lo strumento di lavoro dal sito pubblico. */
+  --esperia-accento: #1d5c63;
+  --esperia-accento-scuro: #164a50;
+  --esperia-accento-chiaro: #6fb5bd;
+  --esperia-accento-tenue: #bfe3e6;
+  --esperia-accento-tinta: #e3f1f2;
+  --esperia-oro: #e8b04b;
+  --esperia-rosso: #b3261e;
+  --esperia-scuro: #211d18;
+  --esperia-scuro-filo: #3a352c;
+  --esperia-scuro-tenue: #a49b8b;
+  --esperia-verde: #2f7d4f;
+
+  /* La cornice scura che contiene la navigazione. */
+  --esperia-cornice: #211d18;
+  --esperia-cornice-filo: #3a352c;
+  --esperia-cornice-testo: #cdc4b2;
+  --esperia-cornice-tenue: #8a8378;
+  --esperia-cornice-tenue-chiaro: #a49b8b;
+  --esperia-cornice-sopra: rgba(255, 253, 248, 0.06);
+  --esperia-cornice-attiva: rgba(255, 253, 248, 0.1);
+
+  /* Il segno dell'AI: oro, sempre e solo per ciò che il modello ha scritto o
+     propone. Nessun altro elemento dell'interfaccia usa questo colore. */
+  --esperia-ai: #e8b04b;
+  --esperia-ai-tinta: #fbf0d9;
+  --esperia-ai-testo: #855a0c;
+
+  /* Stati editoriali — usati dalla pastiglia e dai riquadri di riepilogo. */
+  --stato-bozza-bg: #f1ebdd;
+  --stato-bozza-fg: #6b6459;
+  --stato-revisione-bg: #f6dccf;
+  --stato-revisione-fg: #9c4a1e;
+  --stato-approvato-bg: #e3f1f2;
+  --stato-approvato-fg: #1d5c63;
+  --stato-programmato-bg: #e6e1f2;
+  --stato-programmato-fg: #57488c;
+  --stato-pubblicato-bg: #e2f1e7;
+  --stato-pubblicato-fg: #2f7d4f;
+}
+
+body {
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+  background: var(--esperia-accento-tenue);
+}

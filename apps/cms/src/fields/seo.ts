@@ -41,7 +41,7 @@ export const seoField: Field = {
       relationTo: 'media',
       label: 'Immagine per la condivisione social',
       admin: {
-        description: 'Formato ideale 1200×630. Usata da Open Graph e Twitter Card (RF-P-06).',
+        description: 'Formato ideale 1200×630. Usata da Open Graph e Twitter Card.',
       },
     },
     {

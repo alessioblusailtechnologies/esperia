@@ -10,10 +10,12 @@ import { anyone, authenticated, isEditor } from '@/access'
  */
 export const Media: CollectionConfig = {
   slug: 'media',
-  labels: { singular: 'Media', plural: 'Media library' },
+  labels: { singular: 'Immagine', plural: 'Media' },
   admin: {
     group: 'Contenuti',
-    defaultColumns: ['filename', 'alt', 'mimeType', 'filesize'],
+    // Tipo e peso del file sono dettagli tecnici: in elenco bastano
+    // anteprima, nome, testo alternativo e data.
+    defaultColumns: ['filename', 'alt', 'updatedAt'],
   },
   hooks: {
     beforeChange: [
@@ -70,7 +72,7 @@ export const Media: CollectionConfig = {
       label: 'Testo alternativo',
       admin: {
         description:
-          'Descrive l’immagine a chi usa uno screen reader ed è richiesto dalle linee guida di accessibilità (RNF-07). Obbligatorio.',
+          'Descrive l’immagine a chi usa uno screen reader ed è richiesto dalle linee guida di accessibilità. Obbligatorio.',
       },
     },
     {
@@ -95,7 +97,7 @@ export const Media: CollectionConfig = {
       admin: {
         readOnly: true,
         position: 'sidebar',
-        description: 'Impostato automaticamente quando l’immagine arriva dal modulo AI (RF-AI-07).',
+        description: 'Impostato automaticamente quando l’immagine arriva dal modulo AI.',
       },
     },
   ],

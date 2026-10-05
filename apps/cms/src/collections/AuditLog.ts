@@ -52,7 +52,7 @@ export const AuditLog: CollectionConfig = {
       name: 'changedFields',
       type: 'json',
       label: 'Campi modificati',
-      admin: { description: 'Solo i nomi dei campi: il contenuto e nelle revisioni (RF-B-13).' },
+      admin: { description: 'Solo i nomi dei campi: il contenuto e nelle revisioni.' },
     },
     { name: 'ip', type: 'text', label: 'Indirizzo IP' },
   ],

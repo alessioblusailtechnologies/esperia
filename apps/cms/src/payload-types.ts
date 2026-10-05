@@ -162,11 +162,7 @@ export interface UserAuthOperations {
 export interface Article {
   id: string;
   /**
-   * Parte finale dell’indirizzo della pagina. Si genera dal titolo; modificandolo dopo la pubblicazione ricordarsi di creare un redirect.
-   */
-  slug: string;
-  /**
-   * Bozza, In revisione, Approvato. Solo un articolo Approvato puo essere pubblicato (RF-B-05).
+   * Bozza, In revisione, Approvato. Solo un articolo Approvato può essere pubblicato.
    */
   editorialStatus: 'bozza' | 'in_revisione' | 'approvato';
   /**
@@ -180,11 +176,15 @@ export interface Article {
    */
   authors?: (string | User)[] | null;
   /**
-   * Riservato a Editor e Amministratori (RF-P-01).
+   * Riservato a Editor e Amministratori.
    */
   featured?: boolean | null;
   /**
-   * Breve testo sopra il titolo (RF-P-04).
+   * Parte finale dell’indirizzo della pagina. Si genera dal titolo; modificandolo dopo la pubblicazione ricordarsi di creare un redirect.
+   */
+  slug: string;
+  /**
+   * Breve testo sopra il titolo.
    */
   kicker?: string | null;
   title: string;
@@ -222,7 +222,7 @@ export interface Article {
      */
     metaDescription?: string | null;
     /**
-     * Formato ideale 1200×630. Usata da Open Graph e Twitter Card (RF-P-06).
+     * Formato ideale 1200×630. Usata da Open Graph e Twitter Card.
      */
     ogImage?: (string | null) | Media;
     /**
@@ -232,7 +232,7 @@ export interface Article {
     noIndex?: boolean | null;
   };
   /**
-   * Se lasciato vuoto, il portale propone automaticamente articoli della stessa categoria che condividono i tag (RF-P-04).
+   * Se lasciato vuoto, il portale propone automaticamente articoli della stessa categoria che condividono i tag.
    */
   relatedArticles?: (string | Article)[] | null;
   ai?: {
@@ -241,7 +241,7 @@ export interface Article {
     model?: string | null;
     generatedAt?: string | null;
     /**
-     * RF-AI-05.
+     * Le indicazioni date all’AI per scrivere la bozza.
      */
     brief?: string | null;
     checks?:
@@ -254,7 +254,7 @@ export interface Article {
       | boolean
       | null;
     /**
-     * Si spunta dal riquadro «Prima di inviare». Senza, una bozza AI non passa In revisione e quindi non raggiunge il portale (RF-AI-08).
+     * Si spunta dal riquadro «Prima di inviare». Senza, una bozza AI non passa In revisione e quindi non raggiunge il portale.
      */
     humanReviewed?: boolean | null;
   };
@@ -281,7 +281,7 @@ export interface Category {
    */
   description?: string | null;
   /**
-   * Valori più bassi compaiono prima. RF-B-08.
+   * Valori più bassi compaiono prima.
    */
   order?: number | null;
   /**
@@ -302,7 +302,7 @@ export interface Category {
      */
     metaDescription?: string | null;
     /**
-     * Formato ideale 1200×630. Usata da Open Graph e Twitter Card (RF-P-06).
+     * Formato ideale 1200×630. Usata da Open Graph e Twitter Card.
      */
     ogImage?: (string | null) | Media;
     /**
@@ -321,7 +321,7 @@ export interface Category {
 export interface Media {
   id: string;
   /**
-   * Descrive l’immagine a chi usa uno screen reader ed è richiesto dalle linee guida di accessibilità (RNF-07). Obbligatorio.
+   * Descrive l’immagine a chi usa uno screen reader ed è richiesto dalle linee guida di accessibilità. Obbligatorio.
    */
   alt: string;
   caption?: string | null;
@@ -330,7 +330,7 @@ export interface Media {
    */
   credit?: string | null;
   /**
-   * Impostato automaticamente quando l’immagine arriva dal modulo AI (RF-AI-07).
+   * Impostato automaticamente quando l’immagine arriva dal modulo AI.
    */
   aiGenerated?: boolean | null;
   updatedAt: string;
@@ -445,7 +445,7 @@ export interface HotTopic {
   summary?: string | null;
   status: 'nuovo' | 'in_lavorazione' | 'convertito' | 'scartato';
   /**
-   * Volume x freschezza x affinita con la linea editoriale (RF-AI-03).
+   * Volume x freschezza x affinita con la linea editoriale.
    */
   score: number;
   detectedAt: string;
@@ -465,7 +465,7 @@ export interface HotTopic {
       }[]
     | null;
   /**
-   * Valorizzato quando un redattore trasforma l argomento in bozza (RF-AI-04).
+   * Valorizzato quando un redattore trasforma l argomento in bozza.
    */
   generatedArticle?: (string | null) | Article;
   /**
@@ -504,7 +504,7 @@ export interface Source {
    */
   pollIntervalMinutes?: number | null;
   /**
-   * Moltiplicatore applicato agli argomenti che arrivano da questa fonte (RF-AI-03). 1 = neutro.
+   * Moltiplicatore applicato agli argomenti che arrivano da questa fonte. 1 = neutro.
    */
   weight?: number | null;
   lastFetchedAt?: string | null;
@@ -554,7 +554,7 @@ export interface Page {
      */
     metaDescription?: string | null;
     /**
-     * Formato ideale 1200×630. Usata da Open Graph e Twitter Card (RF-P-06).
+     * Formato ideale 1200×630. Usata da Open Graph e Twitter Card.
      */
     ogImage?: (string | null) | Media;
     /**
@@ -663,7 +663,7 @@ export interface AuditLog {
   statusFrom?: string | null;
   statusTo?: string | null;
   /**
-   * Solo i nomi dei campi: il contenuto e nelle revisioni (RF-B-13).
+   * Solo i nomi dei campi: il contenuto e nelle revisioni.
    */
   changedFields?:
     | {
@@ -898,13 +898,13 @@ export interface PayloadMigration {
  * via the `definition` "articles_select".
  */
 export interface ArticlesSelect<T extends boolean = true> {
-  slug?: T;
   editorialStatus?: T;
   publishedAt?: T;
   category?: T;
   tags?: T;
   authors?: T;
   featured?: T;
+  slug?: T;
   kicker?: T;
   title?: T;
   subtitle?: T;
@@ -1284,11 +1284,11 @@ export interface SiteSetting {
   tagline?: string | null;
   logo?: (string | null) | Media;
   /**
-   * Usata quando un contenuto non ha ne immagine social ne copertina (RF-P-06). Formato 1200x630.
+   * Usata quando un contenuto non ha ne immagine social ne copertina. Formato 1200x630.
    */
   defaultOgImage?: (string | null) | Media;
   /**
-   * Ragione sociale usata nei dati strutturati schema.org come Publisher (RF-P-07).
+   * Ragione sociale usata nei dati strutturati schema.org come Publisher.
    */
   publisherName?: string | null;
   /**
@@ -1301,7 +1301,7 @@ export interface SiteSetting {
   companyDetails?: string | null;
   editorInChief?: string | null;
   /**
-   * Se valorizzata, ha la precedenza sugli articoli marcati In evidenza. Vuota = ordinamento automatico per data (RF-P-01).
+   * Se valorizzata, ha la precedenza sugli articoli marcati In evidenza. Vuota = ordinamento automatico per data.
    */
   featuredArticles?: (string | Article)[] | null;
   /**
@@ -1323,7 +1323,7 @@ export interface SiteSetting {
       }[]
     | null;
   /**
-   * Senza @. Usato nella Twitter Card (RF-P-06).
+   * Senza @. Usato nella Twitter Card.
    */
   twitterHandle?: string | null;
   contactEmail?: string | null;
@@ -1335,14 +1335,14 @@ export interface SiteSetting {
   };
   analytics?: {
     /**
-     * Plausible e Umami non usano cookie e non richiedono consenso preventivo: sono la scelta piu semplice sul piano GDPR (RNF-04).
+     * Plausible e Umami non usano cookie e non richiedono consenso preventivo: sono la scelta piu semplice sul piano GDPR.
      */
     provider?: ('nessuno' | 'plausible' | 'umami' | 'ga4') | null;
     siteId?: string | null;
     scriptUrl?: string | null;
   };
   /**
-   * Un commento che contiene uno di questi termini, come parola intera e senza badare ad accenti e maiuscole, arriva in moderazione con il segnale "Segnalato in automatico". Non viene bloccato: decide comunque la redazione (RF-C-06).
+   * Un commento che contiene uno di questi termini, come parola intera e senza badare ad accenti e maiuscole, arriva in moderazione con il segnale "Segnalato in automatico". Non viene bloccato: decide comunque la redazione.
    */
   moderationTerms?: string[] | null;
   maintenanceMode?: boolean | null;
@@ -1359,16 +1359,16 @@ export interface SiteSetting {
 export interface AiSetting {
   id: string;
   /**
-   * Se disattivato, gli strumenti AI spariscono dal backoffice con un messaggio informativo e il resto della piattaforma continua a funzionare normalmente (RNF-10).
+   * Se disattivato, gli strumenti AI spariscono dal backoffice con un messaggio informativo e il resto della piattaforma continua a funzionare normalmente.
    */
   enabled?: boolean | null;
   disabledMessage?: string | null;
   /**
-   * Superata questa soglia il backoffice mostra un avviso. Non blocca le chiamate: serve a rendere visibile il consumo (RF-AI-10).
+   * Superata questa soglia il backoffice mostra un avviso. Non blocca le chiamate: serve a rendere visibile il consumo.
    */
   monthlyBudgetEur?: number | null;
   /**
-   * Chiave intestata al Committente. Cifrata prima del salvataggio, mai restituita in chiaro (RF-AI-09).
+   * Chiave intestata al Committente. Cifrata prima del salvataggio, mai restituita in chiaro.
    */
   anthropicApiKey?: string | null;
   /**

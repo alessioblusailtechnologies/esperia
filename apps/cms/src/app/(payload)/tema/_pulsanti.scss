@@ -1,0 +1,254 @@
+/* =============================================================================
+   Pulsanti, pillole e piccoli segni — tutti a pillola, come in Moonbrand.
+
+   Payload colora i pulsanti con variabili (--bg-color, --color, --hover-bg,
+   --btn-border…) impostate per ogni stile: ridefiniamo quelle, non le regole.
+   ============================================================================= */
+
+.btn {
+  --btn-font-weight: 600;
+
+  border-radius: var(--raggio-pillola);
+  font-family: var(--font-body);
+  letter-spacing: 0;
+  transition:
+    background-color 120ms var(--ease-esperia),
+    border-color 120ms var(--ease-esperia),
+    transform 120ms var(--ease-esperia);
+
+  &:active:not(:disabled):not(.btn--disabled) {
+    transform: scale(0.97);
+  }
+
+  &:focus-visible {
+    outline: var(--accessibility-outline);
+    outline-offset: 2px;
+  }
+}
+
+.btn--size-medium {
+  --btn-padding-block-start: 8px;
+  --btn-padding-block-end: 8px;
+  --btn-padding-inline-start: 16px;
+  --btn-padding-inline-end: 16px;
+
+  font-size: 13px;
+}
+
+.btn--size-small {
+  --btn-padding-inline-start: 12px;
+  --btn-padding-inline-end: 12px;
+
+  font-size: 12px;
+}
+
+.btn--size-large {
+  --btn-padding-block-start: 10px;
+  --btn-padding-block-end: 10px;
+  --btn-padding-inline-start: 22px;
+  --btn-padding-inline-end: 22px;
+
+  font-size: 14px;
+}
+
+/* Primario: il verde-petrolio della redazione. */
+.btn--style-primary {
+  --bg-color: var(--esperia-accento);
+  --color: #fff;
+  --hover-bg: var(--esperia-accento-scuro);
+  --hover-color: #fff;
+  --btn-border: 1.5px solid transparent;
+  --hover-btn-border: 1.5px solid transparent;
+}
+
+/* Il pulsante di pubblicazione col suo menu: le due metà formano una pillola. */
+.form-submit .btn--withPopup {
+  display: flex;
+  border-radius: var(--raggio-pillola);
+}
+
+.form-submit .btn--withPopup > .btn {
+  border-radius: var(--raggio-pillola) 0 0 var(--raggio-pillola);
+}
+
+.form-submit .btn--withPopup .popup-button {
+  border-left: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 0 var(--raggio-pillola) var(--raggio-pillola) 0;
+  background: var(--esperia-accento);
+  color: #fff;
+
+  &:hover {
+    background: var(--esperia-accento-scuro);
+  }
+}
+
+/* Secondario: contorno, sfondo scheda. */
+.btn--style-secondary {
+  --bg-color: var(--esperia-scheda);
+  --color: var(--esperia-testo);
+  --hover-bg: var(--esperia-scheda);
+  --hover-color: var(--esperia-testo);
+  --btn-border: 1.5px solid var(--esperia-filo-forte);
+  --hover-btn-border: 1.5px solid var(--esperia-testo);
+}
+
+/* Pillola e tenue: fondo «incassato», per le azioni di contorno. */
+.btn--style-pill,
+.btn--style-subtle {
+  --bg-color: var(--esperia-superficie);
+  --color: var(--esperia-testo);
+  --hover-bg: var(--esperia-filo);
+  --hover-color: var(--esperia-testo);
+  --btn-border: 1.5px solid transparent;
+  --hover-btn-border: 1.5px solid transparent;
+}
+
+.btn--style-error {
+  --bg-color: var(--esperia-rosso);
+  --color: #fff;
+  --hover-bg: #9a2019;
+}
+
+/* Pulsanti a sola icona: tondi, sfondo al passaggio. */
+.btn--icon-style-without-border,
+.btn--style-icon-label {
+  border-radius: var(--raggio-pillola);
+}
+
+/* --------------------------------------------------------------------------
+   Pillole di Payload (conteggi, etichette, valori multipli)
+   -------------------------------------------------------------------------- */
+
+.pill {
+  border-radius: var(--raggio-pillola);
+  font-family: var(--font-body);
+  font-weight: 600;
+}
+
+.pill--style-light,
+.pill--style-light-gray,
+.pill--style-gray {
+  background: var(--esperia-superficie);
+  color: var(--esperia-testo-corpo);
+}
+
+.pill--style-dark {
+  background: var(--esperia-testo);
+  color: var(--esperia-pannello);
+}
+
+.pill--style-success {
+  background: var(--stato-pubblicato-bg);
+  color: var(--stato-pubblicato-fg);
+}
+
+.pill--style-warning {
+  background: var(--stato-revisione-bg);
+  color: var(--stato-revisione-fg);
+}
+
+.pill--style-error {
+  background: #fbe9e7;
+  color: var(--esperia-rosso);
+}
+
+/* Il segno «AI», lo stesso ovunque. */
+.segno-ai {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  height: 22px;
+  padding: 0 9px;
+  border-radius: var(--raggio-pillola);
+  background: var(--esperia-ai-tinta);
+  color: var(--esperia-ai-testo);
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.segno-ai--con-icona {
+  padding-left: 7px;
+}
+
+/* Le azioni delle viste costruite da noi (Moderazione, Hot topic): stessa
+   pillola dei pulsanti di Payload. */
+.azione {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 34px;
+  padding: 0 14px;
+  border: 1.5px solid var(--esperia-filo-forte);
+  border-radius: var(--raggio-pillola);
+  background: var(--esperia-scheda);
+  color: var(--esperia-testo);
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    background-color 120ms var(--ease-esperia),
+    border-color 120ms var(--ease-esperia);
+}
+
+.azione:hover:not(:disabled) {
+  border-color: var(--esperia-testo);
+  background: var(--esperia-scheda);
+  color: var(--esperia-testo);
+}
+
+.azione:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.azione--primaria {
+  border-color: transparent;
+  background: var(--esperia-accento);
+  color: #fff;
+}
+
+.azione--primaria:hover:not(:disabled) {
+  border-color: transparent;
+  background: var(--esperia-accento-scuro);
+  color: #fff;
+}
+
+.azione--pericolo {
+  border-color: transparent;
+  background: #fbe9e7;
+  color: var(--esperia-rosso);
+}
+
+.azione--pericolo:hover:not(:disabled) {
+  border-color: var(--esperia-rosso);
+  background: #fbe9e7;
+  color: var(--esperia-rosso);
+}
+
+.azione--tenue {
+  border-color: transparent;
+  background: transparent;
+  color: var(--esperia-testo-corpo);
+}
+
+.azione--tenue:hover:not(:disabled) {
+  border-color: transparent;
+  background: var(--esperia-superficie);
+  color: var(--esperia-testo);
+}
+
+/* L'azione che chiama l'AI: in oro, come ogni suo segno. */
+.azione--ai {
+  border-color: transparent;
+  background: var(--esperia-ai);
+  color: #2b1d04;
+}
+
+.azione--ai:hover:not(:disabled) {
+  border-color: transparent;
+  background: #edbd63;
+  color: #2b1d04;
+}

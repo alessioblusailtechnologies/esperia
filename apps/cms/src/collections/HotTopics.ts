@@ -63,7 +63,7 @@ export const HotTopics: CollectionConfig = {
       admin: {
         position: 'sidebar',
         readOnly: true,
-        description: 'Volume x freschezza x affinita con la linea editoriale (RF-AI-03).',
+        description: 'Volume x freschezza x affinita con la linea editoriale.',
       },
     },
     {
@@ -114,7 +114,7 @@ export const HotTopics: CollectionConfig = {
       label: 'Articolo generato',
       admin: {
         readOnly: true,
-        description: 'Valorizzato quando un redattore trasforma l argomento in bozza (RF-AI-04).',
+        description: 'Valorizzato quando un redattore trasforma l argomento in bozza.',
       },
     },
     {

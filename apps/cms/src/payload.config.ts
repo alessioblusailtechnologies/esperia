@@ -56,6 +56,11 @@ export default buildConfig({
 
   admin: {
     user: Users.slug,
+    // Il tema Esperia è disegnato in chiaro: la variante scura di Payload
+    // mescolerebbe i suoi grigi freddi con la nostra scala calda.
+    theme: 'light',
+    // Date all'italiana in elenchi e intestazioni («5 ott 2026, 14:56»).
+    dateFormat: 'd MMM yyyy, HH:mm',
     meta: {
       titleSuffix: ' — Esperia',
       description: 'Backoffice editoriale della piattaforma Esperia',
@@ -102,6 +107,41 @@ export default buildConfig({
   i18n: {
     supportedLanguages: { it },
     fallbackLanguage: 'it',
+    // Alcune traduzioni di Payload suonano meccaniche («<No Titolo>»,
+    // «Modificare», «Crea Nuovo»): le riscriviamo nel tono del backoffice.
+    translations: {
+      it: {
+        general: {
+          createNew: 'Nuovo',
+          // Forme neutre al genere: «un nuovo Categoria» è sbagliato, e la
+          // stessa frase serve a categorie, tag, articoli, immagini.
+          createNewLabel: 'Aggiungi {{label}}',
+          creatingNewLabel: 'Aggiungi {{label}}',
+          newLabel: 'Aggiungi {{label}}',
+          edit: 'Modifica',
+          noLabel: '—',
+          loading: 'Caricamento…',
+          perPage: 'Per pagina: {{limit}}',
+          searchBy: 'Cerca per {{label}}',
+          selectValue: 'Scegli…',
+          columns: 'Colonne',
+          filters: 'Filtri',
+          true: 'Sì',
+          false: 'No',
+        },
+        fields: {
+          chooseFromExisting: 'Scegli dall’archivio',
+          addNew: 'Aggiungi',
+          addNewLabel: 'Aggiungi {{label}}',
+          newLabel: 'Aggiungi {{label}}',
+          uploadNewLabel: 'Carica {{label}}',
+        },
+        upload: {
+          dragAndDropHere: 'oppure trascina qui un file',
+          bulkUpload: 'Carica più file',
+        },
+      },
+    },
   },
 
   collections: [

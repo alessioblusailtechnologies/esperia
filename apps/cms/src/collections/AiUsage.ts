@@ -46,8 +46,8 @@ export const AiUsage: CollectionConfig = {
       options: AI_OPERATIONS.map((value) => ({ value, label: value.replace(/_/g, ' ') })),
       admin: { readOnly: true },
     },
-    { name: 'inputTokens', type: 'number', defaultValue: 0, admin: { readOnly: true } },
-    { name: 'outputTokens', type: 'number', defaultValue: 0, admin: { readOnly: true } },
+    { name: 'inputTokens', type: 'number', defaultValue: 0, label: 'Token in ingresso', admin: { readOnly: true } },
+    { name: 'outputTokens', type: 'number', defaultValue: 0, label: 'Token in uscita', admin: { readOnly: true } },
     {
       name: 'totalTokens',
       type: 'number',

@@ -46,7 +46,7 @@ export const Categories: CollectionConfig = {
       admin: {
         position: 'sidebar',
         step: 10,
-        description: 'Valori più bassi compaiono prima. RF-B-08.',
+        description: 'Valori più bassi compaiono prima.',
       },
     },
     {

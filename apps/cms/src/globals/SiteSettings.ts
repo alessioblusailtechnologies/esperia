@@ -51,9 +51,9 @@ export const SiteSettings: GlobalConfig = {
       type: 'tabs',
       tabs: [
         {
-          label: 'Identita',
+          label: 'Identità',
           fields: [
-            { name: 'siteName', type: 'text', required: true, defaultValue: 'Esperia' },
+            { name: 'siteName', type: 'text', required: true, defaultValue: 'Esperia', label: 'Nome del sito' },
             {
               name: 'tagline',
               type: 'text',
@@ -68,7 +68,7 @@ export const SiteSettings: GlobalConfig = {
               label: 'Immagine social di riserva',
               admin: {
                 description:
-                  'Usata quando un contenuto non ha ne immagine social ne copertina (RF-P-06). Formato 1200x630.',
+                  'Usata quando un contenuto non ha ne immagine social ne copertina. Formato 1200x630.',
               },
             },
             {
@@ -77,7 +77,7 @@ export const SiteSettings: GlobalConfig = {
               label: 'Editore',
               admin: {
                 description:
-                  'Ragione sociale usata nei dati strutturati schema.org come Publisher (RF-P-07).',
+                  'Ragione sociale usata nei dati strutturati schema.org come Publisher.',
               },
             },
             /*
@@ -119,7 +119,7 @@ export const SiteSettings: GlobalConfig = {
               label: 'Apertura manuale',
               admin: {
                 description:
-                  'Se valorizzata, ha la precedenza sugli articoli marcati In evidenza. Vuota = ordinamento automatico per data (RF-P-01).',
+                  'Se valorizzata, ha la precedenza sugli articoli marcati In evidenza. Vuota = ordinamento automatico per data.',
               },
             },
             {
@@ -133,9 +133,10 @@ export const SiteSettings: GlobalConfig = {
                   type: 'relationship',
                   relationTo: 'categories',
                   required: true,
+                  label: 'Categoria',
                 },
                 { name: 'title', type: 'text', label: 'Titolo della sezione' },
-                { name: 'limit', type: 'number', defaultValue: 4, min: 2, max: 12 },
+                { name: 'limit', type: 'number', defaultValue: 4, min: 2, max: 12, label: 'Articoli mostrati' },
               ],
             },
           ],
@@ -152,6 +153,7 @@ export const SiteSettings: GlobalConfig = {
                   name: 'platform',
                   type: 'select',
                   required: true,
+                  label: 'Piattaforma',
                   options: [
                     { value: 'facebook', label: 'Facebook' },
                     { value: 'instagram', label: 'Instagram' },
@@ -161,14 +163,14 @@ export const SiteSettings: GlobalConfig = {
                     { value: 'tiktok', label: 'TikTok' },
                   ],
                 },
-                { name: 'url', type: 'text', required: true },
+                { name: 'url', type: 'text', required: true, label: 'Indirizzo' },
               ],
             },
             {
               name: 'twitterHandle',
               type: 'text',
               label: 'Handle X/Twitter',
-              admin: { description: 'Senza @. Usato nella Twitter Card (RF-P-06).' },
+              admin: { description: 'Senza @. Usato nella Twitter Card.' },
             },
             { name: 'contactEmail', type: 'email', label: 'Email di redazione' },
           ],
@@ -218,6 +220,7 @@ export const SiteSettings: GlobalConfig = {
                   name: 'provider',
                   type: 'select',
                   defaultValue: 'nessuno',
+                  label: 'Servizio di statistiche',
                   options: [
                     { value: 'nessuno', label: 'Nessuno' },
                     { value: 'plausible', label: 'Plausible (senza cookie)' },
@@ -226,7 +229,7 @@ export const SiteSettings: GlobalConfig = {
                   ],
                   admin: {
                     description:
-                      'Plausible e Umami non usano cookie e non richiedono consenso preventivo: sono la scelta piu semplice sul piano GDPR (RNF-04).',
+                      'Plausible e Umami non usano cookie e non richiedono consenso preventivo: sono la scelta piu semplice sul piano GDPR.',
                   },
                 },
                 {
@@ -260,7 +263,7 @@ export const SiteSettings: GlobalConfig = {
               access: { read: isEditorField },
               admin: {
                 description:
-                  'Un commento che contiene uno di questi termini, come parola intera e senza badare ad accenti e maiuscole, arriva in moderazione con il segnale "Segnalato in automatico". Non viene bloccato: decide comunque la redazione (RF-C-06).',
+                  'Un commento che contiene uno di questi termini, come parola intera e senza badare ad accenti e maiuscole, arriva in moderazione con il segnale "Segnalato in automatico". Non viene bloccato: decide comunque la redazione.',
               },
             },
           ],

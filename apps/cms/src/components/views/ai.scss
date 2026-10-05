@@ -491,19 +491,3 @@
   color: #5c554a;
   margin: 0;
 }
-
-/* L'unico pulsante della vista che chiama l'AI: in oro, come ogni suo segno. */
-.azione--ai {
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-  border-color: transparent;
-  background: var(--esperia-ai);
-  color: #2b1d04;
-}
-
-.azione--ai:hover:not(:disabled) {
-  border-color: transparent;
-  background: #edbd63;
-  color: #2b1d04;
-}

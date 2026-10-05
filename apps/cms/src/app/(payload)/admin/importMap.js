@@ -1,5 +1,7 @@
 import { VerificaAi as VerificaAi_203753434beab4c83f59efea63afd73a } from '@/components/verifica/VerificaAi'
 import { CellaStato as CellaStato_29396452c01c85f32df0cb67d28bba77 } from '@/components/CellaStato'
+import { CellaOrigine as CellaOrigine_ede9a5b0e0314f18e6596c711f2a9fc8 } from '@/components/elenco/CellaOrigine'
+import { CellaTitoloArticolo as CellaTitoloArticolo_07b6fe7a1b739cf46c3c0ef32eaf5ffb } from '@/components/elenco/CellaTitoloArticolo'
 import { RscEntryLexicalCell as RscEntryLexicalCell_44fe37237e0ebf4470c9990d8cb7b07e } from '@payloadcms/richtext-lexical/rsc'
 import { RscEntryLexicalField as RscEntryLexicalField_44fe37237e0ebf4470c9990d8cb7b07e } from '@payloadcms/richtext-lexical/rsc'
 import { LexicalDiffComponent as LexicalDiffComponent_44fe37237e0ebf4470c9990d8cb7b07e } from '@payloadcms/richtext-lexical/rsc'
@@ -27,6 +29,8 @@ import { RelationshipFeatureClient as RelationshipFeatureClient_e70f5e05f09f93e0
 import { BlockquoteFeatureClient as BlockquoteFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { InlineToolbarFeatureClient as InlineToolbarFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { PannelloAssistente as PannelloAssistente_cecaaf1e7e1a4ed03e5c1626d829c36e } from '@/components/assistente/PannelloAssistente'
+import { SchedeArticoli as SchedeArticoli_58f6836733788bd07694fba24e54bd48 } from '@/components/elenco/SchedeArticoli'
+import { AzioneNuovoArticolo as AzioneNuovoArticolo_b5a8169444a50d5bf448f194ea96f847 } from '@/components/elenco/AzioneNuovoArticolo'
 import { NavLaterale as NavLaterale_de2a0ee0c6be975314796bb42af8f8ae } from '@/components/nav/NavLaterale'
 import { Icona as Icona_d216cb1d0a1719f968f43929b4881650 } from '@/components/Marchio'
 import { Logo as Logo_d216cb1d0a1719f968f43929b4881650 } from '@/components/Marchio'
@@ -39,6 +43,8 @@ import { CollectionCards as CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1 } f
 export const importMap = {
   "@/components/verifica/VerificaAi#VerificaAi": VerificaAi_203753434beab4c83f59efea63afd73a,
   "@/components/CellaStato#CellaStato": CellaStato_29396452c01c85f32df0cb67d28bba77,
+  "@/components/elenco/CellaOrigine#CellaOrigine": CellaOrigine_ede9a5b0e0314f18e6596c711f2a9fc8,
+  "@/components/elenco/CellaTitoloArticolo#CellaTitoloArticolo": CellaTitoloArticolo_07b6fe7a1b739cf46c3c0ef32eaf5ffb,
   "@payloadcms/richtext-lexical/rsc#RscEntryLexicalCell": RscEntryLexicalCell_44fe37237e0ebf4470c9990d8cb7b07e,
   "@payloadcms/richtext-lexical/rsc#RscEntryLexicalField": RscEntryLexicalField_44fe37237e0ebf4470c9990d8cb7b07e,
   "@payloadcms/richtext-lexical/rsc#LexicalDiffComponent": LexicalDiffComponent_44fe37237e0ebf4470c9990d8cb7b07e,
@@ -66,6 +72,8 @@ export const importMap = {
   "@payloadcms/richtext-lexical/client#BlockquoteFeatureClient": BlockquoteFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "@payloadcms/richtext-lexical/client#InlineToolbarFeatureClient": InlineToolbarFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "@/components/assistente/PannelloAssistente#PannelloAssistente": PannelloAssistente_cecaaf1e7e1a4ed03e5c1626d829c36e,
+  "@/components/elenco/SchedeArticoli#SchedeArticoli": SchedeArticoli_58f6836733788bd07694fba24e54bd48,
+  "@/components/elenco/AzioneNuovoArticolo#AzioneNuovoArticolo": AzioneNuovoArticolo_b5a8169444a50d5bf448f194ea96f847,
   "@/components/nav/NavLaterale#NavLaterale": NavLaterale_de2a0ee0c6be975314796bb42af8f8ae,
   "@/components/Marchio#Icona": Icona_d216cb1d0a1719f968f43929b4881650,
   "@/components/Marchio#Logo": Logo_d216cb1d0a1719f968f43929b4881650,

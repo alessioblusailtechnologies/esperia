@@ -1,0 +1,275 @@
+/* =============================================================================
+   Campi dei moduli — etichetta piccola in maiuscoletto, campo «scheda» con
+   bordo caldo, fuoco in inchiostro. Come i campi di Moonbrand Studio.
+   ============================================================================= */
+
+/* `.unstyled` è l'etichetta che Payload riusa dentro pillole e intestazioni. */
+.field-label:not(.unstyled) {
+  margin-bottom: 6px;
+  font-family: var(--font-body);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--esperia-testo-corpo);
+
+  .required {
+    color: var(--esperia-accento);
+  }
+}
+
+.field-description {
+  margin-top: 6px;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--esperia-testo-tenue);
+}
+
+/* --------------------------------------------------------------------------
+   Input di testo, aree di testo, date e ricerca
+   -------------------------------------------------------------------------- */
+
+.field-type input:not([type='checkbox']):not([type='radio']):not([type='file']):not(.rs__input),
+.field-type textarea,
+.react-datepicker__input-container input,
+.search-filter__input {
+  min-height: 42px;
+  padding: 10px 14px;
+  border: 1.5px solid var(--esperia-filo);
+  border-radius: var(--style-radius-m);
+  background: var(--esperia-scheda);
+  box-shadow: none;
+  color: var(--esperia-testo);
+  font-family: var(--font-body);
+  font-size: 14px;
+  transition: border-color 120ms var(--ease-esperia);
+
+  &::placeholder {
+    color: var(--esperia-testo-tenue);
+  }
+
+  &:hover:not(:focus):not(:disabled) {
+    border-color: var(--esperia-filo-forte);
+  }
+
+  &:focus,
+  &:focus-within {
+    border-color: var(--esperia-testo);
+    outline: 0;
+    box-shadow: none;
+  }
+
+  &:disabled,
+  &[readonly] {
+    background: var(--esperia-superficie);
+    color: var(--esperia-testo-corpo);
+  }
+}
+
+.field-type textarea {
+  line-height: 1.55;
+}
+
+.field-type.error input,
+.field-type.error textarea,
+.field-type.error .rs__control {
+  border-color: var(--esperia-rosso);
+  background: #fffaf9;
+}
+
+/* --------------------------------------------------------------------------
+   Selettori (react-select) e relazioni
+   -------------------------------------------------------------------------- */
+
+.rs__control {
+  min-height: 42px;
+  border: 1.5px solid var(--esperia-filo) !important;
+  border-radius: var(--style-radius-m) !important;
+  background: var(--esperia-scheda) !important;
+  box-shadow: none !important;
+  font-family: var(--font-body);
+  font-size: 14px;
+
+  &:hover {
+    border-color: var(--esperia-filo-forte) !important;
+  }
+}
+
+.rs__control--is-focused,
+.rs__control--menu-is-open {
+  border-color: var(--esperia-testo) !important;
+}
+
+.rs__placeholder {
+  color: var(--esperia-testo-tenue);
+}
+
+.rs__menu {
+  overflow: hidden;
+  margin-top: 6px !important;
+  border: 1px solid var(--esperia-filo);
+  border-radius: 14px !important;
+  background: var(--esperia-scheda) !important;
+  box-shadow: var(--ombra-menu) !important;
+}
+
+.rs__menu-list {
+  padding: 4px !important;
+}
+
+.rs__option {
+  border-radius: 10px;
+  color: var(--esperia-testo) !important;
+  font-size: 14px;
+  cursor: pointer !important;
+}
+
+.rs__option--is-focused {
+  background: var(--esperia-superficie) !important;
+}
+
+.rs__option--is-selected {
+  background: var(--esperia-accento-tinta) !important;
+  color: var(--esperia-accento) !important;
+  font-weight: 600;
+}
+
+/* I valori scelti in un campo multiplo: pillole calde. */
+.rs__multi-value,
+.multi-value {
+  border-radius: var(--raggio-pillola) !important;
+  background: var(--esperia-superficie) !important;
+  font-size: 13px;
+}
+
+.rs__multi-value__remove,
+.multi-value-remove {
+  border-radius: var(--raggio-pillola) !important;
+}
+
+/* Il «+» accanto a un selettore: tondo, come i pulsanti a icona. */
+.relationship-add-new__add-button {
+  width: 42px;
+  height: 42px;
+  border: 1.5px solid var(--esperia-filo);
+  border-radius: var(--raggio-pillola);
+  background: var(--esperia-scheda);
+  color: var(--esperia-testo);
+
+  &:hover {
+    border-color: var(--esperia-testo);
+  }
+}
+
+.rs__value-container {
+  padding: 2px 10px !important;
+}
+
+/* --------------------------------------------------------------------------
+   Caselle di spunta e scelte
+   -------------------------------------------------------------------------- */
+
+.checkbox-input__input {
+  width: 20px;
+  height: 20px;
+  min-height: 0;
+  border: 1.5px solid var(--esperia-filo-forte);
+  border-radius: 6px;
+  background: var(--esperia-scheda);
+  box-shadow: none;
+}
+
+.checkbox-input--checked .checkbox-input__input {
+  border-color: var(--esperia-accento);
+  background: var(--esperia-accento);
+  color: #fff;
+}
+
+.checkbox-input__icon .stroke {
+  stroke: #fff;
+}
+
+.radio-input__styled-radio {
+  border: 1.5px solid var(--esperia-filo-forte);
+}
+
+.radio-input--is-selected .radio-input__styled-radio {
+  border: 6px solid var(--esperia-testo);
+}
+
+/* --------------------------------------------------------------------------
+   Caricamento file e immagine di copertina
+   -------------------------------------------------------------------------- */
+
+.dropzone {
+  border: 1.5px dashed var(--esperia-filo-forte);
+  border-radius: 14px;
+  background: var(--esperia-scheda);
+}
+
+.dropzone--dragging {
+  border-color: var(--esperia-accento);
+  background: var(--esperia-accento-tinta);
+}
+
+.file-details,
+.upload-relationship-details,
+.file-field__upload {
+  border-radius: 14px;
+}
+
+/* --------------------------------------------------------------------------
+   Gruppi, righe ripetibili, blocchi, sezioni richiudibili
+   -------------------------------------------------------------------------- */
+
+.collapsible {
+  border: 1px solid var(--esperia-filo);
+  border-radius: 14px;
+  background: var(--esperia-scheda);
+}
+
+.collapsible__toggle-wrap {
+  border-radius: 14px 14px 0 0;
+  background: var(--esperia-superficie);
+}
+
+.collapsible--collapsed .collapsible__toggle-wrap {
+  border-radius: 14px;
+}
+
+.array-field__header,
+.blocks-field__header {
+  margin-bottom: 10px;
+}
+
+.group-field {
+  border-color: var(--esperia-filo);
+}
+
+/* --------------------------------------------------------------------------
+   Calendario delle date
+   -------------------------------------------------------------------------- */
+
+.react-datepicker {
+  overflow: hidden;
+  border: 1px solid var(--esperia-filo) !important;
+  border-radius: 14px !important;
+  background: var(--esperia-scheda) !important;
+  box-shadow: var(--ombra-menu);
+  font-family: var(--font-body) !important;
+}
+
+.react-datepicker__header {
+  border-bottom-color: var(--esperia-filo) !important;
+  background: var(--esperia-pannello) !important;
+}
+
+.react-datepicker__day {
+  border-radius: 8px !important;
+}
+
+.react-datepicker__day--selected,
+.react-datepicker__time-list-item--selected {
+  background: var(--esperia-accento) !important;
+  color: #fff !important;
+}

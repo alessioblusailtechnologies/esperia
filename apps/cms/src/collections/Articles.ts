@@ -45,10 +45,18 @@ export const Articles: CollectionConfig = {
 
   admin: {
     useAsTitle: 'title',
-    // Colonne dai design (Articoli v1). Niente _status: la pastiglia di
-    // editorialStatus lo incorpora gia (vedi statoVisibile), e due colonne
-    // di stato affiancate si contraddicono a colpo docchio.
-    defaultColumns: ['title', 'authors', 'category', 'editorialStatus', 'publishedAt', 'updatedAt'],
+    // Colonne come nel prototipo: il titolo porta con sé sezione e firma,
+    // poi stato, origine (redazione o bozza AI) e date. Niente _status: la
+    // pastiglia di editorialStatus lo incorpora già (vedi statoVisibile).
+    defaultColumns: ['title', 'editorialStatus', 'origine', 'publishedAt', 'updatedAt'],
+    components: {
+      // «Nuovo articolo» nella barra in alto apre la stessa finestra della
+      // navigazione; le schede per stato stanno sopra la tabella.
+      views: {
+        list: { actions: ['@/components/elenco/AzioneNuovoArticolo#AzioneNuovoArticolo'] },
+      },
+      beforeListTable: ['@/components/elenco/SchedeArticoli#SchedeArticoli'],
+    },
     group: 'Contenuti',
     // Anteprima dell'articolo come apparira' sul portale — RF-B-04.
     preview: (doc) => previewUrl(doc?.slug),
@@ -124,7 +132,6 @@ export const Articles: CollectionConfig = {
     /* ------------------------------------------------------------------ */
     /* Sidebar: stato, workflow, pubblicazione                            */
     /* ------------------------------------------------------------------ */
-    slugField('title'),
     {
       name: 'editorialStatus',
       type: 'select',
@@ -138,7 +145,7 @@ export const Articles: CollectionConfig = {
       admin: {
         position: 'sidebar',
         description:
-          'Bozza, In revisione, Approvato. Solo un articolo Approvato puo essere pubblicato (RF-B-05).',
+          'Bozza, In revisione, Approvato. Solo un articolo Approvato può essere pubblicato.',
         components: {
           // In elenco la pastiglia unisce stato editoriale e pubblicazione:
           // vedi statoVisibile() in packages/shared.
@@ -153,7 +160,7 @@ export const Articles: CollectionConfig = {
       index: true,
       admin: {
         position: 'sidebar',
-        date: { pickerAppearance: 'dayAndTime', displayFormat: 'dd/MM/yyyy HH:mm' },
+        date: { pickerAppearance: 'dayAndTime', displayFormat: 'd MMM yyyy, HH:mm' },
         description: 'Impostata automaticamente alla prima pubblicazione.',
       },
     },
@@ -193,7 +200,21 @@ export const Articles: CollectionConfig = {
       access: { update: isEditorField },
       admin: {
         position: 'sidebar',
-        description: 'Riservato a Editor e Amministratori (RF-P-01).',
+        description: 'Riservato a Editor e Amministratori.',
+      },
+    },
+    // In fondo: si genera dal titolo e di rado va toccato.
+    slugField('title'),
+
+    /* ------------------------------------------------------------------ */
+    /* Colonna «Origine» dell'elenco: redazione o bozza AI                */
+    /* ------------------------------------------------------------------ */
+    {
+      name: 'origine',
+      type: 'ui',
+      label: 'Origine',
+      admin: {
+        components: { Cell: '@/components/elenco/CellaOrigine#CellaOrigine' },
       },
     },
 
@@ -211,9 +232,17 @@ export const Articles: CollectionConfig = {
               type: 'text',
               label: 'Occhiello',
               maxLength: 80,
-              admin: { description: 'Breve testo sopra il titolo (RF-P-04).' },
+              admin: { description: 'Breve testo sopra il titolo.' },
             },
-            { name: 'title', type: 'text', required: true, label: 'Titolo' },
+            {
+              name: 'title',
+              type: 'text',
+              required: true,
+              label: 'Titolo',
+              admin: {
+                components: { Cell: '@/components/elenco/CellaTitoloArticolo#CellaTitoloArticolo' },
+              },
+            },
             { name: 'subtitle', type: 'text', label: 'Sottotitolo', maxLength: 200 },
             {
               name: 'excerpt',
@@ -283,7 +312,7 @@ export const Articles: CollectionConfig = {
                             label: 'URL',
                             admin: {
                               description:
-                                'YouTube, X, Instagram, Vimeo. L embed viene caricato solo dopo il consenso ai cookie (RF-P-09).',
+                                'YouTube, X, Instagram, Vimeo. L embed viene caricato solo dopo il consenso ai cookie.',
                             },
                           },
                           { name: 'caption', type: 'text', label: 'Didascalia' },
@@ -313,7 +342,7 @@ export const Articles: CollectionConfig = {
               filterOptions: ({ id }) => ({ id: { not_equals: id } }),
               admin: {
                 description:
-                  'Se lasciato vuoto, il portale propone automaticamente articoli della stessa categoria che condividono i tag (RF-P-04).',
+                  'Se lasciato vuoto, il portale propone automaticamente articoli della stessa categoria che condividono i tag.',
               },
             },
           ],
@@ -358,7 +387,7 @@ export const Articles: CollectionConfig = {
                   name: 'brief',
                   type: 'textarea',
                   label: 'Brief fornito alla generazione',
-                  admin: { readOnly: true, description: 'RF-AI-05.' },
+                  admin: { readOnly: true, description: 'Le indicazioni date all’AI per scrivere la bozza.' },
                 },
                 {
                   // I punti che l'AI ha segnalato scrivendo la bozza:
@@ -377,7 +406,7 @@ export const Articles: CollectionConfig = {
                   admin: {
                     readOnly: true,
                     description:
-                      'Si spunta dal riquadro «Prima di inviare». Senza, una bozza AI non passa In revisione e quindi non raggiunge il portale (RF-AI-08).',
+                      'Si spunta dal riquadro «Prima di inviare». Senza, una bozza AI non passa In revisione e quindi non raggiunge il portale.',
                   },
                 },
               ],

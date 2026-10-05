@@ -1,0 +1,136 @@
+/* =============================================================================
+   Menu a comparsa, pannelli laterali, finestre di conferma, notifiche.
+   ============================================================================= */
+
+.popup__content {
+  padding: 6px;
+  border: 1px solid var(--esperia-filo);
+  border-radius: 14px;
+  background: var(--esperia-scheda);
+  box-shadow: var(--ombra-menu);
+  font-family: var(--font-body);
+}
+
+.popup__caret {
+  display: none;
+}
+
+.popup-button-list__button {
+  border-radius: 10px;
+  color: var(--esperia-testo);
+  font-size: 14px;
+
+  &:hover,
+  &:focus-visible {
+    background: var(--esperia-superficie);
+  }
+}
+
+/* Pannelli laterali (modifica rapida di un documento collegato, scelta media) */
+.drawer__content {
+  border-radius: 20px 0 0 20px;
+  background: var(--esperia-pannello);
+  box-shadow: var(--ombra-menu);
+}
+
+.drawer__blur-bg {
+  background: var(--theme-overlay);
+}
+
+.drawer__header {
+  font-family: var(--font-body);
+}
+
+.drawer__header__title,
+.drawer__header h2 {
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.drawer__header__close,
+.drawer__close {
+  border-radius: var(--raggio-pillola);
+}
+
+/* Finestre di conferma (elimina, esci senza salvare, ripristina versione) */
+.confirmation-modal__wrapper,
+.payload__modal-container .modal-template,
+.leave-without-saving__wrapper,
+.delete-document__template,
+.generate-confirmation__wrapper {
+  padding: 24px;
+  border-radius: 22px;
+  background: var(--esperia-pannello);
+  box-shadow: var(--ombra-menu);
+  font-family: var(--font-body);
+}
+
+.confirmation-modal__wrapper h1,
+.confirmation-modal__wrapper h3 {
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.payload__modal-item {
+  background: var(--theme-overlay);
+}
+
+/* Notifiche: pillola scura in basso, come i toast di Moonbrand. */
+.payload-toast-container .payload-toast-item,
+[data-sonner-toast] {
+  border: 0 !important;
+  border-radius: 14px !important;
+  background: var(--esperia-testo) !important;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.3) !important;
+  color: var(--esperia-pannello) !important;
+  font-family: var(--font-body) !important;
+  font-size: 13px !important;
+}
+
+.payload-toast-item .toast-icon,
+[data-sonner-toast] [data-icon] {
+  color: var(--esperia-accento-chiaro);
+}
+
+.payload-toast-item.toast-error,
+[data-sonner-toast][data-type='error'] {
+  background: var(--esperia-rosso) !important;
+  color: #fff !important;
+}
+
+.payload-toast-item.toast-error .toast-icon,
+[data-sonner-toast][data-type='error'] [data-icon] {
+  color: #fff;
+}
+
+/* Suggerimenti al passaggio del mouse */
+.tooltip {
+  border-radius: 8px;
+  background: var(--esperia-testo);
+  color: var(--esperia-pannello);
+  font-family: var(--font-body);
+  font-size: 12px;
+}
+
+/* Banner informativi di Payload */
+.banner {
+  border-radius: 14px;
+  font-family: var(--font-body);
+}
+
+.banner--type-default {
+  background: var(--esperia-superficie);
+  color: var(--esperia-testo);
+}
+
+.banner--type-success {
+  background: var(--stato-pubblicato-bg);
+  color: var(--stato-pubblicato-fg);
+}
+
+.banner--type-error {
+  background: #fbe9e7;
+  color: var(--esperia-rosso);
+}

@@ -1,0 +1,288 @@
+/* =============================================================================
+   Schermata del documento — intestazione, comandi, schede, colonna destra.
+   Il corpo dell'articolo si scrive in Newsreader, il resto è interfaccia.
+   ============================================================================= */
+
+.doc-header {
+  font-family: var(--font-body);
+}
+
+.doc-header__title {
+  font-size: 24px;
+  font-weight: 600;
+  letter-spacing: -0.025em;
+}
+
+/* Un documento senza titolo: Payload mostra l'ID in una pillola grigia, che
+   alla redazione non dice nulla. */
+.render-title__id {
+  padding: 0;
+  background: none;
+  font-size: 0;
+
+  &::after {
+    content: 'Senza titolo';
+    color: var(--esperia-testo-tenue);
+    font-size: 24px;
+    font-weight: 500;
+  }
+}
+
+/* «Modifica / Versioni»: schede a pillola, come i segmenti di Moonbrand.
+   La scheda API serve agli sviluppatori, non alla redazione. */
+.doc-tabs__tabs {
+  gap: 4px;
+  padding: 3px;
+  border-radius: var(--raggio-pillola);
+  background: var(--esperia-superficie);
+}
+
+.doc-tab {
+  border-radius: var(--raggio-pillola);
+  color: var(--esperia-testo-corpo);
+  font-size: 13px;
+  font-weight: 500;
+
+  &:hover {
+    background: transparent;
+    color: var(--esperia-testo);
+  }
+}
+
+.doc-tab--active {
+  background: var(--esperia-scheda);
+  box-shadow: 0 1px 3px rgba(33, 29, 24, 0.12);
+  color: var(--esperia-testo);
+}
+
+.doc-tab__label {
+  font-weight: inherit;
+}
+
+/* Una scheda sola («Modifica», senza versioni) non è una scelta: la nascondiamo. */
+.doc-tabs__tabs:not(:has(> :nth-child(2))) {
+  display: none;
+}
+
+.doc-tabs__tabs-container a[href$='/api'],
+.doc-tabs__tabs li:has(a[href$='/api']) {
+  display: none;
+}
+
+.pill-version-count {
+  min-width: 20px;
+  border-radius: var(--raggio-pillola);
+  background: var(--esperia-filo);
+}
+
+/* --------------------------------------------------------------------------
+   Barra dei comandi: stato a sinistra, azioni a destra
+   -------------------------------------------------------------------------- */
+
+.doc-controls {
+  border-bottom: 1px solid var(--esperia-filo);
+  background: var(--theme-bg);
+}
+
+.doc-controls__wrapper {
+  align-items: center;
+}
+
+.doc-controls__meta {
+  gap: 18px;
+  font-size: 12.5px;
+}
+
+.doc-controls__label {
+  color: var(--esperia-testo-tenue);
+}
+
+.doc-controls__value {
+  color: var(--esperia-testo);
+  font-weight: 500;
+}
+
+.doc-controls__controls {
+  gap: 8px;
+}
+
+.doc-controls__dots {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--raggio-pillola);
+  background: transparent;
+
+  &:hover {
+    background: var(--esperia-superficie);
+  }
+}
+
+.preview-btn,
+.live-preview-toggler {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--raggio-pillola);
+
+  &:hover {
+    background: var(--esperia-superficie);
+  }
+}
+
+.autosave {
+  color: var(--esperia-testo-tenue);
+  font-size: 12px;
+}
+
+/* --------------------------------------------------------------------------
+   Corpo del documento e colonna destra
+   -------------------------------------------------------------------------- */
+
+.document-fields__edit {
+  padding-top: 24px;
+}
+
+.document-fields__sidebar {
+  overflow-x: hidden;
+  border-left: 1px solid var(--esperia-filo);
+  background: var(--theme-bg);
+}
+
+.document-fields__sidebar-fields {
+  gap: 22px;
+}
+
+.render-fields {
+  --spacing-field: 22px;
+}
+
+/* Schede dei campi («Contenuto / SEO e social / …»): sottolineatura in
+   inchiostro, come le schede dell'elenco. */
+.tabs-field__tabs {
+  gap: 4px;
+  border-bottom: 1px solid var(--esperia-filo);
+}
+
+.tabs-field__tab-button {
+  margin-bottom: -1px;
+  padding: 10px 12px;
+  border-bottom: 2px solid transparent;
+  color: var(--esperia-testo-corpo);
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0;
+
+  &:hover {
+    color: var(--esperia-testo);
+  }
+}
+
+.tabs-field__tab-button--active {
+  border-bottom-color: var(--esperia-testo);
+  color: var(--esperia-testo);
+}
+
+.tabs-field__content-wrap {
+  padding-top: 22px;
+}
+
+/* --------------------------------------------------------------------------
+   Articolo: titolo e corpo nel carattere della testata
+   -------------------------------------------------------------------------- */
+
+.collection-edit--articles #field-title {
+  min-height: 56px;
+  font-family: var(--font-serif);
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: -0.3px;
+  line-height: 1.2;
+}
+
+.collection-edit--articles #field-kicker {
+  color: var(--esperia-accento);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.collection-edit--articles #field-excerpt,
+.collection-edit--articles #field-subtitle {
+  font-family: var(--font-serif);
+  font-size: 17px;
+  line-height: 1.5;
+}
+
+/* Editor del testo */
+.rich-text-lexical .editor,
+.rich-text-lexical .editor-container {
+  border-radius: 14px;
+}
+
+.rich-text-lexical .editor-container {
+  border: 1.5px solid var(--esperia-filo);
+  background: var(--esperia-scheda);
+}
+
+.rich-text-lexical .editor-container:focus-within {
+  border-color: var(--esperia-filo-forte);
+}
+
+/* Barra degli strumenti e riquadro del testo formano un blocco solo. */
+.fixed-toolbar {
+  border: 1.5px solid var(--esperia-filo);
+  border-bottom-width: 1px;
+  border-radius: 14px 14px 0 0;
+  background: var(--esperia-pannello);
+}
+
+.rich-text-lexical:has(.fixed-toolbar) .editor-container {
+  border-top: 0;
+  border-radius: 0 0 14px 14px;
+}
+
+.fixed-toolbar .toolbar-popup__button,
+.fixed-toolbar button {
+  border-radius: 8px;
+}
+
+.fixed-toolbar .toolbar-popup__button:hover,
+.fixed-toolbar button:hover {
+  background: var(--esperia-superficie);
+}
+
+.fixed-toolbar .toolbar-popup__button.active,
+.fixed-toolbar button.active {
+  background: var(--esperia-filo);
+}
+
+.rich-text-lexical .ContentEditable__root {
+  padding-inline: 24px;
+  font-family: var(--font-serif);
+  font-size: 18px;
+  line-height: 1.7;
+  color: var(--esperia-testo);
+}
+
+.rich-text-lexical .ContentEditable__root h2,
+.rich-text-lexical .ContentEditable__root h3,
+.rich-text-lexical .ContentEditable__root h4 {
+  font-family: var(--font-serif);
+  letter-spacing: -0.3px;
+}
+
+.LexicalEditorTheme__placeholder,
+.rich-text-lexical .editor-placeholder {
+  font-family: var(--font-serif);
+  color: var(--esperia-testo-tenue);
+}
+
+/* --------------------------------------------------------------------------
+   Versioni e confronto
+   -------------------------------------------------------------------------- */
+
+.view-version__wrap,
+.versions__wrap {
+  font-family: var(--font-body);
+}

@@ -1,0 +1,152 @@
+/* =============================================================================
+   Cornice dell'admin — struttura da Moonbrand Studio.
+
+   La colonna della navigazione è una cornice scura; la pagina è un pannello
+   chiaro staccato di 8px dai bordi, con gli angoli arrotondati. Larghezza
+   della colonna: 264px estesa, 72px compressa o su tablet, nessuna sul
+   telefono (lì la barra è un menu sopra la pagina).
+
+   Payload apre e chiude la propria nav con le classi --nav-open: le
+   ignoriamo sopra i 768px, perché Payload la chiude su ogni schermo sotto i
+   1440px e la barra sparirebbe a ogni caricamento. Lo stato compresso lo
+   decide la barra stessa (classe .nav-esperia--compatta, ricordata in un
+   cookie).
+   ============================================================================= */
+
+.template-default {
+  --larghezza-nav: var(--nav-width);
+
+  grid-template-columns: var(--larghezza-nav) minmax(0, 1fr);
+  background: var(--esperia-cornice);
+}
+
+.template-default:has(.nav-esperia--compatta) {
+  --larghezza-nav: 72px;
+}
+
+.template-default__wrap {
+  min-height: calc(100vh - 16px);
+  margin: 8px 8px 8px 0;
+  border-radius: 16px;
+  overflow: clip;
+  background: var(--theme-bg);
+}
+
+/* Il pulsante di Payload in alto a sinistra: la barra ha il suo. */
+.template-default__nav-toggler-wrapper {
+  display: none;
+}
+
+@media (min-width: 769px) and (max-width: 1024px) {
+  .template-default {
+    --larghezza-nav: 72px;
+  }
+}
+
+@media (max-width: 768px) {
+  .template-default,
+  .template-default--nav-open,
+  .template-default--nav-hydrated.template-default--nav-open {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .template-default__wrap {
+    min-height: 100vh;
+    margin: 0;
+    border-radius: 0;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Barra in alto: briciole a sinistra, azioni della pagina a destra.
+   -------------------------------------------------------------------------- */
+
+.app-header {
+  background: var(--theme-bg);
+  border-bottom: 1px solid var(--esperia-filo);
+}
+
+.app-header__bg {
+  display: none;
+}
+
+/* Il marchio sta già nella colonna di navigazione. */
+.app-header__logo,
+.app-header .graphic-icon {
+  display: none;
+}
+
+.step-nav {
+  gap: 8px;
+  font-family: var(--font-body);
+  font-size: 14px;
+  color: var(--esperia-testo-corpo);
+
+  a {
+    color: var(--esperia-testo-corpo);
+    text-decoration: none;
+
+    &:hover {
+      color: var(--esperia-testo);
+    }
+  }
+
+  > span:not(.step-nav__last) {
+    color: var(--esperia-filo-forte);
+  }
+}
+
+.step-nav__last {
+  color: var(--esperia-testo);
+  font-weight: 500;
+}
+
+/* Il primo anello porta a /admin, che oggi rimanda agli articoli (la
+   Scrivania è sospesa): lo togliamo insieme alla sua barra. */
+.step-nav__home,
+.step-nav__home + span {
+  display: none;
+}
+
+/* Le azioni della pagina («Nuovo articolo» nell'elenco) stanno qui, come in
+   Moonbrand. L'avatar di Payload è un doppione del piede della barra. */
+.app-header__account {
+  display: none;
+}
+
+.app-header__actions {
+  max-width: none;
+}
+
+.azione-pagina {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 36px;
+  padding: 0 16px;
+  border: 0;
+  border-radius: var(--raggio-pillola);
+  background: var(--esperia-accento);
+  color: #fff;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background-color 120ms var(--ease-esperia);
+
+  &:hover {
+    background: var(--esperia-accento-scuro);
+  }
+
+  &:focus-visible {
+    outline: var(--accessibility-outline);
+    outline-offset: 2px;
+  }
+}
+
+/* Barre di scorrimento sottili e calde dentro il pannello. */
+.template-default__wrap * {
+  scrollbar-width: thin;
+  scrollbar-color: var(--esperia-filo-forte) transparent;
+}

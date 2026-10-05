@@ -1,33 +1,63 @@
 /* Coda di moderazione — dai design (Moderazione v1). */
 
 .moderazione {
+  padding: 0 var(--gutter-h) 48px;
   font-family: var(--font-body);
-  padding-bottom: 48px;
 }
 
+.moderazione__testata {
+  padding-top: 24px;
+  padding-bottom: 18px;
+
+  h1 {
+    margin: 0;
+    font-size: 28px;
+    line-height: 1.15;
+  }
+
+  p {
+    margin: 6px 0 0;
+    color: var(--esperia-testo-corpo);
+  }
+}
+
+/* Schede come quelle dell'elenco articoli: sottolineatura in inchiostro. */
 .moderazione__schede {
   display: flex;
-  background: var(--esperia-pannello);
-  border-bottom: 1px solid var(--theme-border-color);
-  padding: 0 clamp(16px, 2.4vw, 32px);
-  margin: 0 calc(-1 * clamp(16px, 2.4vw, 32px));
+  gap: 4px;
+  overflow-x: auto;
+  box-shadow: inset 0 -1px 0 var(--esperia-filo);
 }
 
 .scheda {
-  font: inherit;
-  font-size: 12.5px;
-  font-weight: 700;
-  padding: 13px 16px;
-  background: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
   border: 0;
   border-bottom: 2px solid transparent;
-  color: #8a8378;
+  background: none;
+  color: var(--esperia-testo-corpo);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  white-space: nowrap;
   cursor: pointer;
+
+  &:hover {
+    color: var(--esperia-testo);
+  }
 }
 
 .scheda--attiva {
-  color: var(--esperia-accento);
-  border-bottom-color: var(--esperia-accento);
+  border-bottom-color: var(--esperia-testo);
+  color: var(--esperia-testo);
+}
+
+.scheda__numero {
+  color: var(--esperia-testo-tenue);
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
 }
 
 .moderazione__messaggio {
@@ -319,58 +349,7 @@
   color: #a49b8b;
 }
 
-.azione {
-  font: inherit;
-  font-size: 12px;
-  font-weight: 700;
-  border: 1px solid #d9d2c4;
-  border-radius: 8px;
-  padding: 9px 15px;
-  background: none;
-  color: #211d18;
-  cursor: pointer;
-}
-
-.azione:hover:not(:disabled) {
-  border-color: #211d18;
-}
-
-.azione:disabled {
-  opacity: 0.45;
-  cursor: not-allowed;
-}
-
-.azione--primaria {
-  background: var(--esperia-accento);
-  border-color: var(--esperia-accento);
-  color: #faf7f0;
-}
-
-.azione--primaria:hover:not(:disabled) {
-  background: var(--esperia-accento-scuro);
-  border-color: var(--esperia-accento-scuro);
-}
-
-.azione--pericolo {
-  border-color: transparent;
-  color: var(--esperia-rosso);
-  font-weight: 600;
-}
-
-.azione--pericolo:hover:not(:disabled) {
-  border-color: var(--esperia-rosso);
-}
-
-.azione--tenue {
-  border-color: transparent;
-  color: #8a8378;
-  font-weight: 600;
-}
-
-.azione--tenue:hover:not(:disabled) {
-  border-color: var(--esperia-rosso);
-  color: var(--esperia-rosso);
-}
+/* I pulsanti .azione stanno nel tema (tema/_pulsanti.scss). */
 
 /* --- Stati vuoti e avvisi ------------------------------------------------- */
 

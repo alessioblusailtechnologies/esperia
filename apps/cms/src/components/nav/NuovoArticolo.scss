@@ -492,19 +492,7 @@
   text-transform: uppercase;
 }
 
-/* Il segno «AI» in linea con un titolo, lo stesso in tutto il backoffice. */
-.segno-ai {
-  display: inline-flex;
-  align-items: center;
-  height: 20px;
-  padding: 0 8px;
-  border-radius: 999px;
-  background: var(--esperia-ai-tinta);
-  color: var(--esperia-ai-testo);
-  font-size: 10.5px;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-}
+/* .segno-ai sta nel tema (tema/_pulsanti.scss). */
 
 @media (max-width: 600px) {
   .nuovo__griglia,

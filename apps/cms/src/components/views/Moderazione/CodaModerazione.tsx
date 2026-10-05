@@ -99,6 +99,11 @@ export function CodaModerazione({
 
   return (
     <div className="moderazione">
+      <header className="moderazione__testata">
+        <h1>Moderazione</h1>
+        <p>Commenti in attesa di approvazione e segnalazioni dei lettori.</p>
+      </header>
+
       <div className="moderazione__schede" role="tablist">
         <button
           type="button"
@@ -107,7 +112,10 @@ export function CodaModerazione({
           className={`scheda${scheda === 'attesa' ? ' scheda--attiva' : ''}`}
           onClick={() => setScheda('attesa')}
         >
-          Commenti in attesa · {inAttesa.filter((v) => !risolti.has(v.id)).length}
+          Commenti in attesa
+          <span className="scheda__numero">
+            {inAttesa.filter((v) => !risolti.has(v.id)).length}
+          </span>
         </button>
         <button
           type="button"
@@ -116,7 +124,10 @@ export function CodaModerazione({
           className={`scheda${scheda === 'segnalazioni' ? ' scheda--attiva' : ''}`}
           onClick={() => setScheda('segnalazioni')}
         >
-          Segnalazioni ricevute · {segnalazioni.filter((v) => !risolti.has(v.id)).length}
+          Segnalazioni ricevute
+          <span className="scheda__numero">
+            {segnalazioni.filter((v) => !risolti.has(v.id)).length}
+          </span>
         </button>
       </div>
 

@@ -1,0 +1,46 @@
+/* =============================================================================
+   Accesso, recupero password e schermate senza navigazione.
+   Stessa cornice scura del backoffice, con la scheda di accesso al centro.
+   ============================================================================= */
+
+.template-minimal {
+  min-height: 100vh;
+  background: var(--esperia-cornice);
+  font-family: var(--font-body);
+}
+
+.template-minimal__wrap {
+  width: min(420px, calc(100vw - 32px));
+  padding: 32px;
+  border-radius: 22px;
+  background: var(--esperia-pannello);
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.35);
+}
+
+.login__brand {
+  margin-bottom: 18px;
+}
+
+.login__form,
+.login__form .form {
+  gap: 14px;
+}
+
+.login__form {
+  padding: 0;
+  border: 0;
+  background: none;
+}
+
+.login .btn--style-primary,
+.forgot-password .btn--style-primary,
+.reset-password .btn--style-primary {
+  width: 100%;
+  margin-top: 6px;
+}
+
+.login a,
+.forgot-password a {
+  color: var(--esperia-accento);
+  font-weight: 500;
+}
