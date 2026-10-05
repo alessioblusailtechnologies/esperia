@@ -236,6 +236,7 @@ export interface EsitoRicerca {
   fontiLette: number
   fontiInErrore: number
   notizieNuove: number
+  notizieInArgomenti: number
   argomentiCreati: number
   argomentiAggiornati: number
 }
@@ -262,6 +263,7 @@ export async function cercaHotTopicOra(): Promise<Esito<EsitoRicerca>> {
         fontiLette: esito.fontiLette,
         fontiInErrore: esito.fontiInErrore,
         notizieNuove: esito.notizieNuove,
+        notizieInArgomenti: esito.notizieInArgomenti,
         argomentiCreati: esito.argomentiCreati,
         argomentiAggiornati: esito.argomentiAggiornati,
       },
@@ -270,4 +272,3 @@ export async function cercaHotTopicOra(): Promise<Esito<EsitoRicerca>> {
     return { ok: false, messaggio: `Ricerca non riuscita: ${(err as Error).message}` }
   }
 }
-

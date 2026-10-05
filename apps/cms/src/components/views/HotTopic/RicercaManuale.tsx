@@ -38,8 +38,7 @@ export function RicercaManuale() {
   useEffect(() => {
     try {
       const salvato = JSON.parse(sessionStorage.getItem(CHIAVE_ESITO) ?? 'null') as
-        | (EsitoMostrato & { quando: number })
-        | null
+        (EsitoMostrato & { quando: number }) | null
       if (salvato && Date.now() - salvato.quando < 60_000) {
         setEsito({ tipo: salvato.tipo, testo: salvato.testo })
       }
@@ -58,19 +57,44 @@ export function RicercaManuale() {
       }
 
       const d = r.dati
-      const parti = [
-        `${d.fontiLette} ${d.fontiLette === 1 ? 'fonte letta' : 'fonti lette'}`,
-        `${d.notizieNuove} ${d.notizieNuove === 1 ? 'notizia nuova' : 'notizie nuove'}`,
-        d.argomentiCreati
-          ? `${d.argomentiCreati} ${d.argomentiCreati === 1 ? 'argomento nuovo' : 'argomenti nuovi'}`
-          : 'nessun argomento nuovo',
-      ]
-      if (d.argomentiAggiornati) parti.push(`${d.argomentiAggiornati} aggiornati`)
+      // Il contatore conta argomenti, non notizie: il messaggio dice dove sono
+      // finite le notizie nuove, altrimenti «1 notizia nuova» con il contatore
+      // fermo sembra un errore.
+      const isolate = d.notizieNuove - d.notizieInArgomenti
+      const parti = [`${d.fontiLette} ${d.fontiLette === 1 ? 'fonte letta' : 'fonti lette'}`]
+      parti.push(
+        d.notizieNuove === 0
+          ? 'nessuna notizia nuova'
+          : `${d.notizieNuove} ${d.notizieNuove === 1 ? 'notizia nuova' : 'notizie nuove'}`,
+      )
+      if (d.argomentiCreati) {
+        parti.push(
+          `${d.argomentiCreati} ${d.argomentiCreati === 1 ? 'argomento nuovo' : 'argomenti nuovi'}`,
+        )
+      }
+      if (d.argomentiAggiornati) {
+        parti.push(
+          d.argomentiAggiornati === 1
+            ? '1 argomento già in elenco ha nuove fonti'
+            : `${d.argomentiAggiornati} argomenti già in elenco hanno nuove fonti`,
+        )
+      }
+      if (!d.argomentiCreati && !d.argomentiAggiornati) parti.push('nessun argomento nuovo')
+      if (isolate > 0) {
+        parti.push(
+          isolate === 1
+            ? '1 notizia ancora da sola: diventa argomento quando la riprende un’altra testata'
+            : `${isolate} notizie ancora da sole: diventano argomento quando le riprende un’altra testata`,
+        )
+      }
       if (d.fontiInErrore) {
         parti.push(`${d.fontiInErrore} ${d.fontiInErrore === 1 ? 'fonte' : 'fonti'} in errore`)
       }
 
-      const nuovo: EsitoMostrato = { tipo: d.fontiInErrore ? 'errore' : 'ok', testo: parti.join(' · ') }
+      const nuovo: EsitoMostrato = {
+        tipo: d.fontiInErrore ? 'errore' : 'ok',
+        testo: parti.join(' · '),
+      }
       setEsito(nuovo)
       ricordaEsito(nuovo)
       router.refresh()
@@ -93,10 +117,7 @@ export function RicercaManuale() {
         )}
       </button>
       {esito && (
-        <p
-          className={`ricerca-manuale__esito ricerca-manuale__esito--${esito.tipo}`}
-          role="status"
-        >
+        <p className={`ricerca-manuale__esito ricerca-manuale__esito--${esito.tipo}`} role="status">
           {esito.testo}
         </p>
       )}

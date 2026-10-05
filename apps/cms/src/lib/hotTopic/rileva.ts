@@ -39,7 +39,14 @@ export interface EsitoRilevamento {
   fontiLette: number
   fontiInErrore: number
   notizieNuove: number
+  /**
+   * Quante delle notizie nuove sono finite in un argomento (nuovo o già
+   * aperto). Le altre restano da sole finché un'altra testata non le riprende:
+   * senza questo dato «1 notizia nuova» sembra non aver prodotto nulla.
+   */
+  notizieInArgomenti: number
   argomentiCreati: number
+  /** Argomenti aperti che hanno ricevuto almeno una notizia che prima non avevano. */
   argomentiAggiornati: number
   notizieCancellate: number
 }
@@ -109,6 +116,7 @@ export async function rilevaHotTopic(
     fontiLette: 0,
     fontiInErrore: 0,
     notizieNuove: 0,
+    notizieInArgomenti: 0,
     argomentiCreati: 0,
     argomentiAggiornati: 0,
     notizieCancellate: 0,
@@ -121,6 +129,8 @@ export async function rilevaHotTopic(
   if (!config.enabled) return { ...esito, saltato: 'Modulo AI disattivato in Impostazioni AI' }
 
   const criteri = { themes: config.themes, boostKeywords: config.boostKeywords }
+  // Le notizie salvate in questo giro: servono a dire dove sono finite.
+  const urlNuovi = new Set<string>()
 
   const { docs: fonti } = await payload.find({
     collection: 'sources',
@@ -223,6 +233,7 @@ export async function rilevaHotTopic(
             },
           })
           esito.notizieNuove++
+          urlNuovi.add(n.url)
         } catch (err) {
           if (codiceDb(err) === '23505') continue
           scartate++
@@ -370,6 +381,8 @@ export async function rilevaHotTopic(
   }
 
   for (const { argomento, riferimenti } of daAggiornare.values()) {
+    const gia = new Set((argomento.references ?? []).map((r) => r.url))
+    const aggiunte = riferimenti.filter((r) => !gia.has(r.url))
     const punteggio = calcolaPunteggio(
       riferimenti.map(perPunteggio),
       argomento.summary ?? '',
@@ -386,7 +399,10 @@ export async function rilevaHotTopic(
         references: riferimenti.map(({ source, ...r }) => ({ ...r, source: source || null })),
       },
     })
-    esito.argomentiAggiornati++
+    // Il raggruppamento si rifà a ogni giro e ritrova sempre gli stessi
+    // argomenti: «aggiornato» solo se è arrivato qualcosa di nuovo.
+    if (aggiunte.length) esito.argomentiAggiornati++
+    esito.notizieInArgomenti += aggiunte.filter((r) => urlNuovi.has(r.url)).length
   }
 
   nuovi.sort((a, b) => b.punteggio - a.punteggio)
@@ -410,6 +426,7 @@ export async function rilevaHotTopic(
         },
       })
       esito.argomentiCreati++
+      esito.notizieInArgomenti += riferimenti.filter((r) => urlNuovi.has(r.url)).length
     } catch (err) {
       // Collisione su clusterKey con un giro concorrente: l'argomento esiste gia'.
       payload.logger.warn(`[hot-topic] creazione saltata: ${(err as Error).message}`)

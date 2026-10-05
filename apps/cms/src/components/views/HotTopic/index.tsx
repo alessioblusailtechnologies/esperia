@@ -37,7 +37,8 @@ async function ContenutoHotTopic({ initPageResult }: AdminViewServerProps) {
       payload.find({
         collection: 'hot-topics',
         where: { status: { in: ['nuovo', 'in_lavorazione'] } },
-        sort: '-score',
+        // I più recenti in cima: la rilevanza si legge sulla barra di ciascuno.
+        sort: '-detectedAt',
         limit: 40,
         depth: 1,
         req,
@@ -102,8 +103,8 @@ async function ContenutoHotTopic({ initPageResult }: AdminViewServerProps) {
         <span>
           <b>Come nascono:</b> raggruppiamo gli articoli delle fonti RSS e diamo un punteggio a
           ciascun argomento, da soli ogni pochi minuti o subito con «Cerca ora».{' '}
-          <b>Qui l’AI non interviene.</b> Entra in gioco solo se scegli
-          «Scrivi bozza con AI», e scrive usando soltanto gli articoli raccolti.
+          <b>Qui l’AI non interviene.</b> Entra in gioco solo se scegli «Scrivi bozza con AI», e
+          scrive usando soltanto gli articoli raccolti.
         </span>
       </p>
 

@@ -1,6 +1,6 @@
 'use client'
 
-import { useMemo, useState, useTransition } from 'react'
+import { useEffect, useMemo, useState, useTransition } from 'react'
 
 import { Icona } from '@/components/Icona'
 import { apriNuovoArticolo } from '@/components/nav/costanti'
@@ -26,13 +26,31 @@ export interface ArgomentoVista {
  * evita un giro di rete per ogni clic su una pastiglia.
  */
 
-const relativo = new Intl.RelativeTimeFormat('it-IT', { numeric: 'auto' })
+const dataOra = new Intl.DateTimeFormat('it-IT', {
+  day: 'numeric',
+  month: 'short',
+  hour: '2-digit',
+  minute: '2-digit',
+  timeZone: 'Europe/Rome',
+})
+const dataOraAnno = new Intl.DateTimeFormat('it-IT', {
+  day: 'numeric',
+  month: 'short',
+  year: 'numeric',
+  hour: '2-digit',
+  minute: '2-digit',
+  timeZone: 'Europe/Rome',
+})
 
-function quando(iso: string | null): string {
+/** Entro l'ora «adesso» o «N minuti fa»; oltre, la data precisa. */
+function quando(iso: string | null, ora: number): string {
   if (!iso) return 'data ignota'
-  const ore = Math.round((new Date(iso).getTime() - Date.now()) / 3_600_000)
-  if (Math.abs(ore) < 24) return relativo.format(ore, 'hour')
-  return relativo.format(Math.round(ore / 24), 'day')
+  const data = new Date(iso)
+  const minuti = Math.floor((ora - data.getTime()) / 60_000)
+  if (minuti < 1) return 'adesso'
+  if (minuti < 60) return `${minuti} ${minuti === 1 ? 'minuto' : 'minuti'} fa`
+  const formato = data.getFullYear() === new Date(ora).getFullYear() ? dataOra : dataOraAnno
+  return formato.format(data)
 }
 
 const FINESTRE = [
@@ -61,6 +79,13 @@ export function ElencoHotTopic({
   const [messaggio, setMessaggio] = useState<{ tipo: 'ok' | 'errore'; testo: string } | null>(null)
 
   const [inCorso, avvia] = useTransition()
+
+  // «N minuti fa» va avanti da solo mentre la pagina resta aperta.
+  const [ora, setOra] = useState(() => Date.now())
+  useEffect(() => {
+    const t = setInterval(() => setOra(Date.now()), 30_000)
+    return () => clearInterval(t)
+  }, [])
 
   const visibili = useMemo(() => {
     const oreMax = FINESTRE.find((f) => f.chiave === finestra)?.ore ?? Number.POSITIVE_INFINITY
@@ -155,8 +180,8 @@ export function ElencoHotTopic({
         <div className="ai-vuoto">
           <h2>Nessun argomento in questa finestra</h2>
           <p>
-            Prova ad allargare l’intervallo o a togliere il filtro per ambito. La rilevazione
-            gira periodicamente sulle fonti configurate in Impostazioni AI.
+            Prova ad allargare l’intervallo o a togliere il filtro per ambito. La rilevazione gira
+            periodicamente sulle fonti configurate in Impostazioni AI.
           </p>
         </div>
       ) : (
@@ -168,7 +193,9 @@ export function ElencoHotTopic({
                   {a.categoriaSuggerita && (
                     <span className="argomento__ambito">{a.categoriaSuggerita.nome}</span>
                   )}
-                  <span className="argomento__quando">· rilevato {quando(a.rilevatoIl)}</span>
+                  <span className="argomento__quando" suppressHydrationWarning>
+                    · rilevato {quando(a.rilevatoIl, ora)}
+                  </span>
                   <span className="argomento__badge">
                     {a.stato === 'in_lavorazione' ? 'In lavorazione' : 'Proposta'}
                   </span>
@@ -215,9 +242,7 @@ export function ElencoHotTopic({
                   </a>
                 ))}
                 {a.fonti.length > 4 && (
-                  <span className="argomento__fonti-altre">
-                    e altre {a.fonti.length - 4}
-                  </span>
+                  <span className="argomento__fonti-altre">e altre {a.fonti.length - 4}</span>
                 )}
               </div>
             )}
