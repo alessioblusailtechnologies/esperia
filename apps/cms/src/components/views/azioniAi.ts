@@ -7,6 +7,7 @@ import config from '@/payload.config'
 import { generaBozza } from '@/lib/ai/genera'
 import { creaBozzaDaProposta } from '@/lib/ai/creaBozza'
 import { leggiConfigurazione } from '@/lib/ai/client'
+import { materialeHotTopic, type FonteMateriale } from '@/lib/ai/materiale'
 import { rilevaHotTopic } from '@/lib/hotTopic/rileva'
 import { redattoreCorrente } from '@/lib/sessioneRedazione'
 
@@ -29,10 +30,11 @@ import { redattoreCorrente } from '@/lib/sessioneRedazione'
 
 type Esito<T> = { ok: true; dati: T } | { ok: false; messaggio: string }
 
-const PARAGRAFI_PER_LUNGHEZZA: Record<string, number> = {
-  breve: 4,
-  media: 7,
-  lunga: 12,
+// Le stesse lunghezze che la finestra «Nuovo articolo» mostra.
+const PAROLE_PER_LUNGHEZZA: Record<string, number> = {
+  breve: 350,
+  media: 700,
+  lunga: 1300,
 }
 
 /* -------------------------------------------------------------------------- */
@@ -127,11 +129,10 @@ export async function scriviBozzaAi(
   const payload = await getPayload({ config })
   const conf = await leggiConfigurazione(payload)
   const testo = (input.testo ?? '').trim()
-  const taglio = input.taglio ? `\n\nTaglio richiesto: ${input.taglio}.` : ''
-  const lunghezzaParagrafi = PARAGRAFI_PER_LUNGHEZZA[input.lunghezza ?? 'media'] ?? 7
+  const parole = PAROLE_PER_LUNGHEZZA[input.lunghezza ?? 'media'] ?? 700
 
   let contesto: string
-  let fonti: Array<{ titolo: string; url: string; testata?: string }> | undefined
+  let fonti: FonteMateriale[] | undefined
   let categoriaId = input.categoriaId ?? null
 
   if (input.partenza === 'appunti') {
@@ -141,7 +142,7 @@ export async function scriviBozzaAi(
         messaggio: 'Gli appunti sono troppo scarni: scrivi almeno il fatto e il contesto.',
       }
     }
-    contesto = testo + taglio
+    contesto = testo
   } else {
     if (!input.hotTopicId) return { ok: false, messaggio: 'Scegli un argomento.' }
 
@@ -163,22 +164,17 @@ export async function scriviBozzaAi(
       Array.isArray(topic.keywords) && topic.keywords.length
         ? `\nParole chiave ricorrenti: ${topic.keywords.join(', ')}`
         : '',
-      testo ? `\n\nIndicazioni del redattore: ${testo}` : '',
-      taglio,
+      testo ? `\n\nIndicazioni del redattore (hanno la precedenza): ${testo}` : '',
     ].join('')
 
-    fonti = (topic.references ?? []).map((r: Record<string, any>) => ({
-      titolo: String(r.title ?? ''),
-      url: String(r.url ?? ''),
-      testata: r.publisher ? String(r.publisher) : undefined,
-    }))
+    fonti = await materialeHotTopic(payload, topic.references ?? [])
 
     categoriaId ??= topic.suggestedCategory ? String(topic.suggestedCategory) : null
   }
 
   const esito = await generaBozza(
     { payload, utenteId: sessione.utente.id },
-    { contesto, fonti, lunghezzaParagrafi },
+    { contesto, fonti, parole, taglio: input.taglio ?? null },
     input.partenza === 'appunti' ? 'draft_from_brief' : 'draft_from_topic',
   )
   if (!esito.ok) return { ok: false, messaggio: esito.messaggio }

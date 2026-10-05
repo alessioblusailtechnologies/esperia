@@ -2,6 +2,7 @@ import type { Endpoint, PayloadRequest } from 'payload'
 import { slugify } from '@esperia/shared'
 import { bozzaInLexical, generaBozza } from '@/lib/ai/genera'
 import { puntiDaVerificare } from '@/lib/ai/creaBozza'
+import { materialeHotTopic, type FonteMateriale } from '@/lib/ai/materiale'
 
 /**
  * Genera una bozza d'articolo e la salva nel workflow — RF-AI-04, RF-AI-05, RF-AI-08.
@@ -40,7 +41,7 @@ export const generaBozzaEndpoint: Endpoint = {
     /* --- Contesto della generazione ------------------------------------- */
 
     let contesto = brief ?? ''
-    let fonti: Array<{ titolo: string; url: string; testata?: string }> = []
+    let fonti: FonteMateriale[] = []
     let categoriaSuggerita = categoryId
     let hotTopic: Record<string, any> | null = null
 
@@ -53,10 +54,7 @@ export const generaBozzaEndpoint: Endpoint = {
           req,
         })) as Record<string, any>
       } catch {
-        return Response.json(
-          { ok: false, messaggio: 'Hot topic non trovato.' },
-          { status: 404 },
-        )
+        return Response.json({ ok: false, messaggio: 'Hot topic non trovato.' }, { status: 404 })
       }
 
       contesto = [
@@ -68,11 +66,7 @@ export const generaBozzaEndpoint: Endpoint = {
         brief ? `\n\nIndicazioni del redattore: ${brief}` : '',
       ].join('')
 
-      fonti = (hotTopic.references ?? []).map((r: Record<string, any>) => ({
-        titolo: String(r.title ?? ''),
-        url: String(r.url ?? ''),
-        testata: r.publisher ? String(r.publisher) : undefined,
-      }))
+      fonti = await materialeHotTopic(req.payload, hotTopic.references ?? [])
 
       categoriaSuggerita ??=
         typeof hotTopic.suggestedCategory === 'object'
@@ -91,11 +85,13 @@ export const generaBozzaEndpoint: Endpoint = {
     if (!esito.ok) {
       // 503 quando l'AI e' spenta o non configurata: e' una condizione di
       // servizio, non un errore del redattore (RNF-10).
-      const stato =
-        esito.motivo === 'disattivato' || esito.motivo === 'non_configurato' ? 503 : 502
-      return Response.json({ ok: false, motivo: esito.motivo, messaggio: esito.messaggio }, {
-        status: stato,
-      })
+      const stato = esito.motivo === 'disattivato' || esito.motivo === 'non_configurato' ? 503 : 502
+      return Response.json(
+        { ok: false, motivo: esito.motivo, messaggio: esito.messaggio },
+        {
+          status: stato,
+        },
+      )
     }
 
     const bozza = esito.dati
@@ -162,7 +158,7 @@ export const generaBozzaEndpoint: Endpoint = {
         kicker: bozza.occhiello,
         excerpt: bozza.sommario,
         slug: slugify(bozza.titolo),
-        content: bozzaInLexical(bozza.paragrafi),
+        content: bozzaInLexical(bozza.corpo),
         category: categoriaSuggerita,
         tags: idTag,
         authors: [req.user.id],

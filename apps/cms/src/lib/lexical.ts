@@ -26,6 +26,11 @@ export function lexicalToPlainText(root: unknown): string {
   const walk = (n: LexicalNode | undefined): void => {
     if (!n || (n.type && SKIPPED_TYPES.has(n.type))) return
     if (typeof n.text === 'string' && n.text) parts.push(n.text)
+    // Il blocco Citazione tiene il testo nei suoi campi, non in nodi figli.
+    const campi = n.fields as { text?: unknown; attribution?: unknown } | undefined
+    if (n.type === 'block' && typeof campi?.text === 'string') {
+      parts.push(campi.text, typeof campi.attribution === 'string' ? campi.attribution : '', '\n')
+    }
     if (Array.isArray(n.children)) {
       for (const child of n.children) walk(child)
       // I nodi di blocco separano le parole: senza questo "fine.Inizio" si fonde.

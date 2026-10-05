@@ -64,7 +64,9 @@ async function risolviTag(payload: Payload, nomi: string[]): Promise<string[]> {
 }
 
 /** La lista «Prima di inviare» come la salva l'articolo (campo `ai.checks`). */
-export function puntiDaVerificare(proposta: BozzaGenerata): Array<{ testo: string; fatto: boolean }> {
+export function puntiDaVerificare(
+  proposta: BozzaGenerata,
+): Array<{ testo: string; fatto: boolean }> {
   return (proposta.puntiDaVerificare ?? [])
     .map((testo) => testo.trim())
     .filter(Boolean)
@@ -133,7 +135,7 @@ export async function creaBozzaDaProposta(
       kicker: proposta.occhiello,
       excerpt: proposta.sommario,
       slug,
-      content: bozzaInLexical(proposta.paragrafi),
+      content: bozzaInLexical(proposta.corpo),
       category: categoria,
       tags,
       authors: [o.utenteId],
