@@ -17,12 +17,14 @@ import { Pages } from '@/collections/Pages'
 import { Redirects } from '@/collections/Redirects'
 import { Sources } from '@/collections/Sources'
 import { HotTopics } from '@/collections/HotTopics'
+import { NewsItems } from '@/collections/NewsItems'
 import { AiUsage } from '@/collections/AiUsage'
 import { AuditLog } from '@/collections/AuditLog'
 import { searchEndpoint } from '@/endpoints/search'
 import { generaBozzaEndpoint } from '@/endpoints/generaBozza'
 import { SiteSettings } from '@/globals/SiteSettings'
 import { AiSettings } from '@/globals/AiSettings'
+import { rilevaHotTopicTask } from '@/jobs/rilevaHotTopic'
 
 const dirname = path.dirname(fileURLToPath(import.meta.url))
 
@@ -112,6 +114,7 @@ export default buildConfig({
     Pages,
     HotTopics,
     Sources,
+    NewsItems,
     Users,
     Redirects,
     AiUsage,
@@ -141,6 +144,7 @@ export default buildConfig({
   // delle fonti (RF-AI-01). In produzione si puo' spostare su un worker separato
   // disattivando autoRun e chiamando /api/payload-jobs/run da un cron esterno.
   jobs: {
+    tasks: [rilevaHotTopicTask],
     autoRun: [
       {
         cron: '* * * * *',

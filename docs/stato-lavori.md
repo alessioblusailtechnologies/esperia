@@ -3,7 +3,7 @@
 Documento di passaggio di consegne. Serve a riprendere lo sviluppo dopo una
 pausa, senza dover ricostruire il contesto leggendo il codice.
 
-**Ultimo aggiornamento:** 8 settembre 2026
+**Ultimo aggiornamento:** 5 ottobre 2026
 **Riferimenti:** [analisi dei requisiti](Analisi_Requisiti_Esperia.docx) ·
 [architettura](architettura.md) · [tracciabilità](tracciabilita-requisiti.md)
 
@@ -23,8 +23,9 @@ Esistono due applicazioni funzionanti, in un monorepo:
 Il database è uno solo, con **tre schemi che non si sovrappongono**: `payload`
 (CMS), `public` (community con RLS), `ricerca` (indice full-text).
 
-Il pezzo grosso ancora da fare è **uno**: il lavoro periodico che rileva gli hot
-topic dalle fonti. Tutto il resto sono completamenti circoscritti.
+Il rilevamento degli hot topic gira con le fonti RSS / Atom; restano da
+scrivere gli adattatori delle altre fonti, che dipendono dalla scelta del
+Committente. Tutto il resto sono completamenti circoscritti.
 
 ---
 
@@ -86,7 +87,8 @@ comandi, non l'abbiamo resa uno script perché non serve in produzione.
 | Navigazione per flusso di lavoro con contatori delle code | ✅ |
 | Dashboard a cinque code (miei pezzi, revisione, programmati, hot topic, moderazione) | ✅ |
 | Coda di moderazione: approva/rifiuta/elimina, blocco utente, azioni di gruppo | ✅ |
-| Hot topic: elenco con filtri, rilevanza, fonti, "genera bozza" | ✅ interfaccia |
+| Hot topic: elenco con filtri, rilevanza, fonti, "genera bozza" | ✅ |
+| Rilevamento hot topic: lettura fonti RSS / Atom, raggruppamento, punteggio, decadimento | ✅ (§4.1) |
 | Genera da brief con accettazione elemento per elemento | ✅ |
 | Registro operazioni immutabile | ✅ |
 | Design consegnati (Pagine backoffice) | ✅ — vedi il limite dichiarato in [architettura §2.8](architettura.md) |
@@ -110,36 +112,49 @@ In ordine di dipendenza, non di importanza.
 
 ### 4.1 Ingestione fonti e ranking hot topic — RF-AI-01, RF-AI-02
 
-**È il pezzo grosso.** Tutto il contorno esiste già:
+**Fatto per le fonti RSS / Atom.** Il job `rileva-hot-topic`
+(`apps/cms/src/jobs/`) gira ogni cinque minuti e, per ogni giro:
 
-- collection `sources` con cinque tipi di fonte, chiave cifrata, diagnostica
-  (`lastFetchedAt`, `lastStatus`, `lastError`);
-- collection `hot-topics` con cluster, fonti di riferimento, punteggio,
-  `clusterKey` unico per non duplicare lo stesso argomento a ogni giro;
-- parametri di rilevanza in `ai-settings` (ambiti, parole chiave da
-  privilegiare o escludere, soglia minima, tetto per esecuzione);
-- coda job di Payload già configurata (`jobs.autoRun`, cron al minuto);
-- l'interfaccia che mostra tutto questo, già funzionante.
+1. interroga le `sources` attive la cui `pollIntervalMinutes` è scaduta;
+2. salva le notizie nuove in `news-items` (una per URL, finestra di 48 ore,
+   conservate sette giorni) e scrive `lastFetchedAt` / `lastStatus` /
+   `lastError` sulla fonte;
+3. raggruppa **tutte** le notizie della finestra, non solo quelle appena lette:
+   è così che due testate uscite a ore di distanza si incontrano;
+4. assegna il punteggio: volume (testate distinte) × freschezza (dimezza ogni
+   12 ore) × affinità con ambiti e parole chiave di Impostazioni AI × `weight`
+   medio delle fonti;
+5. aggiorna gli argomenti già proposti, crea i nuovi sopra `minScore` fino a
+   `maxTopicsPerRun`; non tocca mai quelli scartati o convertiti;
+6. ricalcola il punteggio degli argomenti che non ricevono più notizie, così
+   un fatto di tre giorni fa scende in fondo all'elenco.
 
-**Manca il job.** Da scrivere in `apps/cms/src/jobs/` con questa forma:
+Il raggruppamento è lessicale, senza AI: titoli ridotti a radici, pesate per
+rarità nella finestra. Costa zero per esecuzione e funziona con il modulo AI
+spento — ma l'interruttore generale di Impostazioni AI ferma comunque il job.
+Le soglie sono tarate su feed nazionali reali; per ritararle su fonti locali:
 
-1. per ogni `source` attiva la cui `pollIntervalMinutes` è scaduta, interroga
-   l'adattatore corrispondente al `type`;
-2. normalizza le notizie in `{titolo, url, testata, dataPubblicazione}`;
-3. raggruppa in cluster le notizie che parlano dello stesso fatto;
-4. calcola il punteggio: **volume × freschezza × affinità con la linea
-   editoriale**, con il `weight` della fonte come moltiplicatore;
-5. scarta sotto `minScore`, tieni al massimo `maxTopicsPerRun`;
-6. upsert su `clusterKey`; aggiorna `lastFetchedAt` / `lastStatus` sulla fonte.
+```bash
+pnpm --filter @esperia/cms prova:hot-topic <feed> [<feed>...] --temi "..." --privilegia "..." --tutti
+```
 
-Per il clustering, due strade: confronto per similarità di embedding (pgvector
-è già disponibile in Supabase e servirebbe anche agli articoli correlati),
-oppure una chiamata a `claude-haiku-4-5` che raggruppa un lotto di titoli. La
-seconda è più semplice da avviare, la prima costa meno a regime.
+legge i feed, raggruppa e stampa gruppi e punteggi senza toccare il database.
 
-> **Dipende dalla scelta delle fonti.** NewsAPI, GDELT e SerpAPI hanno costi,
-> limiti e formati molto diversi, e sono a carico del Committente (V-02). È la
-> prima cosa da chiudere al kick-off.
+**Diagnostica in scheda fonte:** errori di rete in chiaro (dominio inesistente,
+timeout, HTTP 404…), feed vuoto, feed fermo da più di sette giorni, tipo di
+fonte non ancora supportato.
+
+**Resta da fare:**
+
+- adattatori NewsAPI, GDELT, SerpAPI, endpoint personalizzato — uno per tipo,
+  in `lib/fonti/`, registrato in `ADATTATORI`. Dipendono dalla scelta delle
+  fonti (V-02), che resta la prima cosa da chiudere al kick-off;
+- sintesi e categoria suggerita: oggi la sintesi è l'estratto della notizia più
+  rappresentativa e la categoria resta vuota. Una chiamata a `utilityModel` per
+  argomento nuovo le scriverebbe meglio, con costo registrato in `ai-usage`;
+- se il raggruppamento lessicale si rivelasse insufficiente su fonti locali, la
+  strada è la similarità di embedding con pgvector (servirebbe anche agli
+  articoli correlati).
 
 ### 4.2 Pagine di accesso della community — RF-C-01, RF-C-02, RF-C-07
 
@@ -276,7 +291,10 @@ apps/cms/src/
   hooks/             enforceWorkflow ← il gate di RF-B-05 · searchIndex · revalidatePortal · auditLog
   fields/            slug, SEO, campo cifrato
   endpoints/         search (FTS con ranking) · generaBozza (REST)
+  jobs/              rilevaHotTopic ← il job periodico, solo pianificazione
   lib/ai/            client (chiavi, degrado) · genera (prompt e schema) · creaBozza
+  lib/fonti/         un adattatore per tipo di fonte (per ora RSS / Atom)
+  lib/hotTopic/      testo · cluster · punteggio (logica pura) · rileva (il giro) · prova
   lib/supabase.ts    ⚠ confine col mondo community: sola chiave di servizio, solo server
   components/        nav, dashboard, pastiglia, e le tre viste personalizzate
   app/(payload)/custom.scss   ← il tema del backoffice: cambiare qui, non nei componenti
@@ -302,7 +320,7 @@ packages/shared/     ruoli, workflow, stati, tipi community — usato da entramb
 
 | Tema | Perché blocca |
 |---|---|
-| **Fonti news e trend** | Blocca il §4.1, cioè l'unico pezzo grosso rimasto. Costi a carico del Committente (V-02) |
+| **Fonti news e trend** | RSS funziona già; NewsAPI, GDELT e SerpAPI aspettano questa scelta (§4.1). Costi a carico del Committente (V-02) |
 | **Hosting** | Finora tutto è portabile (Astro standalone, CMS `output: standalone`, Postgres puro). Deciderlo permette di ottimizzare |
 | **Region dei dati** | Supabase e storage in UE per RNF-04 |
 | **Testi legali** | Privacy e cookie policy: forniti dal Committente, i contenitori esistono |

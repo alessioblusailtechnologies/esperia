@@ -74,6 +74,7 @@ export interface Config {
     pages: Page;
     'hot-topics': HotTopic;
     sources: Source;
+    'news-items': NewsItem;
     users: User;
     redirects: Redirect;
     'ai-usage': AiUsage;
@@ -93,6 +94,7 @@ export interface Config {
     pages: PagesSelect<false> | PagesSelect<true>;
     'hot-topics': HotTopicsSelect<false> | HotTopicsSelect<true>;
     sources: SourcesSelect<false> | SourcesSelect<true>;
+    'news-items': NewsItemsSelect<false> | NewsItemsSelect<true>;
     users: UsersSelect<false> | UsersSelect<true>;
     redirects: RedirectsSelect<false> | RedirectsSelect<true>;
     'ai-usage': AiUsageSelect<false> | AiUsageSelect<true>;
@@ -110,10 +112,12 @@ export interface Config {
   globals: {
     'site-settings': SiteSetting;
     'ai-settings': AiSetting;
+    'payload-jobs-stats': PayloadJobsStat;
   };
   globalsSelect: {
     'site-settings': SiteSettingsSelect<false> | SiteSettingsSelect<true>;
     'ai-settings': AiSettingsSelect<false> | AiSettingsSelect<true>;
+    'payload-jobs-stats': PayloadJobsStatsSelect<false> | PayloadJobsStatsSelect<true>;
   };
   locale: null;
   widgets: {
@@ -122,6 +126,7 @@ export interface Config {
   user: User;
   jobs: {
     tasks: {
+      'rileva-hot-topic': TaskRilevaHotTopic;
       schedulePublish: TaskSchedulePublish;
       inline: {
         input: unknown;
@@ -553,6 +558,23 @@ export interface Page {
   _status?: ('draft' | 'published') | null;
 }
 /**
+ * Notizie raccolte dalle fonti negli ultimi sette giorni. Le scrive e le cancella il job di rilevamento degli hot topic.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "news-items".
+ */
+export interface NewsItem {
+  id: string;
+  title: string;
+  url: string;
+  publisher?: string | null;
+  publishedAt: string;
+  excerpt?: string | null;
+  source: string | Source;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
  * Reindirizzamenti applicati dal portale prima di servire una pagina.
  *
  * This interface was referenced by `Config`'s JSON-Schema
@@ -715,7 +737,7 @@ export interface PayloadJob {
     | {
         executedAt: string;
         completedAt: string;
-        taskSlug: 'inline' | 'schedulePublish';
+        taskSlug: 'inline' | 'rileva-hot-topic' | 'schedulePublish';
         taskID: string;
         input?:
           | {
@@ -748,10 +770,19 @@ export interface PayloadJob {
         id?: string | null;
       }[]
     | null;
-  taskSlug?: ('inline' | 'schedulePublish') | null;
+  taskSlug?: ('inline' | 'rileva-hot-topic' | 'schedulePublish') | null;
   queue?: string | null;
   waitUntil?: string | null;
   processing?: boolean | null;
+  meta?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -789,6 +820,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'sources';
         value: string | Source;
+      } | null)
+    | ({
+        relationTo: 'news-items';
+        value: string | NewsItem;
       } | null)
     | ({
         relationTo: 'users';
@@ -1064,6 +1099,20 @@ export interface SourcesSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "news-items_select".
+ */
+export interface NewsItemsSelect<T extends boolean = true> {
+  title?: T;
+  url?: T;
+  publisher?: T;
+  publishedAt?: T;
+  excerpt?: T;
+  source?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "users_select".
  */
 export interface UsersSelect<T extends boolean = true> {
@@ -1175,6 +1224,7 @@ export interface PayloadJobsSelect<T extends boolean = true> {
   queue?: T;
   waitUntil?: T;
   processing?: T;
+  meta?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -1367,6 +1417,24 @@ export interface AiSetting {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "payload-jobs-stats".
+ */
+export interface PayloadJobsStat {
+  id: string;
+  stats?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "site-settings_select".
  */
 export interface SiteSettingsSelect<T extends boolean = true> {
@@ -1455,6 +1523,16 @@ export interface AiSettingsSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "payload-jobs-stats_select".
+ */
+export interface PayloadJobsStatsSelect<T extends boolean = true> {
+  stats?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "collections_widget".
  */
 export interface CollectionsWidget {
@@ -1462,6 +1540,14 @@ export interface CollectionsWidget {
     [k: string]: unknown;
   };
   width: 'full';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TaskRileva-hot-topic".
+ */
+export interface TaskRilevaHotTopic {
+  input?: unknown;
+  output?: unknown;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

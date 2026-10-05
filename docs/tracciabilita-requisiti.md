@@ -89,8 +89,8 @@ dall'interfaccia.
 
 | ID | Requisito | Pri. | Dove | Stato |
 |---|---|---|---|---|
-| RF-AI-01 | Ingestione fonti | Must | collection `sources` (5 tipi, chiave cifrata, diagnostica) | 🟡 job periodico da fare |
-| RF-AI-02 | Individuazione hot topic | Must | collection `hot-topics`; vista con filtri, rilevanza e fonti | 🟡 interfaccia ✅, algoritmo di rilevazione da fare |
+| RF-AI-01 | Ingestione fonti | Must | collection `sources`, `news-items`; job `rileva-hot-topic`, adattatori in `lib/fonti/` | ✅ RSS / Atom; 🟡 NewsAPI, GDELT, SerpAPI in attesa della scelta delle fonti |
+| RF-AI-02 | Individuazione hot topic | Must | collection `hot-topics`; vista con filtri, rilevanza e fonti; raggruppamento e punteggio in `lib/hotTopic/` | ✅ |
 | RF-AI-03 | Configurazione rilevanza | Should | global `ai-settings`, scheda "Linea editoriale" | ✅ |
 | RF-AI-04 | Generazione da hot topic | Must | vista Hot topic + `azioniAi.ts` + `PannelloProposta` | ✅ |
 | RF-AI-05 | Generazione da brief | Must | vista Genera da brief + `azioniAi.ts` | ✅ |
