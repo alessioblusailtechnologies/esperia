@@ -16,8 +16,10 @@ import { istruzioniDiSistema, registraConsumo } from './genera'
  * che entra nell'articolo solo se il redattore la accetta.
  *
  * Riscrittura e sintesi usano il modello per i testi, perche' il risultato
- * finisce nel pezzo. Titoli e SEO il modello di servizio: sono proposte brevi,
- * da scegliere, non da pubblicare cosi' come sono.
+ * finisce nel pezzo. Anche i suggerimenti SEO: sono osservazioni da verificare
+ * sul testo, e nella prova reale il modello di servizio ne sbagliava meta'
+ * (dichiarava assente cio' che l'attacco conteneva). I titoli alternativi
+ * restano al modello di servizio: sono proposte brevi da scegliere.
  */
 
 export type Strumento = 'riscrivi' | 'sintetizza' | 'titoli' | 'seo'
@@ -117,7 +119,7 @@ export async function proponiAssistenza(
 
   const { client, config } = accesso
   const sulTesto = r.strumento === 'riscrivi' || r.strumento === 'sintetizza'
-  const model = sulTesto ? config.textModel : config.utilityModel
+  const model = r.strumento === 'titoli' ? config.utilityModel : config.textModel
   // Un paragrafo da riscrivere non richiede la profondità di una bozza intera.
   const ragionamento = parametriRagionamento(model, sulTesto ? 'medium' : 'low')
   const schema = sulTesto ? SchemaTesto : r.strumento === 'titoli' ? SchemaTitoli : SchemaSeo

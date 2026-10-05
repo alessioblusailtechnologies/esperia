@@ -21,6 +21,19 @@ const ENDPOINT = 'https://generativelanguage.googleapis.com/v1beta/interactions'
 const TIMEOUT_MS = 90_000
 export const DESCRIZIONE_MAX = 1000
 
+/**
+ * Listino di riserva, USD per immagine a 1K (pagina prezzi di Gemini, ottobre
+ * 2026). Serve quando quello in Impostazioni AI e' vuoto: Payload applica i
+ * valori predefiniti di un array solo alla creazione del global, quindi
+ * un'installazione esistente lo trova vuoto e stimerebbe ogni immagine 0 €
+ * (verificato).
+ */
+const LISTINO_PREDEFINITO: Record<string, number> = {
+  'gemini-3.1-flash-image': 0.067,
+  'gemini-3.1-flash-lite-image': 0.0336,
+  'gemini-3-pro-image': 0.134,
+}
+
 export interface ImmagineProposta {
   base64: string
   mimeType: string
@@ -60,7 +73,9 @@ export async function leggiConfigurazioneImmagini(
     model,
     quante: Math.min(4, Math.max(1, Number(g.imageCount ?? 4))),
     formato: g.imageAspectRatio ?? '16:9',
-    prezzoUsd: Number(listino.find((p: any) => p.model === model)?.perImage ?? 0),
+    prezzoUsd: Number(
+      listino.find((p: any) => p.model === model)?.perImage ?? LISTINO_PREDEFINITO[model] ?? 0,
+    ),
     usdToEur: ai.usdToEur,
     disclaimer: g.imageDisclaimer || 'Immagine generata con intelligenza artificiale',
   }

@@ -15,7 +15,8 @@
     "seed": "tsx src/lib/seed.ts",
     "clean": "rimraf .next .turbo node_modules",
     "seed:demo": "tsx src/lib/seed-demo.ts",
-    "prova:hot-topic": "tsx src/lib/hotTopic/prova.ts"
+    "prova:hot-topic": "tsx src/lib/hotTopic/prova.ts",
+    "community:migra": "tsx src/lib/community-migra.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.124.0",

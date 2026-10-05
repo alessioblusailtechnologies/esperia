@@ -19,13 +19,13 @@ Riferimento: *Analisi dei Requisiti — Piattaforma Esperia*, v0.1
                      ┌───────▼──────┐   ┌──▼──────────────┐
    Redazione ───────▶│  CMS         │   │  Supabase       │
                      │  Payload 3   │   │  Auth + Storage │
-                     │  su Next 16  │   │  schema public  │
+                     │  su Next 16  │   │  schema esperia │
                      └───────┬──────┘   └──┬──────────────┘
                              │              │
                      ┌───────▼──────────────▼───────┐
                      │  PostgreSQL                  │
                      │  payload.*  CMS              │
-                     │  public.*   community + RLS  │
+                     │  esperia.*  community + RLS  │
                      │  ricerca.*  indice full-text │
                      └──────────────────────────────┘
                              │
@@ -35,7 +35,8 @@ Riferimento: *Analisi dei Requisiti — Piattaforma Esperia*, v0.1
 ```
 
 Due applicazioni deployabili separatamente, un solo database con tre schemi
-che non si sovrappongono.
+che non si sovrappongono. La community sta nello schema `esperia` (non `public`)
+così può convivere con altre applicazioni sullo stesso progetto Supabase.
 
 ---
 
@@ -96,7 +97,7 @@ della community. La separazione qui non è una convenzione ma un confine reale:
 | | Community | Backoffice |
 |---|---|---|
 | Identità | Supabase Auth (`auth.users`) | collection `users` di Payload |
-| Dati | schema `public`, protetto da RLS | schema `payload` |
+| Dati | schema `esperia`, protetto da RLS | schema `payload` |
 | Scritture | dal browser, con chiave anon | dal server, con sessione staff |
 | Regole | policy nel database | access control nel codice |
 
@@ -283,10 +284,9 @@ Lo stato puntuale, con cosa è provato e cosa no, è in
 1. **Adattatori delle fonti a pagamento** (RF-AI-01) — il rilevamento degli hot
    topic gira con i feed RSS / Atom; NewsAPI, GDELT e SerpAPI aspettano la
    scelta delle fonti (§6).
-2. **Prove con i servizi veri** — area utente su un progetto Supabase,
-   assistente all'editing con una chiave Anthropic, immagini con una chiave
-   Gemini. Il codice c'è; le prove fatte finora usano un Supabase locale e
-   risposte simulate.
+2. **Prova dell'area utente su un progetto Supabase** — il codice c'è ed è
+   provato sul Supabase locale; assistente all'editing e immagini sono già
+   provati contro Anthropic e Gemini veri.
 3. **Reazioni sugli articoli** (RF-C-04) — sui commenti funzionano; sulla
    pagina articolo manca il design, da concordare.
 4. **Statistiche di consultazione** (RF-B-14) — integrazione analytics

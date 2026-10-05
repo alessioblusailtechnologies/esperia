@@ -74,7 +74,9 @@ export default function Registrazione() {
       email: indirizzo,
       password,
       options: {
-        data: { display_name: nomePulito },
+        // `app` dice al trigger che e' un lettore di esperia: il progetto
+        // Supabase puo' essere condiviso con altre applicazioni.
+        data: { display_name: nomePulito, app: 'esperia' },
         // Il link di conferma riporta su /accedi, che apre la sessione e prosegue.
         emailRedirectTo: indirizzoPortale(`/accedi?ritorno=${encodeURIComponent(ritorno)}`),
       },

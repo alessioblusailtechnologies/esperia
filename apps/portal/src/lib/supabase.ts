@@ -1,4 +1,5 @@
 import { createClient, type SupabaseClient } from '@supabase/supabase-js'
+import { COMMUNITY_SCHEMA } from '@esperia/shared'
 
 /**
  * Client Supabase per la sezione community.
@@ -9,9 +10,9 @@ import { createClient, type SupabaseClient } from '@supabase/supabase-js'
  * scrivere o modificare un commento e' applicata dal database.
  */
 
-let client: SupabaseClient | null = null
+let client: SupabaseClient<any, string> | null = null
 
-export function getSupabase(): SupabaseClient | null {
+export function getSupabase(): SupabaseClient<any, string> | null {
   if (client) return client
 
   const url = import.meta.env.PUBLIC_SUPABASE_URL
@@ -22,6 +23,8 @@ export function getSupabase(): SupabaseClient | null {
   if (!url || !key) return null
 
   client = createClient(url, key, {
+    // Tabelle e funzioni della community stanno nello schema `esperia`.
+    db: { schema: COMMUNITY_SCHEMA },
     auth: {
       persistSession: true,
       autoRefreshToken: true,

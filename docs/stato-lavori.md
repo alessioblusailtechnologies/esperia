@@ -21,7 +21,9 @@ Esistono due applicazioni funzionanti, in un monorepo:
   community, strumenti dell'assistente AI. Design del Committente applicati.
 
 Il database è uno solo, con **tre schemi che non si sovrappongono**: `payload`
-(CMS), `public` (community con RLS), `ricerca` (indice full-text).
+(CMS), `esperia` (community con RLS), `ricerca` (indice full-text). La community
+non sta in `public` perché il progetto Supabase può essere condiviso con altre
+applicazioni: in prova lo è, con moonbrand.
 
 Il rilevamento degli hot topic gira con le fonti RSS / Atom; restano da
 scrivere gli adattatori delle altre fonti, che dipendono dalla scelta del
@@ -39,10 +41,12 @@ cp apps/portal/.env.example apps/portal/.env
 # minimo indispensabile: DATABASE_URI e PAYLOAD_SECRET
 
 pnpm dev:cms                       # 1° avvio: crea lo schema `payload`
-psql "$DATABASE_URI" -f supabase/migrations/0001_community.sql
 psql "$DATABASE_URI" -f supabase/migrations/0002_search_index.sql   # DOPO il punto sopra
-psql "$DATABASE_URI" -f supabase/migrations/0003_cancellazione_account.sql
-psql "$DATABASE_URI" -f supabase/migrations/0004_antispam.sql
+
+# community (0001, 0003, 0004) nello schema `esperia`, anche su un database
+# diverso da quello di Payload: connessione in ESPERIA_COMMUNITY_DB_URL
+pnpm --filter @esperia/cms community:migra             # controlla soltanto
+pnpm --filter @esperia/cms community:migra --applica   # applica, in una transazione
 
 pnpm --filter @esperia/cms seed        # amministratore, categorie, pagine legali
 pnpm --filter @esperia/cms seed:demo   # contenuti finti (MAI in produzione)
@@ -56,6 +60,11 @@ Credenziali del seed: `admin@esperia.local` / `esperia-cambiami-subito`.
 > esiste solo dopo il primo avvio del CMS. Eseguirla prima fallisce.
 
 ### Impostazioni del progetto Supabase per l'area utente
+
+**Dopo** `community:migra --applica`, mai prima: Settings → API → *Exposed
+schemas*, aggiungere `esperia`. PostgREST va in errore se gli si chiede uno
+schema che non esiste, e su un progetto condiviso fermerebbe anche l'API
+dell'altra applicazione.
 
 Nel pannello di Supabase, sezione Authentication:
 
@@ -89,7 +98,7 @@ comandi, non l'abbiamo resa uno script perché non serve in produzione.
 | Feed RSS generale e per categoria | ✅ |
 | Banner cookie con consensi granulari; embed di terze parti caricati solo dopo consenso | ✅ |
 | Commenti con risposte a un livello, "mi piace", segnalazioni | ✅ |
-| Area utente: registrazione, accesso, recupero password, profilo, cancellazione account | ✅ codice; da provare con un Supabase vero (§4.2) |
+| Area utente: registrazione, accesso, recupero password, profilo, cancellazione account | ✅ dati e API provati su Supabase vero; pagine non ancora provate nel browser (§4.2) |
 | Design consegnati (Home, Articolo, Listing, Ricerca v1) | ✅ |
 | Versione dimostrativa statica, senza CMS né database (`MOCK=1`) | ✅ |
 
@@ -105,8 +114,8 @@ comandi, non l'abbiamo resa uno script perché non serve in produzione.
 | Hot topic: elenco con filtri, rilevanza, fonti, "genera bozza" | ✅ |
 | Rilevamento hot topic: lettura fonti RSS / Atom, raggruppamento, punteggio, decadimento | ✅ (§4.1) |
 | Genera da brief con accettazione elemento per elemento | ✅ |
-| Assistente AI nell'editor: riscrivi, sintetizza, titoli alternativi, suggerimenti SEO | ✅ codice; da provare con una chiave API (§4.3) |
-| Immagini assistite con Google Gemini: proposte, scelta, copertina con dicitura | ✅ codice; da provare con una chiave Gemini (§4.3) |
+| Assistente AI nell'editor: riscrivi, sintetizza, titoli alternativi, suggerimenti SEO | ✅ provato con l'API Anthropic vera (§4.3) |
+| Immagini assistite con Google Gemini: proposte, scelta, copertina con dicitura | ✅ provato con Gemini vero (§4.3) |
 | Termini anti-spam gestiti in Impostazioni portale → Community | ✅ (§4.4) |
 | Registro operazioni immutabile | ✅ |
 | Design consegnati (Pagine backoffice) | ✅ — vedi il limite dichiarato in [architettura §2.8](architettura.md) |
@@ -206,21 +215,34 @@ rimanda al profilo.
 Nella versione dimostrativa le pagine dicono che l'area riservata non è
 collegata.
 
-**Resta da fare:** la prova completa dei flussi su un progetto Supabase
-(conferma email, recupero password, cancellazione eseguita dal job); il cambio
-email dal profilo; il login social (RF-C-08), per cui il trigger è già pronto.
+**Provato su un progetto Supabase vero** il 5 ottobre 2026 (progetto di prova
+condiviso con moonbrand, schema `esperia`, migrazioni applicate con
+`community:migra --applica` tramite Management API): profilo creato dal trigger
+solo per gli utenti del portale, profilo al primo accesso per un account
+esterno, commenti con RLS e anti-spam, moderazione e termini dal CMS,
+cancellazione che elimina l'account esperia e conserva quello esterno. Gli
+utenti di prova sono stati creati con l'API di amministrazione (nessuna email
+reale inviata) e rimossi a fine prova.
+
+**Resta da fare:** provare le pagine nel browser, comprese le email di conferma
+e recupero password (servono un SMTP e gli URL di reindirizzamento del
+progetto); il cambio email dal profilo; il login social (RF-C-08), per cui il
+trigger è già pronto.
 
 ### 4.3 Assistenza all'editing — RF-AI-06
 
-**Scritta seguendo il design (Editor v1, blocco "Assistente AI"), non ancora
-provata contro l'API.** Il pannello sta nella colonna laterale dell'editor
+**Fatta seguendo il design (Editor v1, blocco "Assistente AI") e provata contro
+l'API vera** il 5 ottobre 2026, su un articolo di prova: da 2 a 8 secondi per
+strumento, circa 1 centesimo a chiamata col modello per i testi. Il pannello sta nella colonna laterale dell'editor
 articolo: quattro strumenti (Riscrivi, Sintetizza, Titoli alternativi,
 Suggerimenti SEO), proposta accanto al testo attuale, "Accetta e sostituisci" /
 "Rifiuta". Con l'AI spenta il pannello resta e dice perché (RNF-10).
 
 - Riscrivi e Sintetizza agiscono sulla selezione nel corpo, o sul primo
-  paragrafo se non c'è selezione. Usano il modello per i testi. Titoli e SEO
-  usano il modello di servizio.
+  paragrafo se non c'è selezione. Riscrittura, sintesi e SEO usano il modello per
+  i testi, i titoli il modello di servizio. La SEO è passata al modello per i
+  testi dopo la prova: con Haiku metà dei suggerimenti era falsa (segnalava
+  come mancante ciò che l'attacco conteneva).
 - "Accetta" scrive nell'editor aperto, non nel database: la modifica va riletta
   e salvata come le altre, con le versioni di Payload a fare da rete. Se nel
   frattempo il passaggio è cambiato, la proposta viene rifiutata invece di
@@ -264,9 +286,14 @@ Gemini". Un database in cui qualcuno avesse salvato OpenAI, Stability o
 Replicate va riportato a "Nessuno" prima, altrimenti l'allineamento dello
 schema fallisce.
 
-**Resta da fare:** la prova con chiavi vere, Anthropic per i testi e Gemini per
-le immagini. Le chiamate a Gemini sono provate con risposte simulate secondo la
-documentazione di Google, non contro il servizio.
+**Provato con Gemini vero:** una generazione con `gemini-3.1-flash-image` ha
+restituito una JPEG 1376×768 conforme ai vincoli (nessuna persona, scritta o
+logo). Salvata nella media library è diventata un WebP da 168 KB con le
+varianti thumbnail, card e og, dicitura nei crediti e `aiGenerated` impostato.
+La stessa prova ha mostrato che il listino immagini in Impostazioni AI resta
+vuoto sulle installazioni esistenti (Payload applica i valori predefiniti di
+un array solo alla creazione del global) e il costo risultava 0 €: ora c'è un
+listino di riserva nel codice.
 
 ### 4.4 Completamenti minori
 
@@ -352,6 +379,27 @@ literal, il browser esegue un blocco vuoto e **non compare alcun errore in
 console**. Uno script che non parte e non si lamenta costa parecchio tempo. Se
 serve JavaScript condizionale in pagina, tenerlo in un file e iniettarlo come
 testo con `?raw` + `set:html`, come fa `mock/ricerca-cliente.js`.
+
+**PostgREST ricarica la configurazione, non le tabelle.** Dopo aver esposto uno
+schema con `pgrst.db_schemas` serve anche `notify pgrst, 'reload schema'`,
+altrimenti le tabelle risultano inesistenti (PGRST205) pur essendoci.
+`community:migra` lo invia a fine migrazione; il pannello di Supabase lo fa da
+solo quando si cambiano gli schemi esposti.
+
+**Gli utenti di Supabase sono del progetto, non dello schema.** Su un progetto
+condiviso il trigger crea il profilo solo per chi si registra dal portale
+(`app: 'esperia'` nei metadati), `assicura_profilo()` lo crea al primo accesso
+per chi arriva con un account esistente, e la cancellazione elimina l'account
+di accesso solo se è nato da esperia. Provato con un utente "esterno" accanto a
+uno di esperia.
+
+**I valori predefiniti degli array di Payload valgono solo alla creazione.** Un
+campo array aggiunto a un global già salvato resta vuoto: il listino immagini
+stimava 0 € per questo. Per valori indispensabili serve un ripiego nel codice.
+
+**Togliere un'opzione da un campo select rompe lo schema.** Se un database ha
+salvato quel valore, Payload non riesce più ad allineare l'enum e il CMS non
+parte. Le opzioni si aggiungono; per toglierle bisogna prima riportare i dati.
 
 **Il browser mostra copie in cache dell'admin.** Durante lo sviluppo può
 mostrare un rendering vecchio dopo una modifica: sembra un bug che non c'è.

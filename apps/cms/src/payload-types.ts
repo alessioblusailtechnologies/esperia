@@ -1408,7 +1408,7 @@ export interface AiSetting {
   minScore?: number | null;
   maxTopicsPerRun?: number | null;
   imagesEnabled?: boolean | null;
-  imageProvider?: 'gemini' | null;
+  imageProvider?: ('nessuno' | 'gemini') | null;
   /**
    * Chiave di Google AI Studio intestata al Committente, su un progetto con fatturazione attiva: per le immagini non esiste un piano gratuito. Cifrata prima del salvataggio. In mancanza si usa la variabile GEMINI_API_KEY.
    */

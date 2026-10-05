@@ -1,10 +1,16 @@
 /**
  * Tipi della sezione community.
  *
- * Questi dati NON vivono in Payload: stanno nello schema `public` di Supabase,
+ * Questi dati NON vivono in Payload: stanno nello schema `esperia` di Supabase,
  * protetti da RLS, e vengono scritti direttamente dal portale con la chiave anon.
  * Vedi supabase/migrations/0001_community.sql e docs/adr/0002-community-su-supabase.md
  */
+
+/**
+ * Schema Postgres della community. Non `public`: il progetto Supabase puo'
+ * essere condiviso con altre applicazioni (vedi 0001_community.sql).
+ */
+export const COMMUNITY_SCHEMA = 'esperia'
 
 /* -------------------------------------------------------------------------- */
 /* Profilo — RF-C-02                                                          */

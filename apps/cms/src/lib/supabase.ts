@@ -1,5 +1,10 @@
 import { createClient, type SupabaseClient } from '@supabase/supabase-js'
-import type { CommentStatus, ReportReason, ReportStatus } from '@esperia/shared'
+import {
+  COMMUNITY_SCHEMA,
+  type CommentStatus,
+  type ReportReason,
+  type ReportStatus,
+} from '@esperia/shared'
 
 /**
  * Accesso alla community dal backoffice — RF-B-10.
@@ -16,9 +21,9 @@ import type { CommentStatus, ReportReason, ReportStatus } from '@esperia/shared'
  *     può fare sulla community è leggibile in un file solo.
  */
 
-let client: SupabaseClient | null = null
+let client: SupabaseClient<any, string> | null = null
 
-function supabase(): SupabaseClient | null {
+function supabase(): SupabaseClient<any, string> | null {
   if (client) return client
 
   const url = process.env.SUPABASE_URL
@@ -29,6 +34,7 @@ function supabase(): SupabaseClient | null {
   if (!url || !key) return null
 
   client = createClient(url, key, {
+    db: { schema: COMMUNITY_SCHEMA },
     auth: { persistSession: false, autoRefreshToken: false },
   })
   return client
@@ -186,7 +192,7 @@ export async function segnalazioniAperte(limite = 50): Promise<VoceModerazione[]
  * Senza, si giudicherebbe una frase fuori dal suo contesto.
  */
 async function arricchisci(
-  db: SupabaseClient,
+  db: SupabaseClient<any, string>,
   righe: Array<Record<string, any>>,
   _unused: null,
 ): Promise<VoceModerazione[]> {

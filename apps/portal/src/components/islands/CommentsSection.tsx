@@ -191,6 +191,9 @@ export default function CommentsSection({ articleId, articleSlug, dimostrazione 
     supabase.auth.getUser().then(async ({ data }) => {
       setUtente(data.user ?? null)
       if (data.user) {
+        // Senza profilo i commenti verrebbero rifiutati (author_id lo richiede):
+        // succede a chi accede con un account nato da un'altra applicazione.
+        await supabase.rpc('assicura_profilo')
         const { data: profilo } = await supabase
           .from('profiles')
           .select('display_name')

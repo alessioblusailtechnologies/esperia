@@ -87,6 +87,10 @@ export default function Profilo() {
       }
       setUtente(sessione.user)
 
+      // Chi accede con un account gia' esistente nel progetto non ha ancora un
+      // profilo di esperia: lo crea il database, se manca.
+      await supabase.rpc('assicura_profilo')
+
       const { data: riga, error } = await supabase
         .from('profiles')
         .select('display_name, bio, avatar_url, created_at, banned_at, deletion_requested_at')
