@@ -1,9 +1,10 @@
 import Anthropic from '@anthropic-ai/sdk'
-import { zodOutputFormat } from '@anthropic-ai/sdk/helpers/zod'
+import { betaZodOutputFormat } from '@anthropic-ai/sdk/helpers/beta/zod'
 import { z } from 'zod'
 import type { Payload } from 'payload'
 import type { AiOperation } from '@esperia/shared'
 import {
+  PARACADUTE_RIFIUTO,
   ottieniClient,
   parametriRagionamento,
   stimaCostoEur,
@@ -177,13 +178,15 @@ export async function generaBozza(
   ].join('')
 
   try {
-    const risposta = await client.messages.parse({
+    // Endpoint beta per il paracadute in caso di rifiuto (vedi PARACADUTE_RIFIUTO).
+    const risposta = await client.beta.messages.parse({
+      ...PARACADUTE_RIFIUTO,
       model,
       max_tokens: 16000,
       ...(ragionamento.thinking ? { thinking: ragionamento.thinking } : {}),
       output_config: {
         ...(ragionamento.effort ? { effort: ragionamento.effort } : {}),
-        format: zodOutputFormat(SchemaBozza),
+        format: betaZodOutputFormat(SchemaBozza),
       },
       system: istruzioniDiSistema(config),
       messages: [{ role: 'user', content: messaggio }],
@@ -195,7 +198,8 @@ export async function generaBozza(
     if (risposta.stop_reason === 'refusal') {
       await registraConsumo(payload, config, {
         operation: operazione,
-        model,
+        // Il modello che ha risposto davvero: dopo un rifiuto può essere quello di riserva.
+        model: risposta.model ?? model,
         inputTokens: risposta.usage.input_tokens,
         outputTokens: risposta.usage.output_tokens,
         durationMs: durata,
@@ -214,7 +218,7 @@ export async function generaBozza(
 
     await registraConsumo(payload, config, {
       operation: operazione,
-      model,
+      model: risposta.model ?? model,
       inputTokens: risposta.usage.input_tokens,
       outputTokens: risposta.usage.output_tokens,
       durationMs: durata,

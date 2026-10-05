@@ -78,12 +78,11 @@ export const AiSettings: GlobalConfig = {
               name: 'textModel',
               type: 'select',
               required: true,
-              defaultValue: 'claude-opus-5',
+              defaultValue: 'claude-opus-5-5',
               label: 'Modello per la generazione dei testi',
               options: [
-                { value: 'claude-opus-5', label: 'Claude Opus 5 — qualità massima (consigliato)' },
-                { value: 'claude-sonnet-5', label: 'Claude Sonnet 5 — equilibrato' },
-                { value: 'claude-haiku-4-5', label: 'Claude Haiku 4.5 — rapido ed economico' },
+                { value: 'claude-opus-5-5', label: 'Claude Opus 5.5 — qualità massima (consigliato)' },
+                { value: 'claude-sonnet-5-5', label: 'Claude Sonnet 5.5 — più rapido, costa metà' },
               ],
               admin: {
                 description:
@@ -94,16 +93,15 @@ export const AiSettings: GlobalConfig = {
               name: 'utilityModel',
               type: 'select',
               required: true,
-              defaultValue: 'claude-haiku-4-5',
+              defaultValue: 'claude-sonnet-5-5',
               label: 'Modello per le operazioni di servizio',
               options: [
-                { value: 'claude-haiku-4-5', label: 'Claude Haiku 4.5 (consigliato)' },
-                { value: 'claude-sonnet-5', label: 'Claude Sonnet 5' },
-                { value: 'claude-opus-5', label: 'Claude Opus 5' },
+                { value: 'claude-sonnet-5-5', label: 'Claude Sonnet 5.5 (consigliato)' },
+                { value: 'claude-opus-5-5', label: 'Claude Opus 5.5' },
               ],
               admin: {
                 description:
-                  'Clustering degli hot topic, titoli alternativi, moderazione automatica. Sono operazioni ad alto volume: qui conviene il modello economico.',
+                  'Titoli alternativi e altre operazioni brevi e frequenti: qui conviene il modello più rapido.',
               },
             },
             {
@@ -132,9 +130,8 @@ export const AiSettings: GlobalConfig = {
                   'Prezzi in USD per milione di token, usati per stimare la spesa nel registro consumi.',
               },
               defaultValue: [
-                { model: 'claude-opus-5', inputPerMillion: 5, outputPerMillion: 25 },
-                { model: 'claude-sonnet-5', inputPerMillion: 2, outputPerMillion: 10 },
-                { model: 'claude-haiku-4-5', inputPerMillion: 1, outputPerMillion: 5 },
+                { model: 'claude-opus-5-5', inputPerMillion: 4, outputPerMillion: 20 },
+                { model: 'claude-sonnet-5-5', inputPerMillion: 2, outputPerMillion: 10 },
               ],
               fields: [
                 { name: 'model', type: 'text', required: true, label: 'Modello' },

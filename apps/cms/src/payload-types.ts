@@ -1374,11 +1374,11 @@ export interface AiSetting {
   /**
    * Usato per bozze da hot topic e da brief. Il costo per articolo dipende soprattutto da questa scelta.
    */
-  textModel: 'claude-opus-5' | 'claude-sonnet-5' | 'claude-haiku-4-5';
+  textModel: 'claude-opus-5-5' | 'claude-sonnet-5-5';
   /**
-   * Clustering degli hot topic, titoli alternativi, moderazione automatica. Sono operazioni ad alto volume: qui conviene il modello economico.
+   * Titoli alternativi e altre operazioni brevi e frequenti: qui conviene il modello più rapido.
    */
-  utilityModel: 'claude-haiku-4-5' | 'claude-sonnet-5' | 'claude-opus-5';
+  utilityModel: 'claude-sonnet-5-5' | 'claude-opus-5-5';
   /**
    * Alza la qualità e il costo delle generazioni. Conviene tararla dopo qualche settimana di uso reale.
    */

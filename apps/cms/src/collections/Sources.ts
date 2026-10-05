@@ -12,6 +12,23 @@ import { encryptedText } from '@/fields/encryptedText'
  */
 export const Sources: CollectionConfig = {
   slug: 'sources',
+
+  hooks: {
+    // Gli articoli raccolti hanno la fonte obbligatoria: senza questo, una
+    // fonte che ha già portato notizie non si potrebbe eliminare. Sono dati
+    // grezzi del rilevamento e se ne vanno con lei; gli hot topic già creati
+    // restano, perché conservano una copia di titolo e link.
+    beforeDelete: [
+      async ({ id, req }) => {
+        await req.payload.delete({
+          collection: 'news-items',
+          where: { source: { equals: id } },
+          overrideAccess: true,
+          req,
+        })
+      },
+    ],
+  },
   labels: { singular: 'Fonte', plural: 'Fonti news e trend' },
   admin: {
     useAsTitle: 'name',

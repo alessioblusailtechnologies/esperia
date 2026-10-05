@@ -84,9 +84,26 @@ function unisciRiferimenti(...elenchi: Riferimento[][]): Riferimento[] {
     .slice(0, RIFERIMENTI_MAX)
 }
 
+/** Codice SQLSTATE di un errore del database, anche se avvolto da Payload/Drizzle. */
+function codiceDb(err: unknown): string | undefined {
+  const e = err as { code?: string; cause?: { code?: string } }
+  return e?.cause?.code ?? e?.code
+}
+
+/**
+ * Il motivo leggibile di un errore. Drizzle avvolge l'errore del database in
+ * «Failed query: insert …» con tutti i parametri: il motivo vero sta in `cause`.
+ */
+function motivoErrore(err: unknown): string {
+  const e = err as { message?: string; cause?: { message?: string } }
+  return e?.cause?.message || e?.message || String(err)
+}
+
 export async function rilevaHotTopic(
   payload: Payload,
   adesso = new Date(),
+  /** `forza`: legge tutte le fonti attive ora, senza aspettare il loro intervallo (ricerca manuale). */
+  opzioni: { forza?: boolean } = {},
 ): Promise<EsitoRilevamento> {
   const esito: EsitoRilevamento = {
     fontiLette: 0,
@@ -117,8 +134,11 @@ export async function rilevaHotTopic(
   const pesoFonte = (id: string | null | undefined) => (id ? (pesi.get(id) ?? 1) : 1)
 
   const daLeggere = fonti.filter((f) => {
-    if (!f.lastFetchedAt) return true
+    if (opzioni.forza || !f.lastFetchedAt) return true
     const trascorso = adesso.getTime() - new Date(f.lastFetchedAt).getTime()
+    // Un'ultima lettura «nel futuro» (orologio spostato, prove con date
+    // simulate) fermerebbe la fonte fino a quella data: la rileggiamo subito.
+    if (trascorso < 0) return true
     return trascorso + TOLLERANZA_MS >= Number(f.pollIntervalMinutes ?? 60) * 60_000
   })
 
@@ -181,22 +201,33 @@ export async function rilevaHotTopic(
         : { docs: [] }
       const note = new Set(gia.map((d) => d.url))
 
+      // Una notizia che non entra non deve fermare le altre della stessa fonte.
+      // Il caso tipico è un giro concorrente che l'ha già salvata (URL unico):
+      // non è un errore. Gli altri si contano e finiscono nella diagnostica.
+      let scartate = 0
+      let primoErrore: string | null = null
       for (const n of lette) {
         if (note.has(n.url)) continue
         note.add(n.url)
-        await payload.create({
-          collection: 'news-items',
-          overrideAccess: true,
-          data: {
-            title: n.titolo,
-            url: n.url,
-            publisher: n.testata,
-            publishedAt: n.dataPubblicazione,
-            excerpt: n.estratto,
-            source: fonte.id,
-          },
-        })
-        esito.notizieNuove++
+        try {
+          await payload.create({
+            collection: 'news-items',
+            overrideAccess: true,
+            data: {
+              title: n.titolo,
+              url: n.url,
+              publisher: n.testata,
+              publishedAt: n.dataPubblicazione,
+              excerpt: n.estratto,
+              source: fonte.id,
+            },
+          })
+          esito.notizieNuove++
+        } catch (err) {
+          if (codiceDb(err) === '23505') continue
+          scartate++
+          primoErrore ??= motivoErrore(err)
+        }
       }
 
       esito.fontiLette++
@@ -217,12 +248,14 @@ export async function rilevaHotTopic(
         await diagnostica(
           `Il feed risponde ma la notizia più recente è del ${data}: probabilmente non viene più aggiornato.`,
         )
+      } else if (scartate > 0) {
+        await diagnostica(`${scartate} notizie non salvate: ${primoErrore}`)
       } else {
         await diagnostica(null)
       }
     } catch (err) {
       esito.fontiInErrore++
-      const messaggio = (err as Error).message || String(err)
+      const messaggio = motivoErrore(err)
       payload.logger.warn(`[hot-topic] fonte "${fonte.name}": ${messaggio}`)
       await diagnostica(messaggio.slice(0, 500))
     }

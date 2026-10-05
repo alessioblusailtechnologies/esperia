@@ -1,9 +1,9 @@
 import Anthropic from '@anthropic-ai/sdk'
-import { zodOutputFormat } from '@anthropic-ai/sdk/helpers/zod'
+import { betaZodOutputFormat } from '@anthropic-ai/sdk/helpers/beta/zod'
 import { z } from 'zod'
 import type { Payload } from 'payload'
 import type { AiOperation } from '@esperia/shared'
-import { ottieniClient, parametriRagionamento, type EsitoAi } from './client'
+import { PARACADUTE_RIFIUTO, ottieniClient, parametriRagionamento, type EsitoAi } from './client'
 import { istruzioniDiSistema, registraConsumo } from './genera'
 
 /**
@@ -126,10 +126,14 @@ export async function proponiAssistenza(
   const operazione = OPERAZIONE[r.strumento]
   const avvio = Date.now()
 
-  const consumo = (risposta: { usage: Anthropic.Usage } | null, errore?: string) =>
+  const consumo = (
+    risposta: { usage: { input_tokens: number; output_tokens: number }; model?: string } | null,
+    errore?: string,
+  ) =>
     registraConsumo(payload, config, {
       operation: operazione,
-      model,
+      // Il modello che ha risposto davvero: dopo un rifiuto può essere quello di riserva.
+      model: risposta?.model ?? model,
       inputTokens: risposta?.usage.input_tokens ?? 0,
       outputTokens: risposta?.usage.output_tokens ?? 0,
       durationMs: Date.now() - avvio,
@@ -139,13 +143,15 @@ export async function proponiAssistenza(
     })
 
   try {
-    const risposta = await client.messages.parse({
+    // Endpoint beta per il paracadute in caso di rifiuto (vedi PARACADUTE_RIFIUTO).
+    const risposta = await client.beta.messages.parse({
+      ...PARACADUTE_RIFIUTO,
       model,
       max_tokens: 8000,
       ...(ragionamento.thinking ? { thinking: ragionamento.thinking } : {}),
       output_config: {
         ...(ragionamento.effort ? { effort: ragionamento.effort } : {}),
-        format: zodOutputFormat(schema),
+        format: betaZodOutputFormat(schema),
       },
       system: istruzioniDiSistema(config),
       messages: [{ role: 'user', content: richiestaUtente(r) }],

@@ -1,3 +1,4 @@
+import { timingSafeEqual } from 'node:crypto'
 import type { Access, FieldAccess, Where } from 'payload'
 import { roleAtLeast, type StaffRole } from '@esperia/shared'
 
@@ -44,6 +45,22 @@ export const isEditorField: FieldAccess = ({ req }) => {
   return isActive(u) && roleAtLeast(u?.role, 'editor')
 }
 
+/**
+ * Il portale chiede una bozza per l'anteprima — RF-B-04.
+ *
+ * Il server del portale (mai il browser) manda il segreto condiviso
+ * PORTAL_REVALIDATE_SECRET nell'intestazione `x-preview-secret`. Vale solo
+ * per la lettura dei contenuti pubblicabili, e mai se il segreto è vuoto.
+ */
+function anteprimaDelPortale(req: { headers?: Headers }): boolean {
+  const atteso = process.env.PORTAL_REVALIDATE_SECRET
+  const fornito = req.headers?.get('x-preview-secret')
+  if (!atteso || !fornito) return false
+  const a = Buffer.from(atteso)
+  const b = Buffer.from(fornito)
+  return a.length === b.length && timingSafeEqual(a, b)
+}
+
 /* -------------------------------------------------------------------------- */
 /* Contenuti pubblicabili                                                      */
 /* -------------------------------------------------------------------------- */
@@ -59,6 +76,7 @@ export const isEditorField: FieldAccess = ({ req }) => {
  */
 export const publishedOrStaff: Access = ({ req }) => {
   if (isActive(userOf(req))) return true
+  if (anteprimaDelPortale(req)) return true
 
   const now = new Date().toISOString()
   const where: Where = {

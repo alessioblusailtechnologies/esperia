@@ -8,11 +8,13 @@ import CommentsSection from '@/components/islands/CommentsSection.tsx'
 import {
   getAllPublishedSlugs,
   getArticleBySlug,
+  getArticleDraft,
   getRelatedArticles,
   getSiteSettings,
   CmsUnavailableError,
 } from '@/lib/payload'
 import { MOCK } from '@/lib/modalita'
+import { anteprimaValida, origineCms } from '@/lib/anteprima'
 import { applicaAttacco, renderRichText } from '@/lib/lexical-render'
 import { absoluteUrl, articleJsonLd, breadcrumbJsonLd, mediaUrl } from '@/lib/seo'
 import { populated, populatedList } from '@/lib/types'
@@ -35,9 +37,19 @@ export async function getStaticPaths() {
 
 const { slug } = Astro.params
 
+/*
+ * Anteprima — RF-B-04. Con il cookie firmato da /api/preview si mostra
+ * l'ultima versione salvata (anche bozza); senza, solo il pubblicato.
+ */
+const inAnteprima = !MOCK && anteprimaValida(Astro.cookies)
+
 let article = null
 try {
-  article = slug ? await getArticleBySlug(slug) : null
+  if (slug) {
+    article = inAnteprima
+      ? ((await getArticleDraft(slug)) ?? (await getArticleBySlug(slug)))
+      : await getArticleBySlug(slug)
+  }
 } catch (err) {
   if (!(err instanceof CmsUnavailableError)) throw err
   return new Response('Servizio temporaneamente non disponibile', { status: 503 })
@@ -232,6 +244,38 @@ const modificato =
       />
     </section>
   </article>
+
+  {
+    inAnteprima && (
+      <>
+        <p class="anteprima-banda" role="status">
+          Anteprima · questa versione non è visibile ai lettori
+        </p>
+        {/*
+          Anteprima dal vivo: il CMS manda «payload-document-event» a ogni
+          salvataggio (anche l'autosalvataggio) e noi ricarichiamo la pagina,
+          che rilegge la bozza dal server. «ready» dice al CMS che la pagina
+          ascolta. Nei primi due secondi ignoriamo gli eventi: il CMS ne manda
+          uno appena riceve «ready», e ricaricare lì farebbe un ciclo.
+        */}
+        <script is:inline define:vars={{ origine: origineCms() }}>
+          (function () {
+            var caricata = Date.now()
+            var attesa = null
+            window.addEventListener('message', function (e) {
+              if (e.origin !== origine || !e.data || e.data.type !== 'payload-document-event') return
+              if (Date.now() - caricata < 2000) return
+              clearTimeout(attesa)
+              attesa = setTimeout(function () { location.reload() }, 400)
+            })
+            if (window.parent !== window) {
+              window.parent.postMessage({ type: 'payload-live-preview', ready: true }, origine)
+            }
+          })()
+        </script>
+      </>
+    )
+  }
 </Base>
 
 <script>

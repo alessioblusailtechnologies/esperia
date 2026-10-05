@@ -29,10 +29,15 @@ import { indicizzaArticolo, rimuoviDaIndice } from '@/hooks/searchIndex'
 import { estimateReadingMinutes, lexicalToPlainText } from '@/lib/lexical'
 import { PonteAssistenteFeature } from '@/components/assistente/ponteEditorFeature.server'
 
-const previewUrl = (slug: unknown): string => {
+/**
+ * Indirizzo dell'anteprima sul portale — RF-B-04. Null (pulsante nascosto)
+ * finché l'articolo non ha uno slug: il portale non saprebbe cosa mostrare.
+ */
+const previewUrl = (slug: unknown): string | null => {
+  if (typeof slug !== 'string' || !slug) return null
   const base = process.env.PORTAL_URL ?? 'http://localhost:4321'
-  const secret = process.env.PORTAL_REVALIDATE_SECRET ?? ''
-  return `${base}/api/preview?slug=${String(slug ?? '')}&secret=${secret}`
+  const secret = encodeURIComponent(process.env.PORTAL_REVALIDATE_SECRET ?? '')
+  return `${base}/api/preview?slug=${encodeURIComponent(slug)}&secret=${secret}`
 }
 
 /**

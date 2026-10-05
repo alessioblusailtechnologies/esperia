@@ -3,6 +3,7 @@ import { DefaultTemplate } from '@payloadcms/next/templates'
 
 import { Icona } from '@/components/Icona'
 import { Briciole } from '../Briciole'
+import { RicercaManuale } from './RicercaManuale'
 import { leggiConfigurazione } from '@/lib/ai/client'
 import { ElencoHotTopic, type ArgomentoVista } from './ElencoHotTopic'
 
@@ -90,14 +91,18 @@ async function ContenutoHotTopic({ initPageResult }: AdminViewServerProps) {
     <div className="ai-vista">
       <Briciole voci={[{ label: 'Hot topic' }]} />
       <header className="ai-intestazione">
-        <h1>Hot topic</h1>
-        <p>Argomenti che più testate stanno coprendo nelle ultime ore.</p>
+        <div>
+          <h1>Hot topic</h1>
+          <p>Argomenti che più testate stanno coprendo nelle ultime ore.</p>
+        </div>
+        {conf.enabled && <RicercaManuale />}
       </header>
       <p className="ai-principio">
         <Icona nome="info" />
         <span>
           <b>Come nascono:</b> raggruppiamo gli articoli delle fonti RSS e diamo un punteggio a
-          ciascun argomento. <b>Qui l’AI non interviene.</b> Entra in gioco solo se scegli
+          ciascun argomento, da soli ogni pochi minuti o subito con «Cerca ora».{' '}
+          <b>Qui l’AI non interviene.</b> Entra in gioco solo se scegli
           «Scrivi bozza con AI», e scrive usando soltanto gli articoli raccolti.
         </span>
       </p>

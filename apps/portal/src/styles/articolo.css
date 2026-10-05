@@ -178,3 +178,21 @@
   border: 0;
   border-radius: var(--raggio-md);
 }
+
+/* Anteprima dal backoffice: una fascia sempre visibile ricorda che la pagina
+   mostra una versione non pubblicata. */
+.anteprima-banda {
+  position: fixed;
+  left: 50%;
+  bottom: 16px;
+  z-index: 50;
+  margin: 0;
+  padding: 8px 16px;
+  border-radius: 999px;
+  background: #211d18;
+  color: #faf7f0;
+  font: 600 13px/1.3 system-ui, sans-serif;
+  transform: translateX(-50%);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.3);
+  pointer-events: none;
+}

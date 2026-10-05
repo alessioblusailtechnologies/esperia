@@ -1,5 +1,6 @@
 import { defineMiddleware } from 'astro:middleware'
 import { getRedirects, getSiteSettings, CmsUnavailableError } from '@/lib/payload'
+import { anteprimaValida, origineCms } from '@/lib/anteprima'
 import { MOCK } from '@/lib/modalita'
 
 /**
@@ -81,7 +82,7 @@ export const onRequest = defineMiddleware(async (context, next) => {
   // Un'anteprima non deve mai essere messa in cache ne' servita ad altri.
   const anteprima =
     context.url.searchParams.get('anteprima') === '1' ||
-    context.cookies.get('esperia-anteprima')?.value === '1'
+    anteprimaValida(context.cookies)
 
   if (!tecnico) {
     /* --- Redirect gestiti da backoffice — RF-P-07 ------------------------ */
@@ -156,8 +157,14 @@ export const onRequest = defineMiddleware(async (context, next) => {
   risposta.headers.set('Strict-Transport-Security', 'max-age=31536000; includeSubDomains')
 
   // L'anteprima del backoffice incorpora il portale in un iframe da un'altra
-  // origine: solo li' allentiamo il divieto di framing.
-  risposta.headers.set('X-Frame-Options', anteprima ? 'ALLOWALL' : 'SAMEORIGIN')
+  // origine: solo lì allentiamo il divieto di framing, e solo per il CMS.
+  // («ALLOWALL» non è un valore valido di X-Frame-Options: si usa la CSP.)
+  if (anteprima) {
+    risposta.headers.delete('X-Frame-Options')
+    risposta.headers.set('Content-Security-Policy', `frame-ancestors 'self' ${origineCms()}`)
+  } else {
+    risposta.headers.set('X-Frame-Options', 'SAMEORIGIN')
+  }
 
   return risposta
 })

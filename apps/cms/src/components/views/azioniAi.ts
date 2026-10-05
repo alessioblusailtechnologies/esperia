@@ -7,6 +7,7 @@ import config from '@/payload.config'
 import { generaBozza } from '@/lib/ai/genera'
 import { creaBozzaDaProposta } from '@/lib/ai/creaBozza'
 import { leggiConfigurazione } from '@/lib/ai/client'
+import { rilevaHotTopic } from '@/lib/hotTopic/rileva'
 import { redattoreCorrente } from '@/lib/sessioneRedazione'
 
 /**
@@ -226,3 +227,47 @@ export async function scartaHotTopic(id: string, motivo: string): Promise<Esito<
     return { ok: false, messaggio: (err as Error).message }
   }
 }
+
+/* -------------------------------------------------------------------------- */
+/* Ricerca manuale degli hot topic — RF-AI-02                                 */
+/* -------------------------------------------------------------------------- */
+
+export interface EsitoRicerca {
+  fontiLette: number
+  fontiInErrore: number
+  notizieNuove: number
+  argomentiCreati: number
+  argomentiAggiornati: number
+}
+
+/**
+ * Lancia subito il rilevamento che il job fa da solo ogni 5 minuti, leggendo
+ * tutte le fonti attive anche se non è passato il loro intervallo. Serve
+ * quando in redazione arriva una notizia e non si vuole aspettare il giro.
+ */
+export async function cercaHotTopicOra(): Promise<Esito<EsitoRicerca>> {
+  const sessione = await redattoreCorrente()
+  if (!sessione.ok) return sessione
+
+  const payload = await getPayload({ config })
+
+  try {
+    const esito = await rilevaHotTopic(payload, new Date(), { forza: true })
+    if (esito.saltato) return { ok: false, messaggio: esito.saltato }
+
+    revalidatePath('/admin/hot-topic')
+    return {
+      ok: true,
+      dati: {
+        fontiLette: esito.fontiLette,
+        fontiInErrore: esito.fontiInErrore,
+        notizieNuove: esito.notizieNuove,
+        argomentiCreati: esito.argomentiCreati,
+        argomentiAggiornati: esito.argomentiAggiornati,
+      },
+    }
+  } catch (err) {
+    return { ok: false, messaggio: `Ricerca non riuscita: ${(err as Error).message}` }
+  }
+}
+

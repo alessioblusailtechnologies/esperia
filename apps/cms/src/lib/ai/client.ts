@@ -39,8 +39,8 @@ export type EsitoAi<T> =
 
 const PREDEFINITI: ConfigurazioneAi = {
   enabled: false,
-  textModel: 'claude-opus-5',
-  utilityModel: 'claude-haiku-4-5',
+  textModel: 'claude-opus-5-5',
+  utilityModel: 'claude-sonnet-5-5',
   effort: 'high',
   editorialProfile: '',
   themes: [],
@@ -54,6 +54,30 @@ const PREDEFINITI: ConfigurazioneAi = {
   usdToEur: 0.92,
 }
 
+/**
+ * Modelli non più offerti in Impostazioni AI e il loro sostituto. Chi li aveva
+ * scelti passa al successore subito, senza dover risalvare le impostazioni:
+ * Haiku è stato sostituito da Sonnet 5.5 come modello di servizio.
+ */
+const MODELLI_SOSTITUITI: Record<string, string> = {
+  'claude-opus-5': 'claude-opus-5-5',
+  'claude-sonnet-5': 'claude-sonnet-5-5',
+  'claude-haiku-4-5': 'claude-sonnet-5-5',
+}
+
+const modelloAttuale = (m: unknown, ripiego: string): string =>
+  typeof m === 'string' && m ? (MODELLI_SOSTITUITI[m] ?? m) : ripiego
+
+/**
+ * Listino di riserva in USD per milione di token, usato quando la tabella in
+ * Impostazioni AI non ha ancora una riga per il modello (es. dopo un cambio di
+ * modello): senza, il registro consumi segnerebbe 0 €.
+ */
+const LISTINO_PREDEFINITO: ConfigurazioneAi['pricing'] = [
+  { model: 'claude-opus-5-5', inputPerMillion: 4, outputPerMillion: 20 },
+  { model: 'claude-sonnet-5-5', inputPerMillion: 2, outputPerMillion: 10 },
+]
+
 export async function leggiConfigurazione(payload: Payload): Promise<ConfigurazioneAi> {
   try {
     const g = (await payload.findGlobal({
@@ -65,8 +89,8 @@ export async function leggiConfigurazione(payload: Payload): Promise<Configurazi
     return {
       ...PREDEFINITI,
       enabled: Boolean(g.enabled),
-      textModel: g.textModel ?? PREDEFINITI.textModel,
-      utilityModel: g.utilityModel ?? PREDEFINITI.utilityModel,
+      textModel: modelloAttuale(g.textModel, PREDEFINITI.textModel),
+      utilityModel: modelloAttuale(g.utilityModel, PREDEFINITI.utilityModel),
       effort: g.effort ?? PREDEFINITI.effort,
       editorialProfile: g.editorialProfile ?? '',
       themes: Array.isArray(g.themes) ? g.themes : [],
@@ -130,18 +154,33 @@ export async function ottieniClient(
 }
 
 /**
- * Parametri di ragionamento compatibili con il modello scelto.
+ * Parametri di ragionamento per Opus 5.5 e Sonnet 5.5.
  *
- * Opus 5 e Sonnet 5 accettano il thinking adattivo e `effort`; Haiku 4.5 no,
- * e con quei parametri risponde 400. Il modello lo sceglie l'Amministratore in
- * Impostazioni AI, quindi la richiesta deve adattarsi a qualunque scelta.
+ * Su entrambi il ragionamento non si spegne (`disabled` e `budget_tokens`
+ * rispondono 400): si regola solo con `effort`. Lo passiamo sempre in modo
+ * esplicito perché su Opus 5.5 il valore predefinito è sceso a `medium`.
  */
 export function parametriRagionamento(
-  model: string,
+  _model: string,
   effort: ConfigurazioneAi['effort'],
-): { thinking?: { type: 'adaptive' }; effort?: ConfigurazioneAi['effort'] } {
-  if (model.startsWith('claude-haiku')) return {}
+): { thinking: { type: 'adaptive' }; effort: ConfigurazioneAi['effort'] } {
   return { thinking: { type: 'adaptive' }, effort }
+}
+
+/**
+ * Paracadute in caso di rifiuto. Se i filtri di sicurezza del modello
+ * declinano una richiesta (succede anche su testi giornalistici legittimi:
+ * cronaca nera, conflitti, sanità), la stessa richiesta viene rieseguita sul
+ * modello di riserva che Anthropic sceglie per quella categoria, nella stessa
+ * chiamata. Se rifiuta anche quello, `stop_reason` resta `refusal` e la
+ * redazione vede il messaggio di sempre.
+ */
+export const PARACADUTE_RIFIUTO: {
+  betas: Anthropic.Beta.AnthropicBeta[]
+  fallbacks: 'default'
+} = {
+  betas: ['server-side-fallback-2026-07-01'],
+  fallbacks: 'default',
 }
 
 /** Stima del costo di una chiamata, per il registro consumi — RF-AI-10. */
@@ -151,7 +190,9 @@ export function stimaCostoEur(
   inputTokens: number,
   outputTokens: number,
 ): number {
-  const listino = config.pricing.find((p) => p.model === model)
+  const listino =
+    config.pricing.find((p) => p.model === model) ??
+    LISTINO_PREDEFINITO.find((p) => p.model === model)
   if (!listino) return 0
 
   const usd =
