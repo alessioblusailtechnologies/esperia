@@ -25,9 +25,13 @@ Il database è uno solo, con **tre schemi che non si sovrappongono**: `payload`
 non sta in `public` perché il progetto Supabase può essere condiviso con altre
 applicazioni: in prova lo è, con moonbrand.
 
-Il rilevamento degli hot topic gira con le fonti RSS / Atom; restano da
-scrivere gli adattatori delle altre fonti, che dipendono dalla scelta del
-Committente. Tutto il resto sono completamenti circoscritti.
+Tutti i requisiti Must sono implementati. Area utente, assistente AI, immagini
+con Gemini, rilevamento degli hot topic e regole anti-spam sono provati contro i
+servizi veri (Supabase, Anthropic, Gemini, feed RSS). Restano: la prova delle
+pagine dell'area utente nel browser, gli adattatori delle fonti a pagamento
+(attendono la scelta del Committente), due Could (statistiche, newsletter), una
+decisione di design (reazioni sugli articoli) e le attività prima del collaudo.
+Il piano è al §4.
 
 ---
 
@@ -135,7 +139,25 @@ comandi, non l'abbiamo resa uno script perché non serve in produzione.
 
 ## 4. Che cosa resta
 
-In ordine di dipendenza, non di importanza.
+### Piano dei prossimi passi
+
+In ordine di priorità. I dettagli sono nelle sezioni che seguono.
+
+| # | Cosa | Dipende da | Stato |
+|---|---|---|---|
+| 1 | Provare nel browser le pagine dell'area utente: registrazione con email di conferma, accesso, recupero password, profilo, cancellazione (§4.2) | un SMTP sul progetto Supabase di prova (quello predefinito invia 2 email l'ora e solo ai membri del team) | ambiente pronto, prova da fare |
+| 2 | Migrazioni di Payload per la produzione: oggi lo schema si allinea solo in sviluppo, e la cartella `migrations/` è vuota (§4.5) | — | da fare prima del primo deploy |
+| 3 | Adattatori NewsAPI, GDELT, SerpAPI (§4.1) | scelta delle fonti del Committente (§8) | in attesa |
+| 4 | Reazioni sugli articoli (RF-C-04, §4.4) | una decisione di design: Articolo v1 non le prevede | in attesa |
+| 5 | Statistiche in backoffice (RF-B-14, Could) | priorità da confermare al kick-off | da fare |
+| 6 | Newsletter (RF-C-09, Could) | priorità e fornitore da confermare | da fare |
+| 7 | Attività prima del collaudo (§4.5) | in parte dal Committente | aperte |
+
+Fatto in questo ciclo, provato contro i servizi veri: rilevamento hot topic da
+RSS (§4.1), area utente e cancellazione account a livello di dati e API (§4.2),
+assistente all'editing e immagini con Gemini (§4.3), regole anti-spam (§4.4),
+community nello schema `esperia` su un progetto Supabase condiviso, barra
+«Ultim'ora» nel portale (§6).
 
 ### 4.1 Ingestione fonti e ranking hot topic — RF-AI-01, RF-AI-02
 
@@ -328,6 +350,18 @@ moderazione (facoltativa)" che il design prevedeva e che mancava.
   responsabile. Sono campi in Impostazioni portale, non costanti nel codice.
 - Cambiare la password dell'amministratore creato dal seed.
 - Configurare un adattatore email in Payload (ora scrive in console).
+- **Migrazioni di Payload.** In sviluppo Payload allinea da solo lo schema; in
+  produzione no, e `migrations/` è vuota. Prima del primo deploy vanno generate
+  (`pnpm --filter @esperia/cms migrate:create`): fra le tabelle nuove ci sono
+  `news-items` e quella interna dello scheduler dei job.
+- **Progetto Supabase di produzione dedicato, intestato al Committente.** Quello
+  di prova è condiviso con altre applicazioni: lo schema `esperia` separa le
+  tabelle, ma utenti, email e impostazioni di accesso restano comuni (RNF-04).
+- Sul progetto Supabase di produzione: password minima 8, conferma email, SMTP
+  vero, URL del sito e di reindirizzamento del portale (§2).
+- Togliere `SUPABASE_ACCESS_TOKEN` da `apps/cms/.env` quando non serve più: è un
+  token personale valido per tutti i progetti dell'account, condiviso con un
+  altro progetto, e serviva solo ad applicare le migrazioni di prova.
 
 ---
 
@@ -420,7 +454,11 @@ per non riaprirle senza un motivo nuovo.
 | Cache CDN, non ISR | L'hosting non è deciso (V-02): niente legami con una piattaforma |
 | Community su Supabase, contenuti su Payload | RF-B-01 chiede la separazione; i commenti vanno protetti riga per riga da RLS |
 | Ricerca in Postgres, non Meilisearch | Qualche migliaio di articoli in una lingua: un servizio in più non si ripaga |
-| SDK Anthropic ufficiale | `claude-opus-5` per le bozze, `claude-haiku-4-5` per ranking e moderazione |
+| SDK Anthropic ufficiale | Modello per i testi (`claude-opus-5`) per bozze, riscrittura, sintesi e SEO; modello di servizio (`claude-haiku-4-5`) per i titoli alternativi. La SEO è passata al modello per i testi dopo la prova reale |
+| Hot topic senza AI | Raggruppamento lessicale e punteggio calcolato: costo zero per giro, funziona con il modulo AI spento (RNF-10) |
+| Immagini con Google Gemini | Scelta del Committente. Dicitura nei crediti imposta da un hook, `aiGenerated` non modificabile dai redattori |
+| Community nello schema `esperia` | Convive con altre applicazioni sullo stesso progetto Supabase; per la produzione resta consigliato un progetto dedicato (§4.5) |
+| Barra «Ultim'ora» nel portale | Decisa il 5 ottobre 2026: non è nei design consegnati, la demo tiene «In evidenza» |
 | Generazione AI in due tempi | Prima la proposta, poi la bozza: è ciò che rende reale la revisione umana di RF-AI-08 |
 | Backoffice ri-tematizzato, non riscritto | Rifare elenco ed editor al pixel vorrebbe dire riscrivere versioni, permessi e validazioni |
 | Niente tema scuro | I design definiscono una sola palette. Inventarne una seconda sarebbe design non concordato |
@@ -476,6 +514,9 @@ packages/shared/     ruoli, workflow, stati, tipi community — usato da entramb
 | **Region dei dati** | Supabase e storage in UE per RNF-04 |
 | **Testi legali** | Privacy e cookie policy: forniti dal Committente, i contenitori esistono |
 | **Priorità Should/Could** | Con V-01 a due mesi, l'analisi stessa prevede di consolidarle in kick-off. Vale la pena usarla davvero |
+| **Progetto Supabase di produzione** | Va intestato al Committente: utenti, email di accesso e dati personali non possono stare in un progetto condiviso con altri clienti (RNF-04) |
+| **Reazioni sugli articoli** | RF-C-04 è Should, ma la pagina Articolo v1 non le prevede: serve una decisione di design prima di implementarle |
+| **Barra «Ultim'ora»** | Accesa nel portale ma assente dai design: da confermare col Committente |
 
 ---
 
@@ -513,7 +554,8 @@ persone reali per nome, e le fotografie non ritraggono persone identificabili.
 La barra dei titoli sa intercalare un cartello «contenuti di esempio» ma non lo
 fa: la dimostrazione serve a far valutare il design, e un avviso ricorrente
 lavora contro quello scopo. Si riaccende passando `avviso` a `BarraTitoli` in
-`Base.astro`, se l'indirizzo dovesse circolare più del previsto.
+`Base.astro`, se l'indirizzo dovesse circolare più del previsto. Nella demo
+l'etichetta è «In evidenza»; nel portale vero la barra è accesa con «Ultim'ora».
 
 **Le fotografie vengono da Wikimedia Commons**, unico archivio che dia insieme
 licenza verificabile e origine citabile via API. Autore e licenza sono nel campo

@@ -50,12 +50,10 @@ const footerPages = await getFooterPages()
  * motivo per far fallire il rendering (RNF-10).
  */
 let titoli: Article[] = []
-if (MOCK) {
-  try {
-    titoli = await getHeadlines()
-  } catch (err) {
-    if (!(err instanceof CmsUnavailableError)) throw err
-  }
+try {
+  titoli = await getHeadlines()
+} catch (err) {
+  if (!(err instanceof CmsUnavailableError)) throw err
 }
 
 const canonicalUrl = canonical ?? absoluteUrl(Astro.url.pathname)
@@ -181,14 +179,10 @@ const privacyPage = populated<Page>(settings.cookieBanner?.privacyPage)
        * riaccende passando di nuovo `avviso` — il componente lo sa ancora fare
        * e lo intercala ogni quattro titoli.
        *
-       * Fuori dalla dimostrazione la barra e' pronta ma spenta: mostrarla nel
-       * portale vero e' una scelta di design da concordare col Committente, non
-       * un effetto collaterale di questa modifica. Per accenderla basta togliere
-       * la condizione e passare un'etichetta tipo "Ultim'ora".
+       * Nel portale vero la barra e' accesa con l'etichetta "Ultim'ora"
+       * (decisione del 5 ottobre 2026); la dimostrazione tiene "In evidenza".
        */
-      MOCK && (
-        <BarraTitoli titoli={titoli} etichetta="In evidenza" />
-      )
+      <BarraTitoli titoli={titoli} etichetta={MOCK ? 'In evidenza' : 'Ultim’ora'} />
     }
 
     <div class="pagina">
