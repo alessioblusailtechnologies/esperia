@@ -103,14 +103,14 @@ export async function ottieniClient(
   // La chiave in database ha la precedenza; l'ambiente e' il ripiego per lo sviluppo.
   let apiKey: string | null = null
   try {
-    const g = (await payload.findGlobal({
+    // Il campo cifrato esce mascherato dal suo afterRead, e la Local API esegue
+    // gli hook di campo sempre, anche con overrideAccess o showHiddenFields:
+    // il valore cifrato si legge solo dall'adattatore del database.
+    const g = (await payload.db.findGlobal({
       slug: 'ai-settings',
-      overrideAccess: true,
-      depth: 0,
-      // Il campo cifrato esce mascherato dall'afterRead: qui serve il valore grezzo.
-      showHiddenFields: true,
-    })) as Record<string, any>
-    apiKey = tryDecryptSecret(g.anthropicApiKey)
+      select: { anthropicApiKey: true },
+    })) as Record<string, any> | null
+    apiKey = tryDecryptSecret(g?.anthropicApiKey)
   } catch {
     apiKey = null
   }
