@@ -68,6 +68,7 @@ export const Users: CollectionConfig = {
       type: 'upload',
       relationTo: 'media',
       label: 'Foto',
+      admin: { components: { Field: '@/components/media/CampoImmagine#CampoImmagine' } },
     },
     {
       name: 'bio',

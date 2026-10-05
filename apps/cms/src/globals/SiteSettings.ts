@@ -53,14 +53,28 @@ export const SiteSettings: GlobalConfig = {
         {
           label: 'Identità',
           fields: [
-            { name: 'siteName', type: 'text', required: true, defaultValue: 'Esperia', label: 'Nome del sito' },
+            {
+              name: 'siteName',
+              type: 'text',
+              required: true,
+              defaultValue: 'Esperia',
+              label: 'Nome del sito',
+            },
             {
               name: 'tagline',
               type: 'text',
               label: 'Sottotitolo',
-              admin: { description: 'Compare accanto al nome nei risultati di ricerca e nel feed.' },
+              admin: {
+                description: 'Compare accanto al nome nei risultati di ricerca e nel feed.',
+              },
             },
-            { name: 'logo', type: 'upload', relationTo: 'media', label: 'Logo' },
+            {
+              name: 'logo',
+              type: 'upload',
+              relationTo: 'media',
+              label: 'Logo',
+              admin: { components: { Field: '@/components/media/CampoImmagine#CampoImmagine' } },
+            },
             {
               name: 'defaultOgImage',
               type: 'upload',
@@ -69,6 +83,7 @@ export const SiteSettings: GlobalConfig = {
               admin: {
                 description:
                   'Usata quando un contenuto non ha ne immagine social ne copertina. Formato 1200x630.',
+                components: { Field: '@/components/media/CampoImmagine#CampoImmagine' },
               },
             },
             {
@@ -136,7 +151,14 @@ export const SiteSettings: GlobalConfig = {
                   label: 'Categoria',
                 },
                 { name: 'title', type: 'text', label: 'Titolo della sezione' },
-                { name: 'limit', type: 'number', defaultValue: 4, min: 2, max: 12, label: 'Articoli mostrati' },
+                {
+                  name: 'limit',
+                  type: 'number',
+                  defaultValue: 4,
+                  min: 2,
+                  max: 12,
+                  label: 'Articoli mostrati',
+                },
               ],
             },
           ],

@@ -108,6 +108,17 @@ const TRACCIATI = {
       <path d="M12 16v-4M12 8h.01" />
     </>
   ),
+  cerca: (
+    <>
+      <circle cx="11" cy="11" r="8" />
+      <path d="m21 21-4.3-4.3" />
+    </>
+  ),
+  cestino: (
+    <>
+      <path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6" />
+    </>
+  ),
   invia: (
     <>
       <path d="m22 2-7 20-4-9-9-4Z" />

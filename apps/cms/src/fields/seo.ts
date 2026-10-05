@@ -42,6 +42,7 @@ export const seoField: Field = {
       label: 'Immagine per la condivisione social',
       admin: {
         description: 'Formato ideale 1200×630. Usata da Open Graph e Twitter Card.',
+        components: { Field: '@/components/media/CampoImmagine#CampoImmagine' },
       },
     },
     {

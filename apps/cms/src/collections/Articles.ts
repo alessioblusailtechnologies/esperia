@@ -265,6 +265,7 @@ export const Articles: CollectionConfig = {
               type: 'upload',
               relationTo: 'media',
               label: 'Immagine di copertina',
+              admin: { components: { Field: '@/components/media/CampoImmagine#CampoImmagine' } },
             },
             {
               name: 'content',

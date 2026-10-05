@@ -2,6 +2,7 @@ import { VerificaAi as VerificaAi_203753434beab4c83f59efea63afd73a } from '@/com
 import { CellaStato as CellaStato_29396452c01c85f32df0cb67d28bba77 } from '@/components/CellaStato'
 import { CellaOrigine as CellaOrigine_ede9a5b0e0314f18e6596c711f2a9fc8 } from '@/components/elenco/CellaOrigine'
 import { CellaTitoloArticolo as CellaTitoloArticolo_07b6fe7a1b739cf46c3c0ef32eaf5ffb } from '@/components/elenco/CellaTitoloArticolo'
+import { CampoImmagine as CampoImmagine_6efdd9df49efa10c83b6929c039f44d5 } from '@/components/media/CampoImmagine'
 import { RscEntryLexicalCell as RscEntryLexicalCell_44fe37237e0ebf4470c9990d8cb7b07e } from '@payloadcms/richtext-lexical/rsc'
 import { RscEntryLexicalField as RscEntryLexicalField_44fe37237e0ebf4470c9990d8cb7b07e } from '@payloadcms/richtext-lexical/rsc'
 import { LexicalDiffComponent as LexicalDiffComponent_44fe37237e0ebf4470c9990d8cb7b07e } from '@payloadcms/richtext-lexical/rsc'
@@ -45,6 +46,7 @@ export const importMap = {
   "@/components/CellaStato#CellaStato": CellaStato_29396452c01c85f32df0cb67d28bba77,
   "@/components/elenco/CellaOrigine#CellaOrigine": CellaOrigine_ede9a5b0e0314f18e6596c711f2a9fc8,
   "@/components/elenco/CellaTitoloArticolo#CellaTitoloArticolo": CellaTitoloArticolo_07b6fe7a1b739cf46c3c0ef32eaf5ffb,
+  "@/components/media/CampoImmagine#CampoImmagine": CampoImmagine_6efdd9df49efa10c83b6929c039f44d5,
   "@payloadcms/richtext-lexical/rsc#RscEntryLexicalCell": RscEntryLexicalCell_44fe37237e0ebf4470c9990d8cb7b07e,
   "@payloadcms/richtext-lexical/rsc#RscEntryLexicalField": RscEntryLexicalField_44fe37237e0ebf4470c9990d8cb7b07e,
   "@payloadcms/richtext-lexical/rsc#LexicalDiffComponent": LexicalDiffComponent_44fe37237e0ebf4470c9990d8cb7b07e,
