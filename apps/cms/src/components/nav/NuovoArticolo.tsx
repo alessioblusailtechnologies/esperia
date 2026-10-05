@@ -17,8 +17,7 @@ import './NuovoArticolo.scss'
  * Finestra «Nuovo articolo» — l'unico punto da cui nasce un pezzo.
  *
  * Tre partenze: foglio bianco, i propri appunti, un hot topic. Le ultime due
- * passano dall'AI, e la finestra lo dice in chiaro con i due riquadri «L'AI
- * fa» / «Tu fai» prima di qualsiasi generazione. Il risultato non è una
+ * passano dall'AI, segnate in oro. Il risultato non è una
  * proposta da accettare qui: è una bozza a nome di chi l'ha chiesta, aperta
  * subito nell'editor, con la lista dei punti da verificare in cima alla
  * colonna.
@@ -64,6 +63,7 @@ export function NuovoArticolo({
   const [fase, setFase] = useState(0)
   const [errore, setErrore] = useState<string | null>(null)
   const riquadro = useRef<HTMLDivElement>(null)
+  const campoIstruzioni = useRef<HTMLTextAreaElement>(null)
   const passoPrecedente = useRef<Passo>('appunti')
 
   // A ogni apertura si riparte dal passo chiesto e si rileggono categorie e
@@ -105,6 +105,15 @@ export function NuovoArticolo({
     const t = setTimeout(() => setFase((f) => f + 1), 4000)
     return () => clearTimeout(t)
   }, [passo, fase])
+
+  // Il campo delle istruzioni cresce con il testo, fino a un tetto oltre il quale scorre.
+  useEffect(() => {
+    const el = campoIstruzioni.current
+    if (!el) return
+    el.style.height = 'auto'
+    el.style.height = `${Math.min(el.scrollHeight, 140)}px`
+    el.style.overflowY = el.scrollHeight > 140 ? 'auto' : 'hidden'
+  }, [indicazioni, passo])
 
   if (!aperta) return null
 
@@ -185,25 +194,6 @@ export function NuovoArticolo({
         </div>
       </div>
     </>
-  )
-
-  const cosaSuccede = (materiale: string) => (
-    <div className="nuovo__ruoli">
-      <div className="nuovo__ruolo nuovo__ruolo--ai">
-        <b>
-          <Icona nome="ai" dimensione={13} tratto={2} />
-          L’AI fa
-        </b>
-        Scrive titolo, sommario e corpo {materiale}. Elenca cosa manca o va verificato.
-      </div>
-      <div className="nuovo__ruolo nuovo__ruolo--tu">
-        <b>
-          <Icona nome="penna" dimensione={13} tratto={2} />
-          Tu fai
-        </b>
-        Apri la bozza a tuo nome, verifichi, correggi e firmi. Niente viene pubblicato da solo.
-      </div>
-    </div>
   )
 
   let titolo = 'Da dove parti?'
@@ -290,7 +280,6 @@ export function NuovoArticolo({
           </span>
         </label>
         {opzioniComuni}
-        {cosaSuccede('dai tuoi appunti')}
       </>
     )
     piede = (
@@ -344,17 +333,41 @@ export function NuovoArticolo({
             ))}
           </div>
         )}
-        <label className="nuovo__campo">
-          <span className="nuovo__etichetta">Indicazioni (facoltative)</span>
-          <textarea
-            className="nuovo__testo nuovo__testo--breve"
-            value={indicazioni}
-            onChange={(e) => setIndicazioni(e.currentTarget.value)}
-            placeholder="Es. concentrati sull’impatto per le famiglie; cita il ministero se c’è una nota."
-          />
-        </label>
         {opzioniComuni}
-        {cosaSuccede('dagli articoli raccolti sull’argomento')}
+        <div className="nuovo__campo">
+          <label className="nuovo__etichetta" htmlFor="nuovo-istruzioni">
+            Istruzioni per l’AI (facoltative)
+          </label>
+          <div className="nuovo__barra">
+            <span className="nuovo__barra-icona" aria-hidden="true">
+              <Icona nome="ai" dimensione={16} />
+            </span>
+            <textarea
+              id="nuovo-istruzioni"
+              ref={campoIstruzioni}
+              className="nuovo__barra-testo"
+              rows={1}
+              value={indicazioni}
+              onChange={(e) => setIndicazioni(e.currentTarget.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' && !e.shiftKey && !e.nativeEvent.isComposing && argomento) {
+                  e.preventDefault()
+                  void scrivi('hot_topic')
+                }
+              }}
+              placeholder="Es. concentrati sull’impatto per le famiglie; cita il ministero se c’è una nota"
+            />
+            <button
+              type="button"
+              className="nuovo__barra-invia"
+              aria-label="Scrivi la bozza"
+              disabled={!argomento}
+              onClick={() => void scrivi('hot_topic')}
+            >
+              <Icona nome="invia" dimensione={15} />
+            </button>
+          </div>
+        </div>
       </>
     )
     piede = (

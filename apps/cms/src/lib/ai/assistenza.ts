@@ -11,8 +11,10 @@ import { istruzioniDiSistema, registraConsumo } from './genera'
  *
  * Diversa dalla generazione da zero: qui il redattore ha gia' scritto, e
  * l'assistente lavora su un passaggio (riscrittura, sintesi) o sull'articolo
- * intero (titoli alternativi, suggerimenti SEO). Non scrive mai nel documento:
- * restituisce una proposta che il pannello mostra accanto al testo attuale, e
+ * intero (titoli alternativi, suggerimenti SEO), oppure esegue una richiesta
+ * scritta a parole dal redattore (istruzione libera), proponendo modifiche a
+ * singoli blocchi del corpo e ai campi d'intestazione. Non scrive mai nel documento:
+ * restituisce una proposta che la barra mostra accanto al testo attuale, e
  * che entra nell'articolo solo se il redattore la accetta.
  *
  * Riscrittura e sintesi usano il modello per i testi, perche' il risultato
@@ -22,7 +24,10 @@ import { istruzioniDiSistema, registraConsumo } from './genera'
  * restano al modello di servizio: sono proposte brevi da scegliere.
  */
 
-export type Strumento = 'riscrivi' | 'sintetizza' | 'titoli' | 'seo'
+export type Strumento = 'riscrivi' | 'sintetizza' | 'titoli' | 'seo' | 'istruzione'
+
+/** Oltre questa lunghezza la richiesta libera del redattore non viene inviata. */
+export const ISTRUZIONE_MAX = 2_000
 
 /** Oltre questa lunghezza l'articolo non viene inviato: meglio dirlo che tagliarlo in silenzio. */
 export const TESTO_MAX = 60_000
@@ -43,6 +48,58 @@ const SchemaSeo = z.object({
     .describe('Da 2 a 4 osservazioni concrete e verificabili sul contenuto, una frase ciascuna'),
 })
 
+/** I campi d'intestazione che l'istruzione libera puo' proporre di cambiare. */
+export const CAMPI_ISTRUZIONE = [
+  'occhiello',
+  'titolo',
+  'sottotitolo',
+  'sommario',
+  'metaTitle',
+  'metaDescription',
+] as const
+export type CampoIstruzione = (typeof CAMPI_ISTRUZIONE)[number]
+
+const SchemaIstruzione = z.object({
+  risposta: z
+    .string()
+    .describe(
+      'Una o due frasi al redattore: cosa proponi e perché, oppure la risposta alla sua domanda',
+    ),
+  modifiche: z
+    .array(
+      z.object({
+        azione: z.enum(['sostituisci', 'inserisci_dopo', 'elimina']),
+        blocco: z
+          .number()
+          .int()
+          .describe(
+            'Numero del blocco del corpo su cui agire (0 = la selezione del redattore, se presente)',
+          ),
+        testo: z
+          .string()
+          .describe('Il nuovo testo del blocco, o del blocco da inserire; vuoto per elimina'),
+      }),
+    )
+    .describe('Le modifiche al corpo; nessuna se la richiesta è una domanda'),
+  campi: z
+    .array(z.object({ campo: z.enum(CAMPI_ISTRUZIONE), valore: z.string() }))
+    .describe('I campi d’intestazione da cambiare; nessuno se la richiesta non li riguarda'),
+})
+
+export interface ModificaCorpo {
+  azione: 'sostituisci' | 'inserisci_dopo' | 'elimina'
+  blocco: number
+  testo: string
+}
+
+/** Un blocco del corpo così come l'assistente lo vede: numerato, col suo tipo. */
+export interface BloccoCorpo {
+  n: number
+  tipo: string
+  testo: string
+  modificabile: boolean
+}
+
 export type PropostaAssistente =
   | { strumento: 'riscrivi' | 'sintetizza'; testo: string }
   | { strumento: 'titoli'; titoli: string[] }
@@ -52,6 +109,12 @@ export type PropostaAssistente =
       metaDescription: string
       suggerimenti: string[]
     }
+  | {
+      strumento: 'istruzione'
+      risposta: string
+      modifiche: ModificaCorpo[]
+      campi: Array<{ campo: CampoIstruzione; valore: string }>
+    }
 
 export interface RichiestaAssistente {
   strumento: Strumento
@@ -60,6 +123,12 @@ export interface RichiestaAssistente {
   /** L'articolo intero in testo semplice: contesto per tutti, materia per titoli e SEO. */
   articolo: string
   titolo: string
+  /** Solo per l'istruzione libera: cosa chiede il redattore, a parole sue. */
+  istruzione?: string
+  /** Solo per l'istruzione libera: il corpo diviso in blocchi numerati. */
+  blocchi?: BloccoCorpo[]
+  /** Solo per l'istruzione libera: i valori attuali dei campi d'intestazione. */
+  campi?: Partial<Record<CampoIstruzione, string>>
 }
 
 const OPERAZIONE: Record<Strumento, AiOperation> = {
@@ -67,9 +136,52 @@ const OPERAZIONE: Record<Strumento, AiOperation> = {
   sintetizza: 'summarize',
   titoli: 'title_suggestions',
   seo: 'seo_suggestions',
+  // Nel registro dei consumi l'istruzione libera conta come lavoro sul testo.
+  istruzione: 'rewrite',
+}
+
+const NOMI_CAMPI: Record<CampoIstruzione, string> = {
+  occhiello: 'Occhiello',
+  titolo: 'Titolo',
+  sottotitolo: 'Sottotitolo',
+  sommario: 'Sommario',
+  metaTitle: 'Meta title (max 60 caratteri)',
+  metaDescription: 'Meta description (120-155 caratteri)',
+}
+
+function richiestaIstruzione(r: RichiestaAssistente): string {
+  const campi = CAMPI_ISTRUZIONE.map(
+    (c) => `${NOMI_CAMPI[c]} [${c}]: ${r.campi?.[c]?.trim() || '(vuoto)'}`,
+  )
+  const blocchi = (r.blocchi ?? []).map(
+    (b) => `[${b.n}] (${b.tipo}${b.modificabile ? '' : ', non modificabile'}) ${b.testo}`,
+  )
+  return [
+    'Campi d’intestazione:',
+    ...campi,
+    '',
+    'Corpo, diviso in blocchi numerati:',
+    ...(blocchi.length ? blocchi : ['(vuoto)']),
+    ...(r.passaggio ? ['', `Selezione del redattore (blocco 0):\n${r.passaggio}`] : []),
+    '',
+    `Richiesta del redattore: ${r.istruzione}`,
+    '',
+    [
+      'Esegui la richiesta con modifiche puntuali, senza riscrivere l’articolo intero.',
+      r.passaggio
+        ? 'C’è una selezione: se la richiesta riguarda il testo, agisci sul blocco 0 con «sostituisci».'
+        : 'Per agire su un blocco usa il suo numero; «inserisci_dopo» col blocco 0 aggiunge in testa al corpo.',
+      'Il testo di ogni blocco è testo semplice, senza markdown; un blocco per paragrafo.',
+      'Non toccare i blocchi non modificabili. Mantieni fatti, cifre, nomi e citazioni:',
+      'non aggiungere informazioni che non compaiono nell’articolo o nella richiesta.',
+      'Se la richiesta è una domanda sul pezzo, rispondi in «risposta» senza modifiche.',
+      'Se non si può fare con quello che c’è, dillo in «risposta» e non proporre nulla.',
+    ].join(' '),
+  ].join('\n')
 }
 
 function richiestaUtente(r: RichiestaAssistente): string {
+  if (r.strumento === 'istruzione') return richiestaIstruzione(r)
   const contesto = `Titolo attuale: ${r.titolo || '(nessuno)'}\n\nArticolo:\n${r.articolo}`
 
   switch (r.strumento) {
@@ -97,7 +209,7 @@ function richiestaUtente(r: RichiestaAssistente): string {
         'caratteri, sobri e fedeli al contenuto: niente domande retoriche, niente promesse',
         'che il testo non mantiene. Tre angolazioni diverse, non tre varianti della stessa frase.',
       ].join(' ')
-    case 'seo':
+    default:
       return [
         contesto,
         '\n\nProponi meta title e meta description per i motori di ricerca, fedeli al',
@@ -119,10 +231,17 @@ export async function proponiAssistenza(
 
   const { client, config } = accesso
   const sulTesto = r.strumento === 'riscrivi' || r.strumento === 'sintetizza'
+  const libera = r.strumento === 'istruzione'
   const model = r.strumento === 'titoli' ? config.utilityModel : config.textModel
   // Un paragrafo da riscrivere non richiede la profondità di una bozza intera.
-  const ragionamento = parametriRagionamento(model, sulTesto ? 'medium' : 'low')
-  const schema = sulTesto ? SchemaTesto : r.strumento === 'titoli' ? SchemaTitoli : SchemaSeo
+  const ragionamento = parametriRagionamento(model, sulTesto || libera ? 'medium' : 'low')
+  const schema = libera
+    ? SchemaIstruzione
+    : sulTesto
+      ? SchemaTesto
+      : r.strumento === 'titoli'
+        ? SchemaTitoli
+        : SchemaSeo
   const operazione = OPERAZIONE[r.strumento]
   const avvio = Date.now()
 
@@ -147,7 +266,8 @@ export async function proponiAssistenza(
     const risposta = await client.beta.messages.parse({
       ...PARACADUTE_RIFIUTO,
       model,
-      max_tokens: 8000,
+      // L'istruzione libera può toccare molti paragrafi di un pezzo lungo.
+      max_tokens: libera ? 16000 : 8000,
       ...(ragionamento.thinking ? { thinking: ragionamento.thinking } : {}),
       output_config: {
         ...(ragionamento.effort ? { effort: ragionamento.effort } : {}),
@@ -179,6 +299,26 @@ export async function proponiAssistenza(
 
     if (r.strumento === 'riscrivi' || r.strumento === 'sintetizza') {
       return { ok: true, dati: { strumento: r.strumento, testo: String(dati.testo).trim() } }
+    }
+    if (r.strumento === 'istruzione') {
+      // Solo blocchi che esistono e si possono toccare; in testa si può sempre inserire.
+      const ammessi = new Set((r.blocchi ?? []).filter((b) => b.modificabile).map((b) => b.n))
+      const modifiche = (dati.modifiche as ModificaCorpo[]).filter(
+        (m) =>
+          ammessi.has(m.blocco) ||
+          (m.blocco === 0 && (Boolean(r.passaggio) || m.azione === 'inserisci_dopo')),
+      )
+      return {
+        ok: true,
+        dati: {
+          strumento: 'istruzione',
+          risposta: String(dati.risposta).trim(),
+          modifiche: modifiche.map((m) => ({ ...m, testo: String(m.testo).trim() })),
+          campi: (dati.campi as Array<{ campo: CampoIstruzione; valore: string }>)
+            .filter((c) => CAMPI_ISTRUZIONE.includes(c.campo))
+            .map((c) => ({ campo: c.campo, valore: String(c.valore).trim() })),
+        },
+      }
     }
     if (r.strumento === 'titoli') {
       return {

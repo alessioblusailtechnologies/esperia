@@ -239,10 +239,6 @@
   resize: vertical;
 }
 
-.nuovo__testo--breve {
-  min-height: 72px;
-}
-
 .nuovo__aiuto {
   margin: 0;
   font-size: 12px;
@@ -359,37 +355,74 @@
 
 /* ------------------------------------------------------ chi fa che cosa */
 
-.nuovo__ruoli {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
-}
+/* Istruzioni per l'AI: una barra come quella dell'assistente nell'editor. */
+.nuovo__barra {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  padding: 7px 7px 7px 9px;
+  border: 1.5px solid var(--theme-border-color);
+  border-radius: 18px;
+  background: var(--theme-input-bg);
+  transition: border-color 0.15s var(--ease-esperia);
 
-.nuovo__ruolo {
-  padding: 12px 14px;
-  border-radius: 14px;
-  font-size: 12.5px;
-  line-height: 1.5;
-
-  b {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    margin-bottom: 4px;
-    font-size: 11px;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
+  &:focus-within {
+    border-color: var(--esperia-ai);
   }
 }
 
-.nuovo__ruolo--ai {
+.nuovo__barra-icona {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
   background: var(--esperia-ai-tinta);
   color: var(--esperia-ai-testo);
 }
 
-.nuovo__ruolo--tu {
-  background: #e3f1f2;
-  color: var(--esperia-accento);
+.nuovo__barra-testo {
+  flex: 1;
+  min-height: 30px;
+  max-height: 140px;
+  padding: 5px 0;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: var(--theme-text);
+  font: inherit;
+  line-height: 20px;
+  resize: none;
+
+  &::placeholder {
+    color: var(--esperia-testo-tenue);
+  }
+}
+
+.nuovo__barra-invia {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border: 0;
+  border-radius: 50%;
+  background: var(--esperia-ai);
+  color: #2b1d04;
+  cursor: pointer;
+
+  &:hover:not(:disabled) {
+    background: #edbd63;
+  }
+
+  &:disabled {
+    background: var(--esperia-superficie);
+    color: var(--esperia-testo-tenue);
+    cursor: default;
+  }
 }
 
 /* ------------------------------------------------------------- pulsanti */
@@ -495,8 +528,7 @@
 /* .segno-ai sta nel tema (tema/_pulsanti.scss). */
 
 @media (max-width: 600px) {
-  .nuovo__griglia,
-  .nuovo__ruoli {
+  .nuovo__griglia {
     grid-template-columns: 1fr;
   }
 }

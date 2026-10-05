@@ -1,0 +1,393 @@
+/* =============================================================================
+   Barra "Assistente AI" agganciata in fondo alla colonna dell'articolo.
+   La scheda della proposta si apre sopra il campo; l'oro resta il segno di
+   ciò che il modello propone.
+   ============================================================================= */
+
+.barra-ai {
+  position: sticky;
+  bottom: 16px;
+  z-index: 30;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+  max-width: 780px;
+  margin: 28px auto 0;
+  font-family: var(--font-body);
+  // Lo spazio sotto la barra: il corpo non deve finirle nascosto dietro.
+  padding-bottom: 4px;
+}
+
+/* --- Campo --------------------------------------------------------------- */
+
+.barra-ai__campo {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 10px 10px 10px 12px;
+  border: 1.5px solid var(--esperia-filo-forte);
+  border-radius: var(--raggio-scheda);
+  background: var(--esperia-scheda);
+  box-shadow: var(--ombra-menu);
+  transition: border-color 0.15s var(--ease-esperia);
+
+  &:focus-within {
+    border-color: var(--esperia-ai);
+  }
+}
+
+.barra-ai__campo--attesa {
+  border-color: var(--esperia-ai);
+}
+
+.barra-ai__scorciatoie {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  overflow-x: auto;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+.barra-ai__ambito {
+  flex: none;
+  padding: 4px 9px;
+  border-radius: var(--raggio-pillola);
+  background: var(--esperia-superficie);
+  color: var(--esperia-testo-corpo);
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.barra-ai__ambito--selezione {
+  background: var(--esperia-accento-tinta);
+  color: var(--esperia-accento);
+}
+
+.barra-ai__pastiglia {
+  flex: none;
+  padding: 4px 10px;
+  border: 1px solid var(--esperia-filo);
+  border-radius: var(--raggio-pillola);
+  background: transparent;
+  color: var(--esperia-testo);
+  font: inherit;
+  font-size: 11.5px;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+
+  &:hover:not(:disabled) {
+    border-color: var(--esperia-ai);
+    background: var(--esperia-ai-tinta);
+  }
+
+  &[aria-pressed='true'] {
+    border-color: var(--esperia-ai);
+    background: var(--esperia-ai-tinta);
+    color: var(--esperia-ai-testo);
+  }
+
+  &:disabled {
+    color: var(--esperia-testo-tenue);
+    cursor: default;
+  }
+}
+
+.barra-ai__riga {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+}
+
+.barra-ai__icona {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--esperia-ai-tinta);
+  color: var(--esperia-ai-testo);
+}
+
+// Più specifico dello stile dei campi del tema (.field-type textarea): qui il
+// riquadro è la barra intera, non il campo.
+.barra-ai__riga textarea.barra-ai__testo,
+.barra-ai__riga textarea.barra-ai__testo:hover,
+.barra-ai__riga textarea.barra-ai__testo:focus {
+  flex: 1;
+  min-height: 32px;
+  max-height: 160px;
+  padding: 6px 0;
+  border: 0;
+  border-radius: 0;
+  outline: 0;
+  box-shadow: none;
+  background: transparent;
+  color: var(--esperia-testo);
+  font: inherit;
+  font-size: 14px;
+  line-height: 20px;
+  resize: none;
+
+  &::placeholder {
+    color: var(--esperia-testo-tenue);
+  }
+}
+
+.barra-ai__invia {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border: 0;
+  border-radius: 50%;
+  background: var(--esperia-ai);
+  color: #2b1d04;
+  cursor: pointer;
+
+  &:hover:not(:disabled) {
+    background: #edbd63;
+  }
+
+  &:disabled {
+    background: var(--esperia-superficie);
+    color: var(--esperia-testo-tenue);
+    cursor: default;
+  }
+
+  &:focus-visible {
+    outline: var(--accessibility-outline);
+    outline-offset: 2px;
+  }
+}
+
+.barra-ai__spenta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  border: 1px solid var(--esperia-filo);
+  border-radius: var(--raggio-scheda);
+  background: var(--esperia-pannello);
+  box-shadow: var(--ombra-scheda);
+  color: var(--esperia-testo-corpo);
+  font-size: 12.5px;
+  line-height: 1.5;
+}
+
+/* --- Scheda della proposta ---------------------------------------------- */
+
+.barra-ai__scheda {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-height: min(60vh, 560px);
+  overflow-y: auto;
+  padding: 14px 16px 16px;
+  border: 1px solid var(--esperia-filo);
+  border-radius: var(--raggio-scheda);
+  background: var(--esperia-scheda);
+  box-shadow: var(--ombra-menu);
+  animation: barraAiApri 0.18s var(--ease-esperia);
+
+  // La sezione immagini, nata per la colonna laterale, qui non ha bisogno di filetto.
+  .assistente__immagini {
+    border-top: 0;
+    padding-top: 0;
+  }
+
+  .assistente__attesa {
+    border-top: 0;
+    padding-top: 0;
+  }
+
+  .assistente__griglia {
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  }
+}
+
+@keyframes barraAiApri {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+}
+
+.barra-ai__scheda-testa {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.barra-ai__scheda-titolo {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  font-size: 13px;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.barra-ai__chiudi {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--esperia-testo-corpo);
+  cursor: pointer;
+
+  &:hover {
+    background: var(--esperia-superficie);
+    color: var(--esperia-testo);
+  }
+}
+
+.barra-ai__chiudi--angolo {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+}
+
+.barra-ai__proposta {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.barra-ai__risposta {
+  margin: 0;
+  color: var(--esperia-testo);
+  font-size: 13.5px;
+  line-height: 1.55;
+}
+
+.barra-ai__modifica {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 10px 12px;
+  border: 1px solid var(--esperia-filo);
+  border-radius: var(--style-radius-m);
+  background: var(--esperia-pannello);
+}
+
+.barra-ai__modifica-testa {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.barra-ai__dove {
+  flex: 1;
+  color: var(--esperia-testo-tenue);
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.barra-ai__prima,
+.barra-ai__dopo {
+  margin: 0;
+  padding: 8px 10px;
+  border-radius: var(--style-radius-s);
+  font-family: var(--font-serif);
+  font-size: 14.5px;
+  line-height: 1.55;
+  white-space: pre-wrap;
+}
+
+.barra-ai__prima {
+  background: transparent;
+  color: var(--esperia-testo-tenue);
+  text-decoration: line-through;
+  text-decoration-color: rgba(150, 141, 125, 0.5);
+}
+
+.barra-ai__dopo {
+  background: var(--esperia-ai-tinta);
+  color: var(--esperia-testo);
+}
+
+.barra-ai__scelte {
+  display: flex;
+  flex: none;
+  gap: 6px;
+}
+
+.barra-ai__applica,
+.barra-ai__scarta {
+  padding: 4px 11px;
+  border-radius: var(--raggio-pillola);
+  font: inherit;
+  font-size: 11.5px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.barra-ai__applica {
+  border: 0;
+  background: var(--esperia-accento);
+  color: #faf7f0;
+
+  &:hover {
+    background: var(--esperia-accento-scuro);
+  }
+}
+
+.barra-ai__scarta {
+  border: 1px solid var(--esperia-filo-forte);
+  background: transparent;
+  color: var(--esperia-testo);
+
+  &:hover {
+    border-color: var(--esperia-testo);
+  }
+}
+
+.barra-ai__esito {
+  flex: none;
+  font-size: 11.5px;
+  font-weight: 600;
+}
+
+.barra-ai__esito--applicata {
+  color: var(--stato-pubblicato-fg);
+}
+
+.barra-ai__esito--scartata {
+  color: var(--esperia-testo-tenue);
+}
+
+.barra-ai__esito--fallita {
+  color: var(--stato-revisione-fg);
+}
+
+.barra-ai__decisione {
+  display: flex;
+  gap: 7px;
+  flex-wrap: wrap;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .barra-ai__scheda {
+    animation: none;
+  }
+}

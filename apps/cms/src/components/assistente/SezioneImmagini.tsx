@@ -7,7 +7,7 @@ import { proponiImmagini, salvaCopertina } from './azioni'
 import type { ImmagineProposta } from '@/lib/ai/immagini'
 
 /**
- * "Immagini per l'articolo" nel pannello dell'assistente — RF-AI-07.
+ * "Immagini per l'articolo" nella barra dell'assistente — RF-AI-07.
  * Impaginazione e testi dai design (Editor v1).
  *
  * Le proposte restano nel browser finche' il redattore non ne sceglie una:

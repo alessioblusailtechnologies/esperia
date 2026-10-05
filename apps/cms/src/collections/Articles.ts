@@ -277,7 +277,7 @@ export const Articles: CollectionConfig = {
                   FixedToolbarFeature(),
                   HeadingFeature({ enabledHeadingSizes: ['h2', 'h3', 'h4'] }),
                   HorizontalRuleFeature(),
-                  // Espone editor e selezione al pannello "Assistente AI" (RF-AI-06).
+                  // Espone editor e selezione alla barra "Assistente AI" (RF-AI-06).
                   PonteAssistenteFeature(),
                   UploadFeature({
                     collections: {
@@ -328,6 +328,16 @@ export const Articles: CollectionConfig = {
                   }),
                 ],
               }),
+            },
+            {
+              // Assistente AI — RF-AI-06. Campo di sola interfaccia, non salva
+              // nulla: ospita la barra che resta agganciata in fondo alla
+              // colonna mentre si scrive il corpo.
+              name: 'assistenteAi',
+              type: 'ui',
+              admin: {
+                components: { Field: '@/components/assistente/BarraAssistente#BarraAssistente' },
+              },
             },
           ],
         },
@@ -420,19 +430,6 @@ export const Articles: CollectionConfig = {
           ],
         },
       ],
-    },
-
-    /* ------------------------------------------------------------------ */
-    /* Assistente AI nella colonna laterale — RF-AI-06, dai design        */
-    /* ------------------------------------------------------------------ */
-    {
-      // Campo di sola interfaccia: non salva nulla, ospita il pannello.
-      name: 'assistenteAi',
-      type: 'ui',
-      admin: {
-        position: 'sidebar',
-        components: { Field: '@/components/assistente/PannelloAssistente#PannelloAssistente' },
-      },
     },
 
     /* ------------------------------------------------------------------ */

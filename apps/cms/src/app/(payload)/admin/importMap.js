@@ -28,7 +28,7 @@ import { LinkFeatureClient as LinkFeatureClient_e70f5e05f09f93e00b997edb1ef0c864
 import { RelationshipFeatureClient as RelationshipFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { BlockquoteFeatureClient as BlockquoteFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { InlineToolbarFeatureClient as InlineToolbarFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
-import { PannelloAssistente as PannelloAssistente_cecaaf1e7e1a4ed03e5c1626d829c36e } from '@/components/assistente/PannelloAssistente'
+import { BarraAssistente as BarraAssistente_961900265c3a266eb1c20f77c2ae4763 } from '@/components/assistente/BarraAssistente'
 import { SchedeArticoli as SchedeArticoli_58f6836733788bd07694fba24e54bd48 } from '@/components/elenco/SchedeArticoli'
 import { AzioneNuovoArticolo as AzioneNuovoArticolo_b5a8169444a50d5bf448f194ea96f847 } from '@/components/elenco/AzioneNuovoArticolo'
 import { NavLaterale as NavLaterale_de2a0ee0c6be975314796bb42af8f8ae } from '@/components/nav/NavLaterale'
@@ -71,7 +71,7 @@ export const importMap = {
   "@payloadcms/richtext-lexical/client#RelationshipFeatureClient": RelationshipFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "@payloadcms/richtext-lexical/client#BlockquoteFeatureClient": BlockquoteFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "@payloadcms/richtext-lexical/client#InlineToolbarFeatureClient": InlineToolbarFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
-  "@/components/assistente/PannelloAssistente#PannelloAssistente": PannelloAssistente_cecaaf1e7e1a4ed03e5c1626d829c36e,
+  "@/components/assistente/BarraAssistente#BarraAssistente": BarraAssistente_961900265c3a266eb1c20f77c2ae4763,
   "@/components/elenco/SchedeArticoli#SchedeArticoli": SchedeArticoli_58f6836733788bd07694fba24e54bd48,
   "@/components/elenco/AzioneNuovoArticolo#AzioneNuovoArticolo": AzioneNuovoArticolo_b5a8169444a50d5bf448f194ea96f847,
   "@/components/nav/NavLaterale#NavLaterale": NavLaterale_de2a0ee0c6be975314796bb42af8f8ae,

@@ -5,8 +5,12 @@ import { getPayload } from 'payload'
 import config from '@/payload.config'
 import { leggiConfigurazione } from '@/lib/ai/client'
 import {
+  CAMPI_ISTRUZIONE,
+  ISTRUZIONE_MAX,
   proponiAssistenza,
   TESTO_MAX,
+  type BloccoCorpo,
+  type CampoIstruzione,
   type PropostaAssistente,
   type Strumento,
 } from '@/lib/ai/assistenza'
@@ -19,18 +23,19 @@ import {
 } from '@/lib/ai/immagini'
 
 /**
- * Azioni del pannello "Assistente AI" nell'editor — RF-AI-06.
+ * Azioni della barra "Assistente AI" nell'editor — RF-AI-06.
  *
- * Restituiscono solo proposte: nessuna tocca il documento. E' il pannello, nel
+ * Restituiscono solo proposte: nessuna tocca il documento. E' la barra, nel
  * browser, ad applicare al testo cio' che il redattore accetta, nell'editor
  * aperto e quindi ancora da salvare.
  */
 
 type Esito<T> = { ok: true; dati: T } | { ok: false; messaggio: string }
 
+// L'istruzione libera ha la sua azione (chiediIstruzione): porta con sé altri dati.
 const STRUMENTI: Strumento[] = ['riscrivi', 'sintetizza', 'titoli', 'seo']
 
-/** Il pannello esiste anche ad AI spenta: mostra lo stato invece di sparire (RNF-10). */
+/** La barra esiste anche ad AI spenta: mostra lo stato invece di sparire (RNF-10). */
 export async function statoAssistente(): Promise<{
   attivo: boolean
   messaggio: string
@@ -108,6 +113,63 @@ export async function chiediProposta(input: {
   return esito.ok ? esito : { ok: false, messaggio: esito.messaggio }
 }
 
+/**
+ * La richiesta a parole del redattore, dalla barra dell'assistente: il corpo
+ * arriva diviso in blocchi numerati, cosi' le modifiche proposte puntano a un
+ * paragrafo preciso e il browser puo' controllare che non sia cambiato.
+ */
+export async function chiediIstruzione(input: {
+  istruzione: string
+  passaggio: string
+  blocchi: BloccoCorpo[]
+  campi: Partial<Record<CampoIstruzione, string>>
+  titolo: string
+}): Promise<Esito<PropostaAssistente>> {
+  const sessione = await redattoreCorrente()
+  if (!sessione.ok) return sessione
+
+  const istruzione = String(input.istruzione ?? '').trim()
+  if (istruzione.length < 3) {
+    return { ok: false, messaggio: 'Scrivi cosa vuoi che faccia l’assistente.' }
+  }
+  if (istruzione.length > ISTRUZIONE_MAX) {
+    return { ok: false, messaggio: `La richiesta supera i ${ISTRUZIONE_MAX} caratteri.` }
+  }
+
+  const blocchi = (Array.isArray(input.blocchi) ? input.blocchi : []).map((b) => ({
+    n: Number(b.n),
+    tipo: String(b.tipo ?? 'paragrafo').slice(0, 30),
+    testo: String(b.testo ?? ''),
+    modificabile: b.modificabile === true,
+  }))
+  const campi: Partial<Record<CampoIstruzione, string>> = {}
+  for (const c of CAMPI_ISTRUZIONE) {
+    const valore = input.campi?.[c]
+    if (typeof valore === 'string') campi[c] = valore.slice(0, 1_000)
+  }
+
+  const lunghezza = blocchi.reduce((t, b) => t + b.testo.length, 0)
+  if (lunghezza > TESTO_MAX) {
+    return {
+      ok: false,
+      messaggio: `L’articolo supera i ${TESTO_MAX.toLocaleString('it-IT')} caratteri che l’assistente accetta.`,
+    }
+  }
+
+  const payload = await getPayload({ config })
+  const esito = await proponiAssistenza(payload, sessione.utente.id, {
+    strumento: 'istruzione',
+    istruzione,
+    passaggio: String(input.passaggio ?? '').trim(),
+    articolo: blocchi.map((b) => b.testo).join('\n\n'),
+    titolo: String(input.titolo ?? '').trim(),
+    blocchi,
+    campi,
+  })
+
+  return esito.ok ? esito : { ok: false, messaggio: esito.messaggio }
+}
+
 /* -------------------------------------------------------------------------- */
 /* Immagini — RF-AI-07                                                        */
 /* -------------------------------------------------------------------------- */
@@ -138,7 +200,7 @@ export async function proponiImmagini(
 
 /**
  * Salva la proposta scelta nella media library e ne restituisce l'id, che il
- * pannello mette nel campo copertina dell'articolo aperto (ancora da salvare).
+ * barra mette nel campo copertina dell'articolo aperto (ancora da salvare).
  *
  * L'immagine torna dal browser: si accetta solo se e' davvero un'immagine,
  * nei formati e nelle dimensioni di Gemini.

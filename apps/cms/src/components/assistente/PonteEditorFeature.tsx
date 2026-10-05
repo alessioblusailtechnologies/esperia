@@ -9,7 +9,7 @@ import { aggiornaSelezione, registraEditor } from './ponteEditor'
 
 /**
  * Plugin invisibile montato nel corpo dell'articolo: espone editor e selezione
- * al pannello dell'assistente (vedi ponteEditor.ts). Non disegna nulla e non
+ * alla barra dell'assistente (vedi ponteEditor.ts). Non disegna nulla e non
  * modifica nulla da solo.
  */
 function PluginPonte() {

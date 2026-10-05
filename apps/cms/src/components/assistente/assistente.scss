@@ -1,40 +1,8 @@
 /* =============================================================================
-   Pannello "Assistente AI" nella colonna dell'editor — dai design (Editor v1).
+   Pezzi comuni della barra "Assistente AI" (barra.scss): esiti, attesa,
+   elenchi di proposte e la sezione immagini — dai design (Editor v1).
    ============================================================================= */
 
-.assistente {
-  font-family: var(--font-body);
-  border-top: 1px solid var(--esperia-filo);
-}
-
-.assistente__testata {
-  all: unset;
-  box-sizing: border-box;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  width: 100%;
-  padding: 13px 14px;
-  border-bottom: 1px solid var(--esperia-filo);
-  cursor: pointer;
-
-  &:hover {
-    background: var(--esperia-pannello);
-  }
-
-  &:focus-visible {
-    outline: 2px solid var(--esperia-accento);
-    outline-offset: -2px;
-  }
-}
-
-.assistente__titolo {
-  font-size: 12.5px;
-  font-weight: 700;
-  flex: 1;
-}
-
-.assistente__beta,
 .assistente__marchio {
   font-size: 9px;
   font-weight: 700;
@@ -45,83 +13,7 @@
   padding: 2px 6px;
 }
 
-.assistente__chevron {
-  font-size: 11px;
-  color: #8a8378;
-}
-
-.assistente__corpo {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-  padding: 14px;
-  border-bottom: 1px solid var(--esperia-filo);
-}
-
-.assistente__principio {
-  font-size: 11px;
-  line-height: 1.5;
-  color: #5c554a;
-  background: var(--esperia-superficie);
-  border-radius: 8px;
-  padding: 10px 11px;
-  margin: 0;
-}
-
-/* --- Provider non disponibile ------------------------------------------- */
-
-.assistente__spento {
-  display: flex;
-  flex-direction: column;
-  gap: 9px;
-  background: var(--esperia-pannello);
-  border: 1px solid #e2c9a8;
-  border-radius: 10px;
-  padding: 12px 13px;
-
-  p {
-    font-size: 11.5px;
-    line-height: 1.55;
-    color: #5c554a;
-    margin: 0;
-  }
-}
-
-.assistente__spento-testata {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 12px;
-  font-weight: 700;
-}
-
-.assistente__spento-icona {
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  background: var(--stato-bozza-bg);
-  color: var(--stato-bozza-fg);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 11px;
-  font-weight: 700;
-}
-
 /* --- Strumenti ------------------------------------------------------------ */
-
-.assistente__strumenti {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.assistente__riga {
-  display: flex;
-  align-items: baseline;
-  gap: 8px;
-  flex-wrap: wrap;
-}
 
 .assistente__etichetta {
   font-size: 10px;
@@ -130,11 +22,6 @@
   text-transform: uppercase;
   color: #8a8378;
   flex: 1;
-}
-
-.assistente__stato {
-  font-size: 10px;
-  color: #c0b7a4;
 }
 
 .assistente__ambito {
@@ -170,12 +57,6 @@
     color: #c0b7a4;
     cursor: default;
   }
-}
-
-.assistente__strumento--attivo {
-  border-color: var(--esperia-accento);
-  color: var(--esperia-accento);
-  background: #eaf2f2;
 }
 
 /* --- Esiti -------------------------------------------------------------- */
@@ -262,20 +143,6 @@
 
 /* --- Proposta --------------------------------------------------------------- */
 
-.assistente__proposta {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  border-top: 1px solid var(--esperia-filo);
-  padding-top: 13px;
-}
-
-.assistente__titolo-proposta {
-  font-size: 11.5px;
-  font-weight: 700;
-  flex: 1;
-}
-
 .assistente__elenco {
   display: flex;
   flex-direction: column;
@@ -297,67 +164,6 @@
   line-height: 1.5;
   flex: 1;
   color: var(--esperia-scuro);
-}
-
-.assistente__azione {
-  all: unset;
-  font-size: 10.5px;
-  font-weight: 700;
-  color: var(--esperia-accento);
-  cursor: pointer;
-  white-space: nowrap;
-
-  &:hover {
-    color: var(--esperia-accento-scuro);
-  }
-
-  &:focus-visible {
-    outline: 2px solid var(--esperia-accento);
-  }
-}
-
-.assistente__confronto {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.assistente__confronto-etichetta {
-  font-size: 9.5px;
-  font-weight: 700;
-  letter-spacing: 1px;
-  color: var(--esperia-scuro-tenue);
-}
-
-.assistente__confronto-etichetta--proposta {
-  color: var(--stato-pubblicato-fg);
-  margin-top: 4px;
-}
-
-.assistente__attuale,
-.assistente__proposto {
-  font-size: 12px;
-  line-height: 1.6;
-  border-radius: 8px;
-  padding: 10px 11px;
-  margin: 0;
-  white-space: pre-wrap;
-}
-
-.assistente__attuale {
-  color: #5c554a;
-  background: #f7ded9;
-}
-
-.assistente__proposto {
-  color: var(--esperia-scuro);
-  background: var(--stato-pubblicato-bg);
-}
-
-.assistente__decisione {
-  display: flex;
-  gap: 7px;
-  flex-wrap: wrap;
 }
 
 .assistente__accetta,

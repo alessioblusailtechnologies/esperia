@@ -1,12 +1,12 @@
 import type { LexicalEditor } from '@payloadcms/richtext-lexical/lexical'
 
 /**
- * Collegamento fra il corpo dell'articolo e il pannello "Assistente AI" — RF-AI-06.
+ * Collegamento fra il corpo dell'articolo e la barra "Assistente AI" — RF-AI-06.
  *
- * Il pannello sta nella colonna laterale, fuori dall'albero React dell'editor
+ * La barra e' un campo a parte del form, fuori dall'albero React dell'editor
  * Lexical, e non puo' raggiungerlo con un contesto. Il plugin montato
  * nell'editor (PonteEditorFeature) registra qui l'istanza e la selezione
- * corrente; il pannello le legge da qui. Una pagina di modifica ha un solo
+ * corrente; la barra le legge da qui. Una pagina di modifica ha un solo
  * corpo d'articolo, quindi un solo editor alla volta.
  */
 
@@ -37,7 +37,7 @@ export function registraEditor(editor: LexicalEditor | null) {
 }
 
 export function aggiornaSelezione(selezione: SelezioneSalvata | null) {
-  // Il clic su un pulsante del pannello toglie il focus all'editor: la selezione
+  // Il clic su un pulsante della barra toglie il focus all'editor: la selezione
   // viene conservata finche' il redattore non ne fa un'altra dentro il corpo.
   const prima = selezioneCorrente?.testo ?? ''
   selezioneCorrente = selezione
